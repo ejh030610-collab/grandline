@@ -105,6 +105,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .rt-r{background:rgba(37,99,235,.92);color:#fff;}
 .rt-uc,.rt-c{background:rgba(107,114,128,.85);color:#fff;}
 .rt-l{background:rgba(22,163,74,.92);color:#fff;}
+.rt-p{background:linear-gradient(135deg,#f59e0b,#ec4899,#8b5cf6);color:#fff;}
 .wish-btn{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.9);border:none;border-radius:50%;width:26px;height:26px;font-size:13px;display:flex;align-items:center;justify-content:center;color:#ccc;transition:all .15s;}
 .wish-btn.on,.wish-btn:hover{color:#e8507a;}
 .list-badge{position:absolute;bottom:6px;right:6px;font-size:10px;background:rgba(0,0,0,.6);border-radius:7px;padding:2px 7px;color:#fff;}
@@ -433,6 +434,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <!-- 희귀도 -->
     <div class="s-sec-label">희귀도</div>
     <div class="s-sub active" data-rarity="all" onclick="setRarity(this)">전체</div>
+    <div class="s-sub" data-rarity="P" onclick="setRarity(this)">✨ P (패러렐)</div>
     <div class="s-sub" data-rarity="SEC" onclick="setRarity(this)">⭐ SEC</div>
     <div class="s-sub" data-rarity="SR" onclick="setRarity(this)">💜 SR</div>
     <div class="s-sub" data-rarity="R" onclick="setRarity(this)">💙 R</div>
@@ -757,7 +759,7 @@ let aiData = {};
 let adminCards = [];
 
 // ─── HELPERS ───
-const RC = r => ({SEC:'rt-sec',SR:'rt-sr',R:'rt-r',UC:'rt-uc',C:'rt-c',L:'rt-l'}[r]||'rt-c');
+const RC = r => ({SEC:'rt-sec',SR:'rt-sr',R:'rt-r',UC:'rt-uc',C:'rt-c',L:'rt-l',P:'rt-p'}[r]||'rt-c');
 const GC = g => ({S:'gd-s',A:'gd-a',B:'gd-b',C:'gd-c',D:'gd-d'}[g]||'');
 const GBG = g => ({S:'#16a34a',A:'#2563eb',B:'#ca8a04',C:'#dc2626',D:'#6B7280'}[g]||'#999');
 const AVA = ['#D85A30','#2563eb','#16a34a','#7c3aed','#B8860B'];
@@ -1495,6 +1497,22 @@ async function aAddCard() {
 }
 
 // ─── AUTO FETCH ───
+// OP-01 정확한 희귀도 맵 (공식 데이터 기반)
+const RARITY_MAP = {
+  'OP01': {
+    L:['001','002','003','031','060','061','062','091'],
+    SEC:['120','121'],
+    SR:['024','025','040','047','094','096'],
+    R:['004','013','016','017','026','027','051','057','058','067','068','070','071','073','078','079','097','102','106','107','114','119'],
+    UC:['005','006','007','008','009','010','011','012','014','015','019','020','021','022','029','030','033','034','036','037','039','041','042','044','048','049','050','052','053','054','063','064','069','072','074','075','077','080','082','083','084','085','086','088','090','093','095','098','101','108','109','111','112'],
+    // 패러렐 카드 목록 (★별 표시)
+    P:['001_p1','002_p1','003_p1','008_p1','013_p1','016_p1','024_p1','025_p1','031_p1','034_p1','040_p1','047_p1','048_p1','051_p1','060_p1','061_p1','062_p1','064_p1','067_p1','070_p1','073_p1','077_p1','078_p1','091_p1','093_p1','094_p1','096_p1','097_p1','102_p1','109_p1','120_p1','120_p2','121_p1'],
+  }
+};
+
+// 공식 사이트 이미지 URL (영문 공식)
+const OFFICIAL_IMG = 'https://en.onepiece-cardgame.com/images/cardlist/card';
+
 const SETS = [
   {id:'OP01',series:'OP-01',name:'ROMANCE DAWN',total:121},
   {id:'OP02',series:'OP-02',name:'정상결전',total:121},
@@ -1509,12 +1527,23 @@ const SETS = [
   {id:'OP11',series:'OP-11',name:'의지의 계승',total:120},
 ];
 
-function getRarity(setId, num, total) {
-  if (num === total || num === total-1) return 'SEC';
-  if (num >= total-11 && num <= total-2) return 'SR';
-  if (num <= 8) return 'L';
-  if (num >= total-30) return 'R';
-  if (num >= total-60) return 'UC';
+function getCardRarity(setId, numStr, total) {
+  const rm = RARITY_MAP[setId];
+  if (rm) {
+    if (rm.SEC.includes(numStr)) return 'SEC';
+    if (rm.SR.includes(numStr)) return 'SR';
+    if (rm.R.includes(numStr)) return 'R';
+    if (rm.UC.includes(numStr)) return 'UC';
+    if (rm.L.includes(numStr)) return 'L';
+    return 'C';
+  }
+  // 다른 세트는 번호 기반 추정
+  const n = parseInt(numStr);
+  if (n === total || n === total-1) return 'SEC';
+  if (n <= 8) return 'L';
+  if (n >= total-10) return 'SR';
+  if (n >= total-36) return 'R';
+  if (n >= total-66) return 'UC';
   return 'C';
 }
 
@@ -1529,32 +1558,53 @@ async function autoFetch() {
   const btn = document.getElementById('autoFetchBtn');
   btn.disabled = true; btn.textContent='⏳ 수집 중...';
   let total = 0;
+
   for (const set of SETS) {
-    setStatus(`⏳ <b>${set.id} ${set.name}</b> 등록 중... (완료: ${total}종)`);
+    setStatus(`⏳ <b>${set.id} ${set.name}</b> 일반 카드 등록 중... (완료: ${total}종)`);
     const batch = [];
+
+    // 일반 카드
     for (let n=1; n<=set.total; n++) {
       const pad = String(n).padStart(3,'0');
       const cid = `${set.id}-${pad}`;
+      const imgUrl = `${OFFICIAL_IMG}/${cid}.png`;
       batch.push({
         id:cid, name:cid, series:set.series,
-        rarity:getRarity(set.id,n,set.total),
-        card_type:n<=8?'리더':'캐릭터',
+        rarity:getCardRarity(set.id, pad, set.total),
+        card_type: (RARITY_MAP[set.id]?.L||[]).includes(pad) ? '리더' : '캐릭터',
         color:'적색', cost:0, power:0, emoji:'🃏',
-        image_url:`${CDN}/${set.id}/${set.id}-${pad}_p4_EN.webp`,
+        image_url: imgUrl, version:'한글판',
+      });
+    }
+
+    // 패러렐 카드 (OP01만 정확한 데이터 있음, 나머지는 추후 추가)
+    const parallels = RARITY_MAP[set.id]?.P || [];
+    for (const pNum of parallels) {
+      const cid = `${set.id}-${pNum}`;
+      const baseId = `${set.id}-${pNum.split('_')[0]}`;
+      batch.push({
+        id:cid, name:`${cid} (패러렐)`, series:set.series,
+        rarity:'P', card_type:'캐릭터',
+        color:'적색', cost:0, power:0, emoji:'✨',
+        image_url:`${OFFICIAL_IMG}/${set.id}-${pNum}.png`,
         version:'한글판',
       });
     }
+
+    // 20개씩 upsert
     for (let i=0;i<batch.length;i+=20) {
       const {error} = await sb.from('cards').upsert(batch.slice(i,i+20),{onConflict:'id',ignoreDuplicates:false});
       if (!error) total += Math.min(20, batch.length-i);
       await new Promise(r=>setTimeout(r,80));
     }
   }
-  setStatus(`✅ 완료! 총 <b>${total}종</b> 카드 등록됐어요!`, 'done');
+
+  setStatus(`✅ 완료! 총 <b>${total}종</b> 카드 등록 (패러렐 포함)!`, 'done');
   btn.disabled=false; btn.textContent='🤖 전체 카드 자동 수집 (OP01~OP11)';
   await aLoadCards(); await init();
   toast('🎉 '+total+'종 카드 등록 완료!');
 }
+
 
 async function autoImgOnly() {
   setStatus('🖼️ 이미지 URL 업데이트 중...');
