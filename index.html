@@ -1528,8 +1528,7 @@ function parseKrCards(html, setInfo) {
   const cards = [];
   // 이미지 URL + 카드 데이터 추출
   // 패턴: fileDownload?downname=XXXX ... 카드번호 ... 희귀도 ... 카드명
-  const lines = html.split('
-').map(l=>l.trim()).filter(l=>l);
+  const lines = html.split('\n').map(l=>l.trim()).filter(l=>l);
   
   let i = 0;
   while (i < lines.length) {
