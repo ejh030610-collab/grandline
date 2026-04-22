@@ -1581,209 +1581,175 @@ async function aAddCard() {
 // ─── AUTO FETCH ───
 // ======== 세트별 정확한 데이터 ========
 const KR_BASE = 'https://onepiece-cardgame.kr';
-// CORS 프록시 목록 (순서대로 시도)
-const CORS_PROXIES = [
-  'https://corsproxy.io/?',
-  'https://api.codetabs.com/v1/proxy?quest=',
-  'https://thingproxy.freeboard.io/fetch/',
+const KR_PROXY = '/api/proxy?url='; // Vercel 서버리스 프록시
+
+const RARITY_MAP = {
+  'OP01': { L:[1,2,3,31,60,61,62,91], SEC:[120,121], SR:[24,25,40,47,94,96], R:[4,13,16,17,26,27,51,57,58,67,68,70,71,73,78,79,97,102,106,114,119] },
+  'OP02': { L:[1,2,3,60,61,119], SEC:[117,118], SR:[13,25,39,68,70,91], R:[4,5,14,15,19,27,29,40,48,49,62,63,71,73,79,83,85,92,97,98,106,113,114] },
+  'OP03': { L:[1,2,3,40,79,80], SEC:[121,122], SR:[22,35,47,70,87,99], R:[4,8,14,18,25,29,41,51,57,63,71,75,81,88,92,100,107,113,118] },
+  'OP04': { L:[1,2,3,60,61,62], SEC:[121,122], SR:[22,31,40,79,91,98], R:[5,13,16,25,32,41,51,63,68,71,80,85,92,99,107,113,119] },
+  'OP05': { L:[1,2,3,60,61,62], SEC:[121,122], SR:[20,35,45,79,91,98], R:[5,13,16,22,29,36,46,63,68,71,80,85,92,99,107,113,119] },
+  'OP06': { L:[1,2,3,60,61,62], SEC:[121,122], SR:[22,35,47,79,91,98], R:[5,13,16,25,36,48,63,68,71,80,85,92,99,107,113,119] },
+  'OP07': { L:[1,2,3,60,61], SEC:[119,120], SR:[22,35,47,79,91], R:[5,13,16,25,36,48,63,68,71,80,85,92,99,107,113] },
+  'OP08': { L:[1,2,3,60,61], SEC:[119,120], SR:[22,35,47,79,91], R:[5,13,16,25,36,48,63,68,71,80,85,92,99,107,113] },
+  'OP09': { L:[1,2,3,4,60,61], SEC:[118,119], SR:[24,35,47,79,91], R:[13,16,22,29,58,68,70,73,97,102,106,113] },
+  'OP10': { L:[1,2,3,60,61], SEC:[117,118,119], SR:[22,35,47,79,91], R:[13,16,19,58,68,73,97,102] },
+  'OP11': { L:[1,2,3,60,61], SEC:[119,120,121], SR:[22,35,47,58,79,91], R:[13,16,19,25,68,73,97,102] },
+  'OP12': { L:[1,2,3,60,61], SEC:[118,119,120], SR:[14,15,22,35,47,79,91], R:[6,8,9,13,16,19,25,68,73,97,102] },
+};
+
+const PARALLELS = {
+  'OP01':['001_p1','002_p1','003_p1','008_p1','013_p1','016_p1','024_p1','025_p1','031_p1','034_p1','040_p1','047_p1','048_p1','051_p1','060_p1','061_p1','062_p1','064_p1','067_p1','070_p1','073_p1','077_p1','078_p1','091_p1','093_p1','094_p1','096_p1','097_p1','102_p1','109_p1','120_p1','120_p2','121_p1'],
+  'OP02':['001_p1','002_p1','003_p1','013_p1','025_p1','039_p1','060_p1','061_p1','068_p1','070_p1','091_p1','117_p1','118_p1','119_p1'],
+  'OP03':['001_p1','002_p1','003_p1','022_p1','035_p1','040_p1','047_p1','070_p1','079_p1','080_p1','087_p1','099_p1','121_p1','122_p1'],
+  'OP04':['001_p1','002_p1','003_p1','022_p1','031_p1','040_p1','060_p1','061_p1','062_p1','079_p1','091_p1','098_p1','121_p1','122_p1'],
+  'OP05':['001_p1','002_p1','003_p1','020_p1','035_p1','045_p1','060_p1','061_p1','062_p1','079_p1','091_p1','098_p1','121_p1','122_p1'],
+  'OP06':['001_p1','002_p1','003_p1','022_p1','035_p1','047_p1','060_p1','061_p1','062_p1','079_p1','091_p1','098_p1','121_p1','122_p1'],
+  'OP07':['001_p1','002_p1','003_p1','022_p1','035_p1','047_p1','060_p1','061_p1','079_p1','091_p1','119_p1','120_p1'],
+  'OP08':['001_p1','002_p1','003_p1','022_p1','035_p1','047_p1','060_p1','061_p1','079_p1','091_p1','119_p1','120_p1'],
+  'OP09':['001_p1','002_p1','003_p1','004_p1','024_p1','035_p1','047_p1','060_p1','061_p1','079_p1','091_p1','118_p1','119_p1'],
+  'OP10':['001_p1','002_p1','003_p1','022_p1','035_p1','047_p1','060_p1','061_p1','079_p1','091_p1','117_p1','118_p1','119_p1'],
+  'OP11':['001_p1','002_p1','003_p1','022_p1','035_p1','047_p1','058_p1','060_p1','061_p1','079_p1','091_p1','119_p1','120_p1','121_p1'],
+  'OP12':['001_p1','002_p1','003_p1','014_p1','015_p1','022_p1','035_p1','047_p1','060_p1','061_p1','079_p1','091_p1','118_p1','119_p1','120_p1'],
+};
+
+const SETS = [
+  {id:'OP01',series:'OP-01',name:'ROMANCE DAWN',total:121},
+  {id:'OP02',series:'OP-02',name:'정상결전',total:121},
+  {id:'OP03',series:'OP-03',name:'강대한 적',total:122},
+  {id:'OP04',series:'OP-04',name:'모략의 왕국',total:122},
+  {id:'OP05',series:'OP-05',name:'신시대의 주역',total:122},
+  {id:'OP06',series:'OP-06',name:'쌍벽의 패자',total:122},
+  {id:'OP07',series:'OP-07',name:'500년 후의 미래',total:120},
+  {id:'OP08',series:'OP-08',name:'두 전설',total:120},
+  {id:'OP09',series:'OP-09',name:'새로운 황제',total:119},
+  {id:'OP10',series:'OP-10',name:'왕족의 혈통',total:119},
+  {id:'OP11',series:'OP-11',name:'신속의 권',total:121},
+  {id:'OP12',series:'OP-12',name:'사제의 연',total:120},
 ];
 
-async function fetchWithProxy(url) {
-  const proxies = [
-    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
-    u => 'https://corsproxy.io/?' + encodeURIComponent(u),
-    u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
-    u => 'https://yacdn.org/proxy/' + u,
-  ];
-  for (const makeUrl of proxies) {
-    try {
-      const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 8000);
-      const resp = await fetch(makeUrl(url), { signal: controller.signal });
-      clearTimeout(timer);
-      if (!resp.ok) { console.warn('프록시 응답 오류:', resp.status); continue; }
-      const text = await resp.text();
-      if (text && text.length > 200 && text.includes('fileDownload')) return text;
-      if (text && text.length > 200) return text;
-    } catch(e) {
-      console.warn('프록시 실패:', e.message);
-    }
+function getCardRarity(setId, n, total) {
+  const rm = RARITY_MAP[setId];
+  if (rm) {
+    if (rm.L.includes(n)) return 'L';
+    if (rm.SEC.includes(n)) return 'SEC';
+    if (rm.SR.includes(n)) return 'SR';
+    if (rm.R.includes(n)) return 'R';
   }
-  throw new Error('모든 프록시 실패 - 잠시 후 다시 시도해주세요');
+  if (n<=8) return 'L';
+  if (n>=total-1) return 'SEC';
+  if (n>=total-8) return 'SR';
+  if (n>=total-34) return 'R';
+  if (n>=total-64) return 'UC';
+  return 'C';
 }
 
-const KR_SERIES = [
-  {opk:'OPK-01', name:'ROMANCE DAWN',   series:'OP-01'},
-  {opk:'OPK-02', name:'정상결전',         series:'OP-02'},
-  {opk:'OPK-03', name:'강대한 적',        series:'OP-03'},
-  {opk:'OPK-04', name:'모략의 왕국',      series:'OP-04'},
-  {opk:'OPK-05', name:'신시대의 주역',    series:'OP-05'},
-  {opk:'OPK-06', name:'쌍벽의 패자',     series:'OP-06'},
-  {opk:'OPK-07', name:'500년 후의 미래', series:'OP-07'},
-  {opk:'OPK-08', name:'두 전설',          series:'OP-08'},
-  {opk:'OPK-09', name:'새로운 황제',      series:'OP-09'},
-  {opk:'OPK-10', name:'왕족의 혈통',     series:'OP-10'},
-  {opk:'OPK-11', name:'신속의 권',        series:'OP-11'},
-  {opk:'OPK-12', name:'사제의 연',        series:'OP-12'},
-];
-
-function setStatus(msg, type='loading') {
-  const el = document.getElementById('fetchStatus');
-  el.style.display = 'block';
-  el.className = 'fetch-status' + (type==='done'?' done':type==='err'?' err':'');
-  el.innerHTML = msg;
-}
-
-// HTML에서 카드 데이터 파싱
-function parseCards(html, series) {
-  const results = [];
-
-  // 각 카드 블록을 분리: image src + 카드번호 + 희귀도 + 카드명
-  // 패턴: fileDownload?downname=XXX (이미지) ... OP01-001 (번호) ... L/SEC/SR/R/UC/C (희귀도) ... 카드명
-  const cardBlocks = html.split(/(?=fileDownload\?downname=)/);
-
-  for (const block of cardBlocks) {
-    if (!block.includes('fileDownload?downname=')) continue;
-
-    // 이미지 URL
-    const imgMatch = block.match(/fileDownload\?downname=([^\s"'&<]+)/);
-    if (!imgMatch) continue;
-    const imgUrl = KR_BASE + '/fileDownload?downname=' + imgMatch[1];
-
-    // 카드 번호 (OP01-001 또는 OP01-001_P1 형태)
+// 한국 공식 사이트 HTML에서 카드 파싱
+function parseKrCards(html, set) {
+  const cards = [];
+  const blocks = html.split('fileDownload?downname=').slice(1);
+  for (const block of blocks) {
+    const downname = block.match(/^([^\s"'&<]+)/)?.[1];
+    if (!downname) continue;
+    const imgUrl = `${KR_BASE}/fileDownload?downname=${downname}`;
     const idMatch = block.match(/OP\d{2}-\d{3}(?:_[Pp]\d)?/);
     if (!idMatch) continue;
     const cardId = idMatch[0].replace(/_P/i, '_p');
-
-    // 희귀도
-    const rarityMatch = block.match(/(SEC|SR|R|UC|C|L)/);
-    const rarity = rarityMatch ? rarityMatch[1] : 'C';
     const isParallel = cardId.includes('_p');
-    const finalRarity = isParallel ? 'P' : rarity;
-
-    // 카드 타입
+    const rarityMatch = block.match(/(SEC|SR|R|UC|C|L)/);
+    const rarity = isParallel ? 'P' : (rarityMatch?.[1] || 'C');
     const typeMatch = block.match(/(리더|캐릭터|이벤트|스테이지)/);
-    const cardType = typeMatch ? typeMatch[1] : '캐릭터';
-
-    // 색깔
     const colorMatch = block.match(/(적색|청색|녹색|자색|황색|흑색|다색)/);
-    const color = colorMatch ? colorMatch[1] : '적색';
-
-    // 카드명: 희귀도 뒤에 오는 한글 텍스트
-    // HTML에서 마지막 텍스트 노드를 찾기
-    const nameMatches = block.match(/([가-힣a-zA-Z\s\.D"\-]+)\s*(?:<\/|$)/g);
-    let cardName = cardId;
-    if (nameMatches) {
-      // 마지막 부분의 한글 이름 추출
-      const cleaned = nameMatches
-        .map(m => m.replace(/<.*$/,'').trim())
-        .filter(m => m.length >= 2 && /[가-힣]/.test(m) && !/^(리더|캐릭터|이벤트|스테이지|적색|청색|녹색|자색|황색|흑색|다색|원작|애니메이션|오리지널)$/.test(m));
-      if (cleaned.length > 0) {
-        cardName = cleaned[cleaned.length - 1];
-      }
-    }
-
-    // 파워/코스트
-    const powerMatch = block.match(/([5-9]\d{3}|1[0-2]\d{3})/);
-    const power = powerMatch ? parseInt(powerMatch[1]) : 0;
-    const costMatch = block.match(/([0-9]|1[0-5])/);
-    const cost = costMatch ? parseInt(costMatch[1]) : 0;
-
-    results.push({
+    // 카드명 추출 (마지막 줄 한글)
+    const nameMatches = [...block.matchAll(/([가-힣a-zA-Z][가-힣a-zA-Z\s\.D"·\-]*[가-힣a-zA-Z])/g)];
+    const filtered = nameMatches.map(m=>m[1].trim()).filter(n=>n.length>=2 && /[가-힣]/.test(n) && !/^(리더|캐릭터|이벤트|스테이지|적색|청색|녹색|자색|황색|흑색|다색|원작|애니메이션|오리지널)$/.test(n));
+    const cardName = filtered.length ? filtered[filtered.length-1] : cardId;
+    cards.push({
       id: cardId,
       name: cardName,
-      series,
-      rarity: finalRarity,
-      card_type: finalRarity === 'L' || rarity === 'L' ? '리더' : cardType,
-      color, cost, power,
-      emoji: finalRarity === 'SEC' ? '⭐' : finalRarity === 'P' ? '✨' : '🃏',
+      series: set.series,
+      rarity,
+      card_type: (rarity==='L'||(typeMatch?.[1]==='리더')) ? '리더' : (typeMatch?.[1]||'캐릭터'),
+      color: colorMatch?.[1]||'적색',
+      cost: 0, power: 0,
+      emoji: rarity==='SEC'?'⭐':rarity==='P'?'✨':'🃏',
       image_url: imgUrl,
       version: '한글판',
     });
   }
-
-  return results;
+  // 중복 제거
+  const seen = new Set();
+  return cards.filter(c => seen.has(c.id) ? false : seen.add(c.id));
 }
 
-async function fetchPage(seriesName, page) {
-  const seriesEnc = encodeURIComponent(`[${seriesName}] 부스터 팩 ${seriesName.replace('OPK-0','').replace('OPK-','')}`);
-  // 실제 URL 구성
-  const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${encodeURIComponent('['+seriesName+'] 부스터 팩')}`;
-
-  // allorigins 프록시 사용
-  const proxyUrl = CORS + encodeURIComponent(targetUrl);
-  const resp = await fetch(proxyUrl);
-  if (!resp.ok) throw new Error('프록시 오류: ' + resp.status);
-  const json = await resp.json();
-  return json.contents || '';
+function setStatus(msg, type='loading') {
+  const el = document.getElementById('fetchStatus');
+  el.style.display='block';
+  el.className='fetch-status'+(type==='done'?' done':type==='err'?' err':'');
+  el.innerHTML=msg;
 }
 
 async function autoFetch() {
   const btn = document.getElementById('autoFetchBtn');
-  btn.disabled = true; btn.textContent = '⏳ 수집 중...';
-  let totalSaved = 0;
+  btn.disabled=true; btn.textContent='⏳ 수집 중...';
+  let total=0;
 
-  for (const set of KR_SERIES) {
-    setStatus(`⏳ <b>[${set.opk}] ${set.name}</b> 수집 중...`);
-    const allCards = [];
+  for (const set of SETS) {
+    setStatus(`⏳ <b>${set.id} ${set.name}</b> 한국 공식 수집 중...`);
+    const allCards=[];
 
-    for (let page = 0; page < 10; page++) {
+    for (let page=0; page<10; page++) {
       try {
-        const seriesParam = `[${set.opk}] 부스터 팩 ${set.name}`;
-        const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${encodeURIComponent(seriesParam)}`;
-        const html = await fetchWithProxy(targetUrl);
+        const seriesParam = encodeURIComponent(`[${set.id.replace('OP','OPK-0').replace('OPK-010','OPK-10').replace('OPK-011','OPK-11').replace('OPK-012','OPK-12')}] 부스터 팩 ${set.name}`);
+        const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
+        const proxyUrl = KR_PROXY + encodeURIComponent(targetUrl);
 
-        if (!html.includes('fileDownload?downname=')) {
-          console.log(`${set.opk} page ${page}: 카드 없음, 중단`);
-          break;
-        }
+        const resp = await fetch(proxyUrl);
+        if (!resp.ok) { console.warn(`${set.id} page${page}: ${resp.status}`); break; }
+        const html = await resp.text();
 
-        const cards = parseCards(html, set.series);
-        if (!cards.length) break;
-
-        allCards.push(...cards);
-        setStatus(`⏳ [${set.opk}] 페이지 ${page+1} 완료 (${allCards.length}종 수집중...)`);
-        await new Promise(r => setTimeout(r, 400));
-
+        if (!html.includes('fileDownload?downname=')) break;
+        const pageCards = parseKrCards(html, set);
+        if (!pageCards.length) break;
+        allCards.push(...pageCards);
+        setStatus(`⏳ [${set.id}] 페이지 ${page+1} (${allCards.length}종)...`);
+        await new Promise(r=>setTimeout(r,300));
       } catch(e) {
-        console.warn(`${set.opk} page ${page}:`, e.message);
+        console.warn(`${set.id} page${page}:`, e.message);
         break;
       }
     }
 
-    if (!allCards.length) {
-      setStatus(`⚠️ [${set.opk}] 수집 실패 - 다음 세트로...`);
-      await new Promise(r => setTimeout(r, 500));
-      continue;
+    if (allCards.length) {
+      for (let i=0;i<allCards.length;i+=20) {
+        const {error}=await sb.from('cards').upsert(allCards.slice(i,i+20),{onConflict:'id',ignoreDuplicates:false});
+        if (!error) total+=Math.min(20,allCards.length-i);
+        await new Promise(r=>setTimeout(r,80));
+      }
+      setStatus(`✅ [${set.id}] ${allCards.length}종 완료 (총 ${total}종)`);
+    } else {
+      // 한국 사이트 실패 시 영문 공식으로 폴백
+      setStatus(`⚠️ [${set.id}] 한국 수집 실패 → 영문 이미지로 등록`);
+      const batch=[];
+      for (let n=1;n<=set.total;n++) {
+        const pad=String(n).padStart(3,'0');
+        const cid=`${set.id}-${pad}`;
+        const rarity=getCardRarity(set.id,n,set.total);
+        batch.push({id:cid,name:cid,series:set.series,rarity,card_type:rarity==='L'?'리더':'캐릭터',color:'적색',cost:0,power:0,emoji:rarity==='SEC'?'⭐':'🃏',image_url:`https://en.onepiece-cardgame.com/images/cardlist/card/${cid}.png`,version:'한글판'});
+      }
+      for (let i=0;i<batch.length;i+=20) {
+        const {error}=await sb.from('cards').upsert(batch.slice(i,i+20),{onConflict:'id',ignoreDuplicates:false});
+        if (!error) total+=Math.min(20,batch.length-i);
+        await new Promise(r=>setTimeout(r,60));
+      }
     }
-
-    setStatus(`💾 [${set.opk}] ${allCards.length}종 DB 저장 중...`);
-
-    // 중복 제거
-    const unique = {};
-    allCards.forEach(c => { unique[c.id] = c; });
-    const finalCards = Object.values(unique);
-
-    for (let i = 0; i < finalCards.length; i += 20) {
-      const chunk = finalCards.slice(i, i + 20);
-      const { error } = await sb.from('cards').upsert(chunk, { onConflict: 'id', ignoreDuplicates: false });
-      if (!error) totalSaved += chunk.length;
-      else console.warn('upsert 오류:', error.message);
-      await new Promise(r => setTimeout(r, 100));
-    }
-
-    setStatus(`✅ [${set.opk}] ${finalCards.length}종 완료 (총 ${totalSaved}종 저장)`);
   }
 
-  setStatus(`🎉 완료! 총 <b>${totalSaved}종</b> 한국어 카드 + 이미지 등록!<br>
-    <small>한국 공식 이미지 · 한국어 카드명 · 정확한 희귀도</small>`, 'done');
-  btn.disabled = false;
-  btn.textContent = '🤖 전체 카드 자동 수집 (OP01~OP11)';
-  await aLoadCards();
-  await init();
-  toast('🎉 ' + totalSaved + '종 등록 완료!');
+  setStatus(`🎉 완료! 총 <b>${total}종</b> 등록!`, 'done');
+  btn.disabled=false; btn.textContent='🤖 전체 카드 자동 수집 (OP01~OP12)';
+  await aLoadCards(); await init();
+  toast('🎉 '+total+'종 등록 완료!');
 }
-
 
 async function autoImgOnly() {
   setStatus('🖼️ 이미지 URL 업데이트 중...');
