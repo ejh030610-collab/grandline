@@ -1590,21 +1590,26 @@ const CORS_PROXIES = [
 
 async function fetchWithProxy(url) {
   const proxies = [
-    u => 'https://corsproxy.io/?' + u,
-    u => 'https://api.codetabs.com/v1/proxy?quest=' + u,
-    u => 'https://thingproxy.freeboard.io/fetch/' + u,
+    u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+    u => 'https://corsproxy.io/?' + encodeURIComponent(u),
+    u => 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u),
+    u => 'https://yacdn.org/proxy/' + u,
   ];
   for (const makeUrl of proxies) {
     try {
-      const resp = await fetch(makeUrl(url));
-      if (!resp.ok) continue;
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 8000);
+      const resp = await fetch(makeUrl(url), { signal: controller.signal });
+      clearTimeout(timer);
+      if (!resp.ok) { console.warn('프록시 응답 오류:', resp.status); continue; }
       const text = await resp.text();
-      if (text && text.length > 100) return text;
+      if (text && text.length > 200 && text.includes('fileDownload')) return text;
+      if (text && text.length > 200) return text;
     } catch(e) {
       console.warn('프록시 실패:', e.message);
     }
   }
-  throw new Error('모든 프록시 실패');
+  throw new Error('모든 프록시 실패 - 잠시 후 다시 시도해주세요');
 }
 
 const KR_SERIES = [
@@ -1795,6 +1800,52 @@ async function autoImgOnly() {
   }
   setStatus(`✅ ${done}종 이미지 업데이트 완료!`,'done');
   await aLoadCards(); await init();
+}
+
+// ======== 카드 수정 모달 ========
+function openEditCard(cid) {
+  const c = adminCards.find(x=>x.id===cid);
+  if (!c) { toast('카드를 찾을 수 없어요'); return; }
+  document.getElementById('edit-id').value = c.id;
+  document.getElementById('edit-id-show').value = c.id;
+  document.getElementById('edit-name').value = c.name || '';
+  document.getElementById('edit-ver').value = c.version || '한글판';
+  document.getElementById('edit-series').value = c.series || 'OP-01';
+  document.getElementById('edit-rarity').value = c.rarity || 'C';
+  document.getElementById('edit-color').value = c.color || '적색';
+  document.getElementById('edit-cost').value = c.cost || 0;
+  document.getElementById('edit-power').value = c.power || 0;
+  document.getElementById('edit-feature').value = c.feature || '';
+  document.getElementById('edit-imgurl').value = c.image_url || '';
+  document.getElementById('editCardOv').classList.add('on');
+}
+
+function closeEditCard() {
+  document.getElementById('editCardOv').classList.remove('on');
+}
+
+async function submitEditCard() {
+  const cid = document.getElementById('edit-id').value;
+  const name = document.getElementById('edit-name').value.trim();
+  if (!name) { toast('카드명을 입력해주세요'); return; }
+  const rarity = document.getElementById('edit-rarity').value;
+  const {error} = await sb.from('cards').update({
+    name,
+    version: document.getElementById('edit-ver').value,
+    series: document.getElementById('edit-series').value,
+    rarity,
+    card_type: rarity==='L' ? '리더' : '캐릭터',
+    color: document.getElementById('edit-color').value,
+    cost: parseInt(document.getElementById('edit-cost').value)||0,
+    power: parseInt(document.getElementById('edit-power').value)||0,
+    feature: document.getElementById('edit-feature').value||null,
+    image_url: document.getElementById('edit-imgurl').value||null,
+  }).eq('id', cid);
+  if (error) { toast('저장 실패: '+error.message); return; }
+  toast('✅ 카드 수정 완료!');
+  closeEditCard();
+  await aLoadCards();
+  await init();
 }
 
 init();
