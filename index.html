@@ -141,7 +141,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .hot-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:9px;}
 
 /* ── OVERLAYS ── */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:200;overflow-y:auto;padding:30px 14px;}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(4px);z-index:500;overflow-y:auto;padding:30px 14px;}
 .ov.on{display:flex;align-items:flex-start;justify-content:center;}
 .modal{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:fadeUp .22s ease;width:100%;max-width:420px;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
@@ -770,7 +770,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- 카드 수정 모달 -->
-<div class="ov" id="editCardOv" onclick="if(event.target===this)closeEditCard()">
+<div class="ov" id="editCardOv" style="z-index:600" onclick="if(event.target===this)closeEditCard()">
   <div class="modal" style="max-width:500px;padding:22px">
     <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">카드 수정</h3>
     <input type="hidden" id="edit-id">
