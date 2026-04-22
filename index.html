@@ -769,6 +769,30 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   </div>
 </div>
 
+<!-- 카드 수정 모달 -->
+<div class="ov" id="editCardOv" onclick="if(event.target===this)closeEditCard()">
+  <div class="modal" style="max-width:500px;padding:22px">
+    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">카드 수정</h3>
+    <input type="hidden" id="edit-id">
+    <div class="af-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px">
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드 번호</label><input type="text" id="edit-id-show" disabled style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;color:var(--muted)"></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>한글판</option><option>일판</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P (패러렐)</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">코스트</label><input type="number" id="edit-cost" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">파워</label><input type="number" id="edit-power" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
+    </div>
+    <div style="margin-bottom:10px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">특징</label><input type="text" id="edit-feature" placeholder="밀짚모자 일당" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
+    <div style="margin-bottom:14px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">이미지 URL</label><input type="text" id="edit-imgurl" placeholder="https://onepiece-cardgame.kr/fileDownload?downname=..." style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
+    <div style="display:flex;gap:8px">
+      <button class="mbtn-cancel" onclick="closeEditCard()" style="flex:1;padding:9px;font-size:13px;font-weight:600;border-radius:var(--r2);background:#fff;border:1px solid var(--border);color:var(--muted)">취소</button>
+      <button class="mbtn-ok" onclick="submitEditCard()" style="flex:1;padding:9px;font-size:13px;font-weight:600;border-radius:var(--r2);background:var(--red);border:1px solid var(--red);color:#fff">저장하기</button>
+    </div>
+  </div>
+</div>
+
 <!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox" onclick="closeLB()">
   <button class="lb-close" onclick="closeLB()">✕</button>
@@ -1564,14 +1588,19 @@ const CORS_PROXIES = [
 ];
 
 async function fetchWithProxy(url) {
-  for (const proxy of CORS_PROXIES) {
+  const proxies = [
+    u => 'https://corsproxy.io/?' + u,
+    u => 'https://api.codetabs.com/v1/proxy?quest=' + u,
+    u => 'https://thingproxy.freeboard.io/fetch/' + u,
+  ];
+  for (const makeUrl of proxies) {
     try {
-      const resp = await fetch(proxy + encodeURIComponent(url));
+      const resp = await fetch(makeUrl(url));
       if (!resp.ok) continue;
       const text = await resp.text();
       if (text && text.length > 100) return text;
     } catch(e) {
-      console.warn('프록시 실패:', proxy, e.message);
+      console.warn('프록시 실패:', e.message);
     }
   }
   throw new Error('모든 프록시 실패');
@@ -1694,8 +1723,8 @@ async function autoFetch() {
 
     for (let page = 0; page < 10; page++) {
       try {
-        const seriesParam = encodeURIComponent(`[${set.opk}] 부스터 팩 ${set.name}`);
-        const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
+        const seriesParam = `[${set.opk}] 부스터 팩 ${set.name}`;
+        const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${encodeURIComponent(seriesParam)}`;
         const html = await fetchWithProxy(targetUrl);
 
         if (!html.includes('fileDownload?downname=')) {
