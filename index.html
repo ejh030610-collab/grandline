@@ -424,7 +424,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-08" onclick="selectCat(this)">OP-08 두 영웅의 결전<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-09" onclick="selectCat(this)">OP-09 악인의 시대<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-10" onclick="selectCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-11" onclick="selectCat(this)">OP-11 의지의 계승<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-11" onclick="selectCat(this)">OP-11 신속의 권<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-12" onclick="selectCat(this)">OP-12 사제의 연<span class="s-cnt">-</span></div>
       </div>
       <div class="s-grade-hd" onclick="toggleGrp('kr-grade')">
         <span>🏆</span> 등급 <span class="s-arrow" id="arr-kr-grade" style="margin-left:auto">▶</span>
@@ -1555,7 +1556,26 @@ async function aAddCard() {
 // ─── AUTO FETCH ───
 // ======== 세트별 정확한 데이터 ========
 const KR_BASE = 'https://onepiece-cardgame.kr';
-const CORS = 'https://api.allorigins.win/get?url=';
+// CORS 프록시 목록 (순서대로 시도)
+const CORS_PROXIES = [
+  'https://corsproxy.io/?',
+  'https://api.codetabs.com/v1/proxy?quest=',
+  'https://thingproxy.freeboard.io/fetch/',
+];
+
+async function fetchWithProxy(url) {
+  for (const proxy of CORS_PROXIES) {
+    try {
+      const resp = await fetch(proxy + encodeURIComponent(url));
+      if (!resp.ok) continue;
+      const text = await resp.text();
+      if (text && text.length > 100) return text;
+    } catch(e) {
+      console.warn('프록시 실패:', proxy, e.message);
+    }
+  }
+  throw new Error('모든 프록시 실패');
+}
 
 const KR_SERIES = [
   {opk:'OPK-01', name:'ROMANCE DAWN',   series:'OP-01'},
@@ -1569,6 +1589,7 @@ const KR_SERIES = [
   {opk:'OPK-09', name:'새로운 황제',      series:'OP-09'},
   {opk:'OPK-10', name:'왕족의 혈통',     series:'OP-10'},
   {opk:'OPK-11', name:'신속의 권',        series:'OP-11'},
+  {opk:'OPK-12', name:'사제의 연',        series:'OP-12'},
 ];
 
 function setStatus(msg, type='loading') {
@@ -1675,11 +1696,7 @@ async function autoFetch() {
       try {
         const seriesParam = encodeURIComponent(`[${set.opk}] 부스터 팩 ${set.name}`);
         const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
-        const proxyUrl = CORS + encodeURIComponent(targetUrl);
-
-        const resp = await fetch(proxyUrl);
-        const json = await resp.json();
-        const html = json.contents || '';
+        const html = await fetchWithProxy(targetUrl);
 
         if (!html.includes('fileDownload?downname=')) {
           console.log(`${set.opk} page ${page}: 카드 없음, 중단`);
