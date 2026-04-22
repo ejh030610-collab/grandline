@@ -205,7 +205,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .ctab{font-size:11px;padding:3px 9px;border-radius:15px;border:1px solid var(--border);background:#fff;color:var(--muted);}
 .ctab.active{border-color:var(--red);color:var(--red);background:var(--red-light);}
 .chart-wrap{height:140px;}
-.chart-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:9px;}
+.chart-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:9px;}
 .cstat{text-align:center;background:var(--bg2);border-radius:var(--r2);padding:8px;}
 .cstat-v{font-size:13px;font-weight:700;}
 .cstat-l{font-size:10px;color:var(--muted);margin-top:1px;}
@@ -344,6 +344,36 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 /* TOAST */
 .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:9px 18px;border-radius:18px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;box-shadow:var(--sh2);}
 .toast.on{opacity:1;}
+
+/* 체크리스트 */
+.checklist-wrap{margin-bottom:12px;}
+.checklist-title{font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px;}
+.checklist-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.check-item{display:flex;align-items:center;gap:7px;padding:7px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);cursor:pointer;transition:all .15s;user-select:none;}
+.check-item:hover{border-color:var(--border2);}
+.check-item.bad{background:#fef2f2;border-color:#fca5a5;}
+.check-item.good{background:var(--green-light);border-color:#86efac;}
+.check-item input{display:none;}
+.check-box{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .15s;}
+.check-item.bad .check-box{background:#dc2626;border-color:#dc2626;color:#fff;}
+.check-item.good .check-box{background:var(--green);border-color:var(--green);color:#fff;}
+.check-label{font-size:12px;color:var(--muted);}
+.check-item.bad .check-label{color:#dc2626;font-weight:500;}
+.check-item.good .check-label{color:var(--green);font-weight:500;}
+
+/* 구매자 화면 체크리스트 */
+.cond-list{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px;}
+.cond-tag{font-size:11px;padding:3px 9px;border-radius:9px;font-weight:500;}
+.cond-ok{background:var(--green-light);color:var(--green);border:1px solid #86efac;}
+.cond-bad{background:#fef2f2;color:#dc2626;border:1px solid #fca5a5;}
+
+/* 시세 개선 */
+.price-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-top:10px;}
+.price-stat{background:var(--bg2);border-radius:var(--r2);padding:9px;text-align:center;border:1px solid var(--border);}
+.price-stat-v{font-size:14px;font-weight:700;}
+.price-stat-l{font-size:10px;color:var(--muted);margin-top:1px;}
+.no-chart-msg{text-align:center;padding:20px;color:var(--muted);font-size:13px;background:var(--bg2);border-radius:var(--r2);}
+
 </style>
 </head>
 <body>
@@ -1147,7 +1177,10 @@ async function loadChart(cid, days, btn) {
   let pts = data?.length ? data.map(d=>({x:new Date(d.traded_at),y:d.price})) : [];
   const ls = listings[cid];
   if (!pts.length && ls?.length) pts = ls.map(l=>({x:new Date(l.created_at||Date.now()),y:l.price}));
-  if (!pts.length) return;
+  if (!pts.length) {
+    ctx.parentElement.innerHTML = '<div class="no-chart-msg">📊 아직 거래 데이터가 없어요<br><small>거래가 발생하면 시세 그래프가 표시돼요</small></div>';
+    return;
+  }
   priceChart = new Chart(ctx, {
     type:'line',
     data:{labels:pts.map(p=>{const d=new Date(p.x);return(d.getMonth()+1)+'/'+d.getDate();}),
@@ -1181,7 +1214,7 @@ function openSell(prefill) {
   document.getElementById('ai-btn').disabled = true;
   document.getElementById('sellOv').classList.add('on');
 }
-function closeSell() { document.getElementById('sellOv').classList.remove('on'); }
+function closeSell() { document.getElementById('sellOv').classList.remove('on'); resetChecklist(); }
 
 function switchGrade(type, btn) {
   sellGrade = type;
@@ -1267,6 +1300,7 @@ async function submitSell() {
     description:document.getElementById('s_desc').value,
     version:document.getElementById('s_ver').value, series:document.getElementById('s_set').value,
     grade_type:sellGrade, grade_score:document.getElementById('s_grade_score')?.value||null,
+    condition_detail:JSON.stringify(getChecklistData()),
     auto_grade:aiData.grade||null, auto_grade_score:aiData.score||null, auto_grade_reason:aiData.reason||null,
     image_front:frontUrl, image_back:backUrl, status:'active'
   }).select().single();
@@ -1441,6 +1475,24 @@ async function aSetImg(cid) {
     </div>
   </td>`;
 }
+
+async function saveCardName(cid) {
+  const input = document.getElementById('name-'+cid);
+  if (!input) return;
+  const name = input.value.trim();
+  if (!name) return;
+  const card = adminCards.find(c=>c.id===cid);
+  if (card && card.name === name) return; // 변경 없으면 스킵
+  const {error} = await sb.from('cards').update({name}).eq('id',cid);
+  if (error) { toast('저장 실패: '+error.message); input.value = card?.name||cid; return; }
+  // 로컬 업데이트
+  if (card) card.name = name;
+  toast('✅ 카드명 저장: '+name);
+  // 메인 카드 목록도 업데이트
+  const mainCard = allCards.find(c=>c.id===cid);
+  if (mainCard) mainCard.name = name;
+}
+
 async function saveImg(cid) {
   const url = document.getElementById('img-input-'+cid)?.value.trim();
   if (!url) { toast('URL을 입력해주세요'); return; }
@@ -1477,19 +1529,22 @@ async function aToggleAdmin(username, isAdmin) {
   toast(isAdmin?'권한 해제됨':'관리자 지정됨 ⭐'); aLoadMembers();
 }
 function aClearForm() {
-  ['af-id','af-name','af-feature','af-emoji','af-imgurl'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
+  ['af-id','af-name','af-feature','af-imgurl'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
   document.getElementById('af-cost').value=0; document.getElementById('af-power').value=0;
 }
 async function aAddCard() {
   const id=document.getElementById('af-id').value.trim();
   const name=document.getElementById('af-name').value.trim();
   if(!id||!name){toast('번호와 이름은 필수예요');return;}
+  const rawRarity = document.getElementById('af-rarity').value;
+  const rarity = rawRarity.startsWith('P') ? 'P' : rawRarity;
   const {error}=await sb.from('cards').upsert({
     id,name,version:document.getElementById('af-ver').value,series:document.getElementById('af-series').value,
-    rarity:document.getElementById('af-rarity').value,card_type:document.getElementById('af-type').value,
+    rarity,card_type:rarity==='L'?'리더':'캐릭터',
     color:document.getElementById('af-color').value,cost:parseInt(document.getElementById('af-cost').value)||0,
     power:parseInt(document.getElementById('af-power').value)||0,
-    feature:document.getElementById('af-feature').value||null,emoji:document.getElementById('af-emoji').value||'🃏',
+    feature:document.getElementById('af-feature').value||null,
+    emoji:rarity==='SEC'?'⭐':rarity==='SR'?'💜':rarity==='P'?'✨':'🃏',
     image_url:document.getElementById('af-imgurl').value||null,
   });
   if(error){toast('추가 실패: '+error.message);return;}
@@ -1498,161 +1553,182 @@ async function aAddCard() {
 
 // ─── AUTO FETCH ───
 // ======== 세트별 정확한 데이터 ========
-const CORS = 'https://api.allorigins.win/get?url=';
 const KR_BASE = 'https://onepiece-cardgame.kr';
+const CORS = 'https://api.allorigins.win/get?url=';
 
-// 한국 공식 시리즈 목록
 const KR_SERIES = [
-  {opk:'OPK-01', op:'OP01', series:'OP-01', name:'ROMANCE DAWN', pages:7},
-  {opk:'OPK-02', op:'OP02', series:'OP-02', name:'정상결전', pages:7},
-  {opk:'OPK-03', op:'OP03', series:'OP-03', name:'강대한 적', pages:7},
-  {opk:'OPK-04', op:'OP04', series:'OP-04', name:'모략의 왕국', pages:7},
-  {opk:'OPK-05', op:'OP05', series:'OP-05', name:'신시대의 주역', pages:7},
-  {opk:'OPK-06', op:'OP06', series:'OP-06', name:'쌍벽의 패자', pages:7},
-  {opk:'OPK-07', op:'OP07', series:'OP-07', name:'500년 후의 미래', pages:7},
-  {opk:'OPK-08', op:'OP08', series:'OP-08', name:'두 전설', pages:7},
-  {opk:'OPK-09', op:'OP09', series:'OP-09', name:'새로운 황제', pages:7},
-  {opk:'OPK-10', op:'OP10', series:'OP-10', name:'왕족의 혈통', pages:7},
-  {opk:'OPK-11', op:'OP11', series:'OP-11', name:'신속의 권', pages:7},
+  {opk:'OPK-01', name:'ROMANCE DAWN',   series:'OP-01'},
+  {opk:'OPK-02', name:'정상결전',         series:'OP-02'},
+  {opk:'OPK-03', name:'강대한 적',        series:'OP-03'},
+  {opk:'OPK-04', name:'모략의 왕국',      series:'OP-04'},
+  {opk:'OPK-05', name:'신시대의 주역',    series:'OP-05'},
+  {opk:'OPK-06', name:'쌍벽의 패자',     series:'OP-06'},
+  {opk:'OPK-07', name:'500년 후의 미래', series:'OP-07'},
+  {opk:'OPK-08', name:'두 전설',          series:'OP-08'},
+  {opk:'OPK-09', name:'새로운 황제',      series:'OP-09'},
+  {opk:'OPK-10', name:'왕족의 혈통',     series:'OP-10'},
+  {opk:'OPK-11', name:'신속의 권',        series:'OP-11'},
 ];
 
 function setStatus(msg, type='loading') {
   const el = document.getElementById('fetchStatus');
-  el.style.display='block';
+  el.style.display = 'block';
   el.className = 'fetch-status' + (type==='done'?' done':type==='err'?' err':'');
   el.innerHTML = msg;
 }
 
-// 한국 공식 사이트에서 카드 파싱
-function parseKrCards(html, setInfo) {
-  const cards = [];
-  // 이미지 URL + 카드 데이터 추출
-  // 패턴: fileDownload?downname=XXXX ... 카드번호 ... 희귀도 ... 카드명
-  const lines = html.split('\n').map(l=>l.trim()).filter(l=>l);
-  
-  let i = 0;
-  while (i < lines.length) {
-    const line = lines[i];
-    
-    // 이미지 라인 찾기
-    if (line.includes('fileDownload?downname=')) {
-      const imgMatch = line.match(/fileDownload\?downname=([^\)"\s]+)/);
-      if (!imgMatch) { i++; continue; }
-      const imgUrl = KR_BASE + '/fileDownload?downname=' + imgMatch[1];
-      
-      // 이후 라인에서 카드 번호, 희귀도, 이름 찾기
-      let cardId = null, rarity = null, cardName = null;
-      let cardType = '캐릭터', color = '적색', cost = 0, power = 0, feature = '';
-      
-      for (let j = i+1; j < Math.min(i+20, lines.length); j++) {
-        const l = lines[j];
-        
-        // 카드 번호 패턴: OP01-001 또는 OP01-001_P1
-        if (!cardId && /^OP\d{2}-\d{3}(_P\d)?$/i.test(l)) {
-          cardId = l.toUpperCase().replace('_P', '_p');
-        }
-        // 희귀도
-        if (!rarity && /^(SEC|SR|R|UC|C|L)$/.test(l)) {
-          rarity = l;
-        }
-        // 카드 타입
-        if (/^(리더|캐릭터|이벤트|스테이지)$/.test(l)) cardType = l;
-        // 색깔
-        if (/^(적색|청색|녹색|자색|황색|흑색|다색)$/.test(l)) color = l;
-        // 파워 (숫자)
-        if (/^\d{4,5}$/.test(l) && parseInt(l) >= 1000) power = parseInt(l);
-        // 코스트
-        if (/^\d{1,2}$/.test(l) && parseInt(l) <= 15 && !cost) cost = parseInt(l);
-        
-        // 카드명은 희귀도 다음 라인
-        if (rarity && cardId && !cardName && l.length >= 2 && !/^(리더|캐릭터|이벤트|스테이지|적색|청색|녹색|자색|황색|흑색|다색)$/.test(l) && !/^[\d\-\_\[\]]+$/.test(l) && !l.startsWith('[') && !l.startsWith('!') && !l.startsWith('【') && l !== rarity && l !== cardId) {
-          cardName = l;
-          break;
-        }
+// HTML에서 카드 데이터 파싱
+function parseCards(html, series) {
+  const results = [];
+
+  // 각 카드 블록을 분리: image src + 카드번호 + 희귀도 + 카드명
+  // 패턴: fileDownload?downname=XXX (이미지) ... OP01-001 (번호) ... L/SEC/SR/R/UC/C (희귀도) ... 카드명
+  const cardBlocks = html.split(/(?=fileDownload\?downname=)/);
+
+  for (const block of cardBlocks) {
+    if (!block.includes('fileDownload?downname=')) continue;
+
+    // 이미지 URL
+    const imgMatch = block.match(/fileDownload\?downname=([^\s"'&<]+)/);
+    if (!imgMatch) continue;
+    const imgUrl = KR_BASE + '/fileDownload?downname=' + imgMatch[1];
+
+    // 카드 번호 (OP01-001 또는 OP01-001_P1 형태)
+    const idMatch = block.match(/OP\d{2}-\d{3}(?:_[Pp]\d)?/);
+    if (!idMatch) continue;
+    const cardId = idMatch[0].replace(/_P/i, '_p');
+
+    // 희귀도
+    const rarityMatch = block.match(/(SEC|SR|R|UC|C|L)/);
+    const rarity = rarityMatch ? rarityMatch[1] : 'C';
+    const isParallel = cardId.includes('_p');
+    const finalRarity = isParallel ? 'P' : rarity;
+
+    // 카드 타입
+    const typeMatch = block.match(/(리더|캐릭터|이벤트|스테이지)/);
+    const cardType = typeMatch ? typeMatch[1] : '캐릭터';
+
+    // 색깔
+    const colorMatch = block.match(/(적색|청색|녹색|자색|황색|흑색|다색)/);
+    const color = colorMatch ? colorMatch[1] : '적색';
+
+    // 카드명: 희귀도 뒤에 오는 한글 텍스트
+    // HTML에서 마지막 텍스트 노드를 찾기
+    const nameMatches = block.match(/([가-힣a-zA-Z\s\.D"\-]+)\s*(?:<\/|$)/g);
+    let cardName = cardId;
+    if (nameMatches) {
+      // 마지막 부분의 한글 이름 추출
+      const cleaned = nameMatches
+        .map(m => m.replace(/<.*$/,'').trim())
+        .filter(m => m.length >= 2 && /[가-힣]/.test(m) && !/^(리더|캐릭터|이벤트|스테이지|적색|청색|녹색|자색|황색|흑색|다색|원작|애니메이션|오리지널)$/.test(m));
+      if (cleaned.length > 0) {
+        cardName = cleaned[cleaned.length - 1];
       }
-      
-      if (cardId && rarity) {
-        // 패러렐 처리
-        const isParallel = cardId.includes('_p');
-        cards.push({
-          id: cardId,
-          name: cardName || cardId,
-          series: setInfo.series,
-          rarity: isParallel ? 'P' : rarity,
-          card_type: cardType,
-          color, cost, power, feature,
-          emoji: rarity === 'SEC' ? '⭐' : rarity === 'SR' ? '💜' : isParallel ? '✨' : '🃏',
-          image_url: imgUrl,
-          version: '한글판',
-        });
-      }
-      i += 15;
-      continue;
     }
-    i++;
+
+    // 파워/코스트
+    const powerMatch = block.match(/([5-9]\d{3}|1[0-2]\d{3})/);
+    const power = powerMatch ? parseInt(powerMatch[1]) : 0;
+    const costMatch = block.match(/([0-9]|1[0-5])/);
+    const cost = costMatch ? parseInt(costMatch[1]) : 0;
+
+    results.push({
+      id: cardId,
+      name: cardName,
+      series,
+      rarity: finalRarity,
+      card_type: finalRarity === 'L' || rarity === 'L' ? '리더' : cardType,
+      color, cost, power,
+      emoji: finalRarity === 'SEC' ? '⭐' : finalRarity === 'P' ? '✨' : '🃏',
+      image_url: imgUrl,
+      version: '한글판',
+    });
   }
-  return cards;
+
+  return results;
+}
+
+async function fetchPage(seriesName, page) {
+  const seriesEnc = encodeURIComponent(`[${seriesName}] 부스터 팩 ${seriesName.replace('OPK-0','').replace('OPK-','')}`);
+  // 실제 URL 구성
+  const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${encodeURIComponent('['+seriesName+'] 부스터 팩')}`;
+
+  // allorigins 프록시 사용
+  const proxyUrl = CORS + encodeURIComponent(targetUrl);
+  const resp = await fetch(proxyUrl);
+  if (!resp.ok) throw new Error('프록시 오류: ' + resp.status);
+  const json = await resp.json();
+  return json.contents || '';
 }
 
 async function autoFetch() {
   const btn = document.getElementById('autoFetchBtn');
-  btn.disabled = true; btn.textContent='⏳ 수집 중...';
-  let totalCards = 0;
-  let totalUpdated = 0;
+  btn.disabled = true; btn.textContent = '⏳ 수집 중...';
+  let totalSaved = 0;
 
-  for (const setInfo of KR_SERIES) {
-    setStatus(`⏳ <b>[${setInfo.opk}] ${setInfo.name}</b> 수집 중... (완료: ${totalCards}종)`);
+  for (const set of KR_SERIES) {
+    setStatus(`⏳ <b>[${set.opk}] ${set.name}</b> 수집 중...`);
     const allCards = [];
-    
-    // 페이지별 순회
-    for (let page = 0; page < setInfo.pages; page++) {
+
+    for (let page = 0; page < 10; page++) {
       try {
-        const seriesParam = encodeURIComponent(`[${setInfo.opk}] 부스터 팩 ${setInfo.name}`);
-        const url = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
-        const proxyUrl = `${CORS}${encodeURIComponent(url)}`;
-        
+        const seriesParam = encodeURIComponent(`[${set.opk}] 부스터 팩 ${set.name}`);
+        const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
+        const proxyUrl = CORS + encodeURIComponent(targetUrl);
+
         const resp = await fetch(proxyUrl);
         const json = await resp.json();
         const html = json.contents || '';
-        
-        if (!html) { console.warn(`${setInfo.opk} page ${page}: empty`); break; }
-        
-        // 페이지에 카드가 없으면 중단
-        if (!html.includes('fileDownload?downname=')) break;
-        
-        const pageCards = parseKrCards(html, setInfo);
-        if (!pageCards.length) break;
-        allCards.push(...pageCards);
-        
-        setStatus(`⏳ <b>[${setInfo.opk}] ${setInfo.name}</b> 페이지 ${page+1} 완료 (${allCards.length}종) ...`);
-        await new Promise(r => setTimeout(r, 500)); // 서버 부하 방지
+
+        if (!html.includes('fileDownload?downname=')) {
+          console.log(`${set.opk} page ${page}: 카드 없음, 중단`);
+          break;
+        }
+
+        const cards = parseCards(html, set.series);
+        if (!cards.length) break;
+
+        allCards.push(...cards);
+        setStatus(`⏳ [${set.opk}] 페이지 ${page+1} 완료 (${allCards.length}종 수집중...)`);
+        await new Promise(r => setTimeout(r, 400));
+
       } catch(e) {
-        console.warn(`${setInfo.opk} page ${page} error:`, e.message);
+        console.warn(`${set.opk} page ${page}:`, e.message);
         break;
       }
     }
-    
-    totalCards += allCards.length;
-    setStatus(`⏳ [${setInfo.opk}] ${allCards.length}종 발견 → DB 저장 중...`);
-    
-    // DB에 저장 (20개씩 배치)
-    for (let i = 0; i < allCards.length; i += 20) {
-      const chunk = allCards.slice(i, i+20);
-      const { error } = await sb.from('cards').upsert(chunk, {onConflict:'id', ignoreDuplicates:false});
-      if (!error) totalUpdated += chunk.length;
-      else console.warn('upsert error:', error.message);
+
+    if (!allCards.length) {
+      setStatus(`⚠️ [${set.opk}] 수집 실패 - 다음 세트로...`);
+      await new Promise(r => setTimeout(r, 500));
+      continue;
+    }
+
+    setStatus(`💾 [${set.opk}] ${allCards.length}종 DB 저장 중...`);
+
+    // 중복 제거
+    const unique = {};
+    allCards.forEach(c => { unique[c.id] = c; });
+    const finalCards = Object.values(unique);
+
+    for (let i = 0; i < finalCards.length; i += 20) {
+      const chunk = finalCards.slice(i, i + 20);
+      const { error } = await sb.from('cards').upsert(chunk, { onConflict: 'id', ignoreDuplicates: false });
+      if (!error) totalSaved += chunk.length;
+      else console.warn('upsert 오류:', error.message);
       await new Promise(r => setTimeout(r, 100));
     }
-    
-    setStatus(`✅ [${setInfo.opk}] ${allCards.length}종 완료 (총 ${totalUpdated}종 저장)`);
-    await new Promise(r => setTimeout(r, 300));
+
+    setStatus(`✅ [${set.opk}] ${finalCards.length}종 완료 (총 ${totalSaved}종 저장)`);
   }
 
-  setStatus(`🎉 완료! 총 <b>${totalUpdated}종</b> 한국어 카드 등록 완료!<br>
-    <small style="color:#166534">한국 공식 이미지 + 한국어 카드명 + 정확한 희귀도 포함</small>`, 'done');
-  btn.disabled = false; btn.textContent = '🤖 전체 카드 자동 수집 (OP01~OP11)';
-  await aLoadCards(); await init();
-  toast('🎉 ' + totalUpdated + '종 한국 공식 카드 등록 완료!');
+  setStatus(`🎉 완료! 총 <b>${totalSaved}종</b> 한국어 카드 + 이미지 등록!<br>
+    <small>한국 공식 이미지 · 한국어 카드명 · 정확한 희귀도</small>`, 'done');
+  btn.disabled = false;
+  btn.textContent = '🤖 전체 카드 자동 수집 (OP01~OP11)';
+  await aLoadCards();
+  await init();
+  toast('🎉 ' + totalSaved + '종 등록 완료!');
 }
 
 
