@@ -418,10 +418,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-02" onclick="selectCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-03" onclick="selectCat(this)">OP-03 강대한 적<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-04" onclick="selectCat(this)">OP-04 모략의 왕국<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-05" onclick="selectCat(this)">OP-05 각지의 영웅들<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-06" onclick="selectCat(this)">OP-06 쌍익의 왕자<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-05" onclick="selectCat(this)">OP-05 신시대의 주역<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-06" onclick="selectCat(this)">OP-06 쌍벽의 패자<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-07" onclick="selectCat(this)">OP-07 500년 후의 미래<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-08" onclick="selectCat(this)">OP-08 두 영웅의 결전<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-08" onclick="selectCat(this)">OP-08 두 전설<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-09" onclick="selectCat(this)">OP-09 악인의 시대<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-10" onclick="selectCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-11" onclick="selectCat(this)">OP-11 신속의 권<span class="s-cnt">-</span></div>
@@ -1738,7 +1738,13 @@ async function autoFetch() {
         batch.push({id:cid,name:cid,series:set.series,rarity,card_type:rarity==='L'?'리더':'캐릭터',color:'적색',cost:0,power:0,emoji:rarity==='SEC'?'⭐':'🃏',image_url:`https://en.onepiece-cardgame.com/images/cardlist/card/${cid}.png`,version:'한글판'});
       }
       for (let i=0;i<batch.length;i+=20) {
-        const {error}=await sb.from('cards').upsert(batch.slice(i,i+20),{onConflict:'id',ignoreDuplicates:false});
+        const chunk = batch.slice(i,i+20);
+      // 기존에 이름이 있는 카드는 이름 보존, 이미지만 업데이트
+      const {data: existing} = await sb.from('cards').select('id,name').in('id', chunk.map(c=>c.id));
+      const existingNames = {};
+      (existing||[]).forEach(c=>{ if(c.name !== c.id) existingNames[c.id] = c.name; });
+      const finalChunk = chunk.map(c => existingNames[c.id] ? {...c, name: existingNames[c.id]} : c);
+      const {error}=await sb.from('cards').upsert(finalChunk,{onConflict:'id',ignoreDuplicates:false});
         if (!error) total+=Math.min(20,batch.length-i);
         await new Promise(r=>setTimeout(r,60));
       }
