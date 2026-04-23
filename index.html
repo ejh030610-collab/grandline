@@ -831,7 +831,7 @@ async function init() {
   const saved = localStorage.getItem('gl_session');
   if (saved) { try { await onLogin(JSON.parse(saved)); } catch(e) { localStorage.removeItem('gl_session'); } }
 
-  const { data, error } = await sb.from('cards').select('*').order('id');
+  const { data, error } = await sb.from('cards').select('*').order('id').limit(2000);
   if (error || !data) { document.getElementById('cardGrid').innerHTML = '<div class="empty-grid">⚠️ 카드를 불러오지 못했어요</div>'; return; }
   allCards = data;
 
@@ -1458,7 +1458,7 @@ async function aLoadOverview() {
     : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">판매 내역 없음</td></tr>';
 }
 async function aLoadCards() {
-  const { data } = await sb.from('cards').select('*').order('id');
+  const { data } = await sb.from('cards').select('*').order('id').limit(2000);
   adminCards = data||[]; aRenderCards(adminCards);
 }
 function aRenderCards(cards) {
