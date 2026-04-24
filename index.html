@@ -582,11 +582,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="fg"><label>카드 사진 (앞면 + 뒷면)</label>
           <div class="photo-row">
             <div class="photo-slot" onclick="document.getElementById('photo-front').click()">
-              <input type="file" id="photo-front" accept="image/*" onchange="previewPhoto('front',event)">
+              <input type="file" id="photo-front" accept="image/*" capture="environment" onchange="previewPhoto('front',event)">
               <div id="front-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div></div>
             </div>
             <div class="photo-slot" onclick="document.getElementById('photo-back').click()">
-              <input type="file" id="photo-back" accept="image/*" onchange="previewPhoto('back',event)">
+              <input type="file" id="photo-back" accept="image/*" capture="environment" onchange="previewPhoto('back',event)">
               <div id="back-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div></div>
             </div>
           </div>
@@ -1146,7 +1146,7 @@ async function openDetail(cid) {
       <div class="l-avatar" style="background:${AVA[i%5]}">${l.seller_name[0]}</div>
       <div class="l-info"><div class="l-seller">${l.seller_name}${ag}${eg}</div><div class="l-meta">${l.condition||'미등급'}${l.sleeve?' · '+l.sleeve:''}</div></div>
       <span class="l-price">${l.price.toLocaleString()}원</span>
-      <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">연락</button>
+      <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
     </div>`;
   }).join('') : '<div class="no-listings">현재 판매 중인 카드가 없어요</div>';
 
@@ -1273,31 +1273,46 @@ function previewPhoto(side, e) {
 async function analyzeCard() {
   const btn = document.getElementById('ai-btn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="ai-spin"></span> 분석 중...';
+  btn.innerHTML = '<span class="ai-spin"></span> PSA 분석 중...';
   document.getElementById('ai-result').classList.add('on');
-  document.getElementById('ai-lbl').textContent = '분석 중...';
-  document.getElementById('ai-reason').textContent = 'AI가 카드 상태를 분석하고 있어요...';
+  document.getElementById('ai-lbl').textContent = 'PSA 등급 분석 중...';
+  document.getElementById('ai-reason').textContent = 'AI가 PSA 기준으로 카드 상태를 분석하고 있어요...';
   document.getElementById('ai-checks').innerHTML = '';
   try {
-    const imgs = [];
     const toB64 = f => new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});
+    const imgs = [];
     if (sellFront) { imgs.push({type:'image',source:{type:'base64',media_type:sellFront.type,data:await toB64(sellFront)}}); imgs.push({type:'text',text:'위 이미지는 카드 앞면입니다.'}); }
     if (sellBack) { imgs.push({type:'image',source:{type:'base64',media_type:sellBack.type,data:await toB64(sellBack)}}); imgs.push({type:'text',text:'위 이미지는 카드 뒷면입니다.'}); }
-    imgs.push({type:'text',text:`원피스 TCG 카드 감정사입니다. 아래 기준으로 등급을 JSON으로만 응답하세요:
-S(9~10점):완벽, A(7~8점):우수, B(5~6점):보통, C(3~4점):손상, D(1~2점):심한손상
-{"grade":"S","score":9,"reason":"한국어 설명 2~3문장","checks":{"corner":true,"surface":true,"edge":true,"centering":true,"print":true}}`});
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,messages:[{role:'user',content:imgs}]})
+    imgs.push({type:'text',text:`당신은 PSA(Professional Sports Authenticator) 기준으로 트레이딩 카드를 감정하는 전문가입니다.
+PSA 등급 기준:
+- PSA 10 (Gem Mint): 완벽한 상태, 흠집/구김/마모 전혀 없음, 완벽한 센터링
+- PSA 9 (Mint): 거의 완벽, 아주 미세한 표면 흠집만 허용
+- PSA 8 (NM-MT): 약간의 표면 마모, 모서리 약간 무딤
+- PSA 7 (NM): 경미한 손상, 약간의 모서리 마모
+- PSA 6 (EX-MT): 중간 정도의 마모, 눈에 띄는 흠집
+- PSA 5 (EX): 뚜렷한 마모, 여러 흠집
+- PSA 4 (VG-EX): 심한 마모, 모서리 손상
+- PSA 3 이하: 심각한 손상
+
+아래 JSON 형식으로만 응답하세요 (다른 텍스트 없이):
+{"psa_grade":10,"reason":"한국어로 2~3문장 설명","checks":{"corner":"상태설명","surface":"상태설명","edge":"상태설명","centering":"상태설명","print":"상태설명"}}`});
+    const res = await fetch('/api/analyze', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({messages:[{role:'user',content:imgs}]})
     });
     const d = await res.json();
     const txt = (d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim();
     const r = JSON.parse(txt);
     aiData = r;
-    document.getElementById('ai-badge').style.background = GBG(r.grade);
-    document.getElementById('ai-badge').textContent = r.grade||'?';
-    document.getElementById('ai-lbl').textContent = (r.grade||'?')+'등급 ('+r.score+'/10점)';
-    document.getElementById('ai-sub').textContent = {S:'완벽한 민트 상태',A:'우수한 상태',B:'보통 상태',C:'손상 있음',D:'심한 손상'}[r.grade]||'';
+    const psaGrade = r.psa_grade||r.grade||0;
+    const psaColor = psaGrade>=9?'#16a34a':psaGrade>=7?'#2563eb':psaGrade>=5?'#d97706':psaGrade>=3?'#dc2626':'#7f1d1d';
+    const psaLabel = psaGrade>=10?'Gem Mint':psaGrade>=9?'Mint':psaGrade>=8?'NM-MT':psaGrade>=7?'NM':psaGrade>=6?'EX-MT':psaGrade>=5?'EX':psaGrade>=4?'VG-EX':psaGrade>=3?'VG':'Poor';
+    document.getElementById('ai-badge').style.background = psaColor;
+    document.getElementById('ai-badge').textContent = 'PSA '+psaGrade;
+    document.getElementById('ai-badge').style.fontSize = '11px';
+    document.getElementById('ai-lbl').textContent = 'PSA '+psaGrade+' - '+psaLabel;
+    document.getElementById('ai-sub').textContent = '';
     document.getElementById('ai-reason').textContent = r.reason||'';
     const checks = [{k:'corner',l:'모서리'},{k:'surface',l:'표면'},{k:'edge',l:'엣지'},{k:'centering',l:'센터링'},{k:'print',l:'인쇄'}];
     document.getElementById('ai-checks').innerHTML = checks.map(c=>`<span class="ai-check">${r.checks?.[c.k]?'✅':'❌'} ${c.l}</span>`).join('');
