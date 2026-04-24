@@ -253,6 +253,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .ai-spin{width:13px;height:13px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 .ai-result{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px;margin-bottom:10px;display:none;}
 .ai-result.on{display:block;}
+.ai-check-item{display:flex;justify-content:space-between;align-items:flex-start;padding:4px 0;border-bottom:1px solid var(--border);font-size:12px;gap:8px;}
+.ai-check-item:last-child{border-bottom:none;}
+.ai-check-key{font-weight:600;color:var(--muted);flex-shrink:0;min-width:44px;}
+.ai-check-val{color:var(--text);text-align:right;}
 .ai-grade-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
 .ai-grade-badge{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#fff;flex-shrink:0;}
 .ai-grade-lbl{font-size:15px;font-weight:700;}
@@ -270,8 +274,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .my-name{font-size:18px;font-weight:700;color:#fff;}
 .my-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;}
 .my-close{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;}
-.my-tabs{display:flex;border-bottom:1px solid var(--border);}
-.my-tab{flex:1;padding:11px;font-size:13px;font-weight:500;border:none;background:#fff;color:var(--muted);border-bottom:2px solid transparent;font-family:inherit;}
+.my-tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;}
+.my-tab{flex:1;padding:11px 8px;font-size:12px;font-weight:500;border:none;background:#fff;color:var(--muted);border-bottom:2px solid transparent;font-family:inherit;white-space:nowrap;}
 .my-tab.active{color:var(--red);border-bottom-color:var(--red);}
 .my-body{padding:16px;min-height:220px;}
 .my-page{display:none;}
@@ -287,7 +291,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .sbadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;}
 .sb-active{background:var(--green-light);color:var(--green);}
 .sb-sold{background:var(--bg3);color:var(--muted);}
-.cancel-btn{font-size:11px;padding:3px 8px;background:#fff;border:1px solid var(--border);border-radius:5px;color:var(--muted);margin-left:6px;font-family:inherit;}
+.cancel-btn{font-size:11px;padding:3px 8px;background:#fff;border:1px solid var(--border);border-radius:5px;color:var(--muted);margin-left:6px;font-family:inherit;cursor:pointer;}
 
 /* CONTACT */
 .contact-modal{max-width:400px;}
@@ -617,6 +621,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <select id="s_sleeve"><option>하드 슬리브</option><option>소프트 슬리브</option><option>슬리브 없음</option></select>
         </div>
       </div>
+      <div class="fg" style="margin-top:10px"><label>판매자 연락처 <span style="color:var(--red)">*</span></label><input type="text" id="s_contact" placeholder="오픈카카오 링크, 카카오ID, 인스타 등 (구매자에게 공개)"></div>
       <div class="fg" style="margin-top:10px"><label>추가 설명</label><textarea id="s_desc" placeholder="직거래 가능 지역, 특이사항 등..."></textarea></div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
@@ -633,6 +638,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <h3 style="margin-bottom:3px">판매자에게 연락하기</h3>
       <p style="font-size:13px;color:var(--muted);margin-bottom:14px">거래는 판매자와 직접 진행해요</p>
       <div class="contact-sel-box" id="contact-info"></div>
+      <!-- 판매자 연락처 -->
+      <div id="seller-contact-box" style="display:none;background:var(--green-light);border:1px solid #bbf7d0;border-radius:var(--r2);padding:11px 14px;margin-bottom:12px;">
+        <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:4px">📱 판매자 연락처</div>
+        <div id="seller-contact-text" style="font-size:13px;font-weight:600;word-break:break-all"></div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">위 연락처로 직접 연락해서 거래를 진행해주세요</div>
+      </div>
       <div class="fg"><label>거래 방식</label>
         <select id="c_method"><option>오픈카카오 링크</option><option>네이버 페이</option><option>직거래</option><option>택배</option></select>
       </div>
@@ -663,6 +674,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="my-tab active" onclick="switchMyTab('stats',this)">📊 현황</button>
       <button class="my-tab" onclick="switchMyTab('listings',this)">🛒 내 판매</button>
       <button class="my-tab" onclick="switchMyTab('wish',this)">♥ 찜 목록</button>
+      <button class="my-tab" onclick="switchMyTab('requests',this)">📨 구매요청</button>
     </div>
     <div class="my-body">
       <div class="my-page active" id="mp-stats">
@@ -678,6 +690,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       </div>
       <div class="my-page" id="mp-wish">
         <div id="my-wish-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px"></div>
+      </div>
+      <div class="my-page" id="mp-requests">
+        <div id="my-requests-list">불러오는 중...</div>
       </div>
     </div>
   </div>
@@ -868,8 +883,13 @@ async function init() {
   sel.innerHTML = '<option value="">-- 카드 선택 --</option>';
   allCards.forEach(c => { const o = document.createElement('option'); o.value=c.id; o.textContent=`${c.id} · ${c.name} (${c.rarity})`; sel.appendChild(o); });
 
-  // 카운트
-  document.getElementById('cnt-op01').textContent = allCards.filter(c=>c.series==='OP-01').length;
+  // 사이드바 카운트 업데이트 (모든 시리즈)
+  document.querySelectorAll('.s-series[data-set]').forEach(el => {
+    const set = el.dataset.set;
+    if (!set || set === 'all') return;
+    const cnt = el.querySelector('.s-cnt');
+    if (cnt) cnt.textContent = allCards.filter(c=>c.series===set).length || '-';
+  });
 
   renderCards();
   loadHome();
@@ -1246,6 +1266,8 @@ function openSell(prefill) {
   if (!curUser) { openAuth('login'); return; }
   if (prefill) document.getElementById('s_card').value = prefill;
   sellFront = null; sellBack = null; aiData = {};
+  document.getElementById('s_contact').value = '';
+  document.getElementById('s_price').value = '';
   document.getElementById('front-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div>';
   document.getElementById('back-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div>';
   document.getElementById('ai-result').classList.remove('on');
@@ -1305,6 +1327,11 @@ PSA 등급 기준:
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({messages:[{role:'user',content:imgs}]})
     });
+    if (!res.ok) {
+      const errText = await res.text().catch(()=>'');
+      const isKeyErr = res.status===401||res.status===500||errText.includes('key')||errText.includes('API_KEY');
+      throw new Error(isKeyErr ? 'API_KEY_MISSING' : `HTTP ${res.status}`);
+    }
     const d = await res.json();
     const txt = (d.content?.[0]?.text||'{}').replace(/```json|```/g,'').trim();
     const r = JSON.parse(txt);
@@ -1319,10 +1346,14 @@ PSA 등급 기준:
     document.getElementById('ai-sub').textContent = '';
     document.getElementById('ai-reason').textContent = r.reason||'';
     const checks = [{k:'corner',l:'모서리'},{k:'surface',l:'표면'},{k:'edge',l:'엣지'},{k:'centering',l:'센터링'},{k:'print',l:'인쇄'}];
-    document.getElementById('ai-checks').innerHTML = checks.map(c=>`<span class="ai-check">${r.checks?.[c.k]?'✅':'❌'} ${c.l}</span>`).join('');
+    document.getElementById('ai-checks').innerHTML = checks.map(c=>`<div class="ai-check-item"><span class="ai-check-key">${c.l}</span><span class="ai-check-val">${r.checks?.[c.k]||'-'}</span></div>`).join('');
   } catch(err) {
-    document.getElementById('ai-lbl').textContent = '분석 실패';
-    document.getElementById('ai-reason').textContent = '다시 시도해주세요: '+err.message;
+    const msg = err.message||'';
+    const isKeyErr = msg.includes('401')||msg.includes('API_KEY_MISSING')||msg.includes('key')||msg.includes('API')||msg.includes('unauthorized');
+    document.getElementById('ai-lbl').textContent = isKeyErr ? '🔑 API 키 미설정' : '분석 실패';
+    document.getElementById('ai-reason').textContent = isKeyErr
+      ? 'Vercel 환경변수에 ANTHROPIC_API_KEY를 설정해주세요. Vercel 대시보드 → Settings → Environment Variables에서 추가할 수 있어요.'
+      : '다시 시도해주세요: '+err.message;
   }
   btn.disabled = false;
   btn.innerHTML = '<span>🤖</span> 다시 분석';
@@ -1332,8 +1363,10 @@ async function submitSell() {
   if (!curUser) { openAuth('login'); return; }
   const card_id = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
+  const contact_info = document.getElementById('s_contact').value.trim();
   if (!card_id) { toast('카드를 선택해주세요'); return; }
   if (!price||price<=0) { toast('올바른 가격을 입력해주세요'); return; }
+  if (!contact_info) { toast('연락처를 입력해주세요'); return; }
   toast('등록 중...');
   let frontUrl=null, backUrl=null;
   const ts = Date.now();
@@ -1354,7 +1387,8 @@ async function submitSell() {
     version:document.getElementById('s_ver').value, series:document.getElementById('s_set').value,
     grade_type:sellGrade, grade_score:document.getElementById('s_grade_score')?.value||null,
     condition_detail:JSON.stringify(getChecklistData()),
-    auto_grade:aiData.grade||null, auto_grade_score:aiData.score||null, auto_grade_reason:aiData.reason||null,
+    contact_info,
+    auto_grade:aiData.psa_grade||null, auto_grade_score:aiData.psa_grade||null, auto_grade_reason:aiData.reason||null,
     image_front:frontUrl, image_back:backUrl, status:'active'
   }).select().single();
   if (error) { toast('등록 실패: '+error.message); return; }
@@ -1373,14 +1407,23 @@ function openContact(lid, cid) {
   if (!l) return;
   if (l.seller_username===curUser.username) { toast('내 판매 글이에요'); return; }
   contactData = {l,c};
+  const contactInfo = l.contact_info || '';
   document.getElementById('contact-info').innerHTML = `
     <div class="c-avatar" style="background:${AVA[l.seller_name.charCodeAt(0)%5]}">${l.seller_name[0]}</div>
     <div>
       <div style="font-size:14px;font-weight:600">${l.seller_name}</div>
-      <div style="font-size:12px;color:var(--muted);margin-top:1px">${c?.name||cid} · ${l.grade_type||'미등급'}${l.auto_grade?' ('+l.auto_grade+'등급)':''}
+      <div style="font-size:12px;color:var(--muted);margin-top:1px">${c?.name||cid} · ${l.grade_type||'미등급'}${l.auto_grade?' (PSA '+l.auto_grade+')':''}
         <span style="font-weight:700;color:var(--red);margin-left:7px">${l.price.toLocaleString()}원</span>
       </div>
     </div>`;
+  // 판매자 연락처 표시
+  const contactBox = document.getElementById('seller-contact-box');
+  if (contactInfo) {
+    contactBox.style.display = 'block';
+    document.getElementById('seller-contact-text').textContent = contactInfo;
+  } else {
+    contactBox.style.display = 'none';
+  }
   document.getElementById('contact-sent').classList.remove('on');
   document.getElementById('contact-btns').style.display='flex';
   document.getElementById('c_contact').value='';
@@ -1388,8 +1431,22 @@ function openContact(lid, cid) {
   document.getElementById('contactOv').classList.add('on');
 }
 function closeContact() { document.getElementById('contactOv').classList.remove('on'); }
-function sendContact() {
+async function sendContact() {
   if (!document.getElementById('c_contact').value.trim()) { toast('연락처를 입력해주세요'); return; }
+  const {l, c} = contactData;
+  // DB에 연락 요청 저장
+  try {
+    await sb.from('listings').update({
+      buyer_contact: JSON.stringify({
+        buyer: curUser.username,
+        buyer_name: curUser.nickname||curUser.username,
+        method: document.getElementById('c_method').value,
+        contact: document.getElementById('c_contact').value.trim(),
+        msg: document.getElementById('c_msg').value.trim(),
+        at: new Date().toISOString()
+      })
+    }).eq('id', l.id);
+  } catch(e) { /* 컬럼 없어도 UI는 진행 */ }
   document.getElementById('contact-sent').classList.add('on');
   document.getElementById('contact-btns').style.display='none';
   toast('연락 요청이 전달됐어요! 📨');
@@ -1403,7 +1460,7 @@ async function openMyPage() {
   document.getElementById('my-name').textContent = curUser.nickname||curUser.username;
   document.getElementById('my-sub').textContent = '아이디: '+curUser.username;
   document.getElementById('myOv').classList.add('on');
-  loadMyStats(); loadMyListings(); loadMyWish();
+  loadMyStats(); loadMyListings(); loadMyWish(); loadMyRequests();
 }
 function closeMyPage() { document.getElementById('myOv').classList.remove('on'); }
 function switchMyTab(id, btn) {
@@ -1435,7 +1492,10 @@ async function loadMyListings() {
       <div style="flex:1"><div style="font-size:13px;font-weight:600">${l.cards?.name||l.card_id}</div><div style="font-size:11px;color:var(--muted)">${l.grade_type||'미등급'}${l.auto_grade?' · '+l.auto_grade+'등급':''}</div></div>
       <span class="sbadge ${l.status==='active'?'sb-active':'sb-sold'}">${l.status==='active'?'판매중':'완료'}</span>
       <span style="font-size:14px;font-weight:700;color:var(--red);margin-left:8px">${l.price.toLocaleString()}원</span>
-      ${l.status==='active'?`<button class="cancel-btn" onclick="cancelListing('${l.id}')">취소</button>`:''}
+      ${l.status==='active'?`
+        <button class="cancel-btn" style="background:#f0fdf4;color:var(--green);border-color:#bbf7d0" onclick="markSold('${l.id}')">✅ 완료</button>
+        <button class="cancel-btn" onclick="cancelListing('${l.id}')">취소</button>
+      `:''}
     </div>`).join('');
 }
 async function cancelListing(id) {
@@ -1443,8 +1503,61 @@ async function cancelListing(id) {
   await sb.from('listings').update({status:'cancelled'}).eq('id',id);
   toast('판매가 취소됐어요'); loadMyListings(); loadMyStats(); renderCards();
 }
-async function loadMyWish() {
-  const ids = [...wishSet].slice(0,20);
+async function markSold(id) {
+  if (!confirm('판매 완료로 처리할까요? 거래 내역에 기록돼요.')) return;
+  // listings 상태 변경
+  const {error} = await sb.from('listings').update({status:'sold'}).eq('id',id);
+  if (error) { toast('처리 실패: '+error.message); return; }
+  // 해당 listing 찾아서 trades에도 기록
+  const {data:ls} = await sb.from('listings').select('*').eq('id',id).single();
+  if (ls) {
+    await sb.from('trades').insert({
+      card_id: ls.card_id,
+      price: ls.price,
+      seller_username: ls.seller_username,
+      traded_at: new Date().toISOString()
+    }).catch(()=>{});
+  }
+  // 로컬 listings 업데이트
+  Object.keys(listings).forEach(cid => {
+    listings[cid] = listings[cid].filter(l=>l.id!==id);
+  });
+  toast('판매 완료! 🎉 거래 내역에 기록됐어요');
+  loadMyListings(); loadMyStats(); renderCards(); loadHome();
+}
+async function loadMyRequests() {
+  const el = document.getElementById('my-requests-list');
+  if (!el || !curUser) return;
+  // 내 판매글에 buyer_contact가 있는 것들 로드
+  const {data} = await sb.from('listings').select('*,cards(name,image_url,emoji)').eq('seller_username',curUser.username).not('buyer_contact','is',null).order('created_at',{ascending:false}).limit(20);
+  if (!data?.length) { el.innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">구매 요청이 없어요</div>'; return; }
+  el.innerHTML = data.map(l => {
+    let req = {};
+    try { req = JSON.parse(l.buyer_contact||'{}'); } catch(e) {}
+    return `<div class="my-l-item" style="flex-direction:column;align-items:flex-start;gap:6px;padding:12px 0">
+      <div style="display:flex;align-items:center;gap:8px;width:100%">
+        ${l.cards?.image_url?`<img src="${l.cards.image_url}" class="my-l-img" onerror="this.style.display='none'">`:`<div class="my-l-img-x">${l.cards?.emoji||'🃏'}</div>`}
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${l.cards?.name||l.card_id}</div>
+          <div style="font-size:11px;color:var(--muted)">${l.price.toLocaleString()}원 · ${l.grade_type||'미등급'}</div>
+        </div>
+        <span class="sbadge ${l.status==='active'?'sb-active':'sb-sold'}">${l.status==='active'?'판매중':'완료'}</span>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:9px 12px;width:100%;font-size:12px">
+        <div><b>${req.buyer_name||req.buyer||'?'}</b> · ${req.method||''}</div>
+        <div style="margin-top:3px;color:var(--blue);font-weight:600">${req.contact||'-'}</div>
+        ${req.msg?`<div style="margin-top:3px;color:var(--muted)">"${req.msg}"</div>`:''}
+        <div style="margin-top:3px;font-size:10px;color:var(--dim)">${req.at?.slice(0,10)||''}</div>
+      </div>
+      ${l.status==='active'?`<div style="display:flex;gap:6px">
+        <button class="cancel-btn" style="background:#f0fdf4;color:var(--green);border-color:#bbf7d0" onclick="markSold('${l.id}')">✅ 판매완료</button>
+        <button class="cancel-btn" onclick="cancelListing('${l.id}')">취소</button>
+      </div>`:''}
+    </div>`;
+  }).join('<div style="height:1px;background:var(--border);margin:4px 0"></div>');
+}
+
+async function loadMyWish() {  const ids = [...wishSet].slice(0,20);
   if (!ids.length) { document.getElementById('my-wish-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px">찜한 카드가 없어요</div>'; return; }
   const { data } = await sb.from('cards').select('*').in('id',ids);
   document.getElementById('my-wish-grid').innerHTML = (data||[]).map(c=>`
@@ -1564,7 +1677,12 @@ async function aDelCard(id) {
 async function aLoadOrders() {
   const { data } = await sb.from('listings').select('*,cards(name,rarity)').order('created_at',{ascending:false}).limit(50);
   document.getElementById('a-orders').innerHTML = data?.length
-    ? data.map(l=>`<tr><td>${l.cards?.name||'-'}</td><td style="color:var(--muted)">${l.seller_name}</td><td style="font-size:11px">${l.version||'-'}</td><td style="font-size:11px">${l.grade_type||'-'}</td><td style="font-size:11px;font-weight:700;color:${GBG(l.auto_grade)||'var(--muted)'}">${l.auto_grade||'-'}</td><td style="color:var(--red);font-weight:600">${l.price.toLocaleString()}원</td><td style="color:var(--muted);font-size:11px">${l.created_at?.slice(0,10)||''}</td><td><button class="aact del" onclick="aDelListing('${l.id}')">삭제</button></td></tr>`).join('')
+    ? data.map(l=>{
+        let req = {};
+        try { req = JSON.parse(l.buyer_contact||'{}'); } catch(e) {}
+        const reqBadge = req.contact ? `<span style="font-size:10px;color:var(--blue);font-weight:600">📨 ${req.buyer_name||req.buyer}</span>` : '';
+        return `<tr><td>${l.cards?.name||'-'}</td><td style="color:var(--muted)">${l.seller_name}</td><td style="font-size:11px">${l.version||'-'}</td><td style="font-size:11px">${l.grade_type||'-'}</td><td style="font-size:11px;font-weight:700;color:${GBG(l.auto_grade)||'var(--muted)'}">${l.auto_grade||'-'}</td><td style="color:var(--red);font-weight:600">${l.price.toLocaleString()}원</td><td style="color:var(--muted);font-size:11px">${l.created_at?.slice(0,10)||''}</td><td>${reqBadge}<button class="aact del" onclick="aDelListing('${l.id}')">삭제</button></td></tr>`;
+      }).join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:14px">판매 내역 없음</td></tr>';
 }
 async function aDelListing(id) {
@@ -1791,7 +1909,7 @@ async function autoImgOnly() {
   let done=0;
   for (const c of dbCards) {
     const parts = c.id.split('-');
-    const url = `${CDN}/${parts[0]}/${c.id.replace('-','')}_p4_EN.webp`;
+    const url = `${CDN}/${parts[0]}/${c.id}_p1_EN.webp`;
     await sb.from('cards').update({image_url:url}).eq('id',c.id);
     done++;
     if (done%30===0) setStatus(`🖼️ ${done}/${dbCards.length} 업데이트 중...`);
