@@ -426,6 +426,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-10" onclick="selectCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-11" onclick="selectCat(this)">OP-11 신속의 권<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-12" onclick="selectCat(this)">OP-12 사제의 연<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-01" onclick="selectCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-02" onclick="selectCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
       </div>
       <div class="s-grade-hd" onclick="toggleGrp('kr-grade')">
         <span>🏆</span> 등급 <span class="s-arrow" id="arr-kr-grade" style="margin-left:auto">▶</span>
@@ -564,6 +566,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
             <option>OP-09</option><option>OP-10</option><option>OP-11</option>
             <option>OP-12</option>
+            <option>EBK-01</option>
+            <option>EBK-02</option>
           </select>
         </div>
       </div>
@@ -723,7 +727,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <div class="afg"><label>카드 번호 *</label><input type="text" id="af-id" placeholder="OP01-024"></div>
             <div class="afg"><label>카드명 *</label><input type="text" id="af-name" placeholder="몽키 D. 루피"></div>
             <div class="afg"><label>버전</label><select id="af-ver"><option>한글판</option><option>일판</option></select></div>
-            <div class="afg"><label>시리즈</label><select id="af-series"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option></select></div>
+            <div class="afg"><label>시리즈</label><select id="af-series"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
             <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option></select></div>
             <div class="afg"><label>타입</label><select id="af-type"><option>캐릭터</option><option>리더</option><option>이벤트</option><option>스테이지</option></select></div>
             <div class="afg"><label>색깔</label><select id="af-color"><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
@@ -778,7 +782,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드 번호</label><input type="text" id="edit-id-show" disabled style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;color:var(--muted)"></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>한글판</option><option>일판</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P (패러렐)</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">코스트</label><input type="number" id="edit-cost" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
