@@ -673,6 +673,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="my-tab" onclick="switchMyTab('listings',this)">🛒 내 판매</button>
       <button class="my-tab" onclick="switchMyTab('requests',this)">📨 구매요청</button>
       <button class="my-tab" onclick="switchMyTab('myreq',this)">🙋 내 요청</button>
+      <button class="my-tab" onclick="switchMyTab('purchased',this)">📦 구매내역</button>
       <button class="my-tab" onclick="switchMyTab('wish',this)">♥ 찜</button>
     </div>
     <div class="my-body">
@@ -692,6 +693,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       </div>
       <div class="my-page" id="mp-myreq">
         <div id="my-myreq-list">불러오는 중...</div>
+      </div>
+      <div class="my-page" id="mp-purchased">
+        <div id="my-purchased-list">불러오는 중...</div>
       </div>
       <div class="my-page" id="mp-wish">
         <div id="my-wish-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px"></div>
@@ -1544,7 +1548,7 @@ async function openMyPage() {
   document.getElementById('my-name').textContent = curUser.nickname||curUser.username;
   document.getElementById('my-sub').textContent = '아이디: '+curUser.username;
   document.getElementById('myOv').classList.add('on');
-  loadMyStats(); loadMyListings(); loadMyWish(); loadMyRequests(); loadMyReq();
+  loadMyStats(); loadMyListings(); loadMyWish(); loadMyRequests(); loadMyReq(); loadPurchaseHistory();
 }
 function closeMyPage() { document.getElementById('myOv').classList.remove('on'); }
 function switchMyTab(id, btn) {
@@ -1591,7 +1595,7 @@ async function loadMyRequests() {
   const { data } = await sb.from('trades')
     .select('*, listings(card_id, price, grade_type, image_front, status), cards:listings(card_id(name,emoji))')
     .eq('seller_username', curUser.username)
-    .neq('status', 'cancelled')
+    .eq('status', 'pending')
     .order('created_at', { ascending: false });
   if (!data?.length) {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
@@ -1651,6 +1655,7 @@ async function loadMyReq() {
   const { data } = await sb.from('trades')
     .select('*')
     .eq('buyer_username', curUser.username)
+    .neq('status', 'cancelled')
     .order('created_at', { ascending: false });
   if (!data?.length) {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">보낸 구매 요청이 없어요</div>';
@@ -1707,6 +1712,45 @@ async function cancelTrade(tradeId) {
   if (error) { toast('취소 실패: ' + error.message); return; }
   toast('요청이 취소됐어요');
   loadMyReq();
+  loadPurchaseHistory();
+}
+
+async function loadPurchaseHistory() {
+  const el = document.getElementById('my-purchased-list');
+  if (!el || !curUser) return;
+  const { data } = await sb.from('trades')
+    .select('*')
+    .eq('buyer_username', curUser.username)
+    .eq('status', 'completed')
+    .order('created_at', { ascending: false });
+  if (!data?.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">완료된 구매 내역이 없어요</div>';
+    return;
+  }
+  // 판매자 연락처 가져오기
+  const listingIds = data.map(t=>t.listing_id).filter(Boolean);
+  let listingMap = {};
+  if (listingIds.length) {
+    const { data: ls } = await sb.from('listings').select('id,contact_info,seller_name').in('id', listingIds);
+    (ls||[]).forEach(l => { listingMap[l.id] = l; });
+  }
+  el.innerHTML = data.map(t => {
+    const listing = listingMap[t.listing_id];
+    return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:14px;font-weight:700">${t.card_id}</div>
+        <span style="font-size:13px;font-weight:700;color:var(--red)">${t.price?.toLocaleString()}원</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
+        ${t.created_at?.slice(0,10)} · 판매자: <b>${listing?.seller_name || t.seller_username}</b>
+      </div>
+      <div style="background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:10px 14px">
+        <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:4px">📱 판매자 연락처</div>
+        <div style="font-size:13px;font-weight:700;color:var(--blue)">${listing?.contact_info || '연락처 정보 없음'}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">연락처로 먼저 연락해서 송금 및 배송 주소를 안내해드리세요</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 async function loadMyWish() {
