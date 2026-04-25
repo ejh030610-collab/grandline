@@ -642,13 +642,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   <div class="modal contact-modal">
     <div class="body">
       <h3 style="margin-bottom:3px">판매자에게 연락하기</h3>
-      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">거래는 판매자와 직접 진행해요</p>
+      <p style="font-size:13px;color:var(--muted);margin-bottom:14px">📦 택배 거래 · 판매자와 직접 진행해요</p>
       <div class="contact-sel-box" id="contact-info"></div>
-      <div class="fg"><label>거래 방식</label>
-        <select id="c_method"><option>오픈카카오 링크</option><option>네이버 페이</option><option>직거래</option><option>택배</option></select>
-      </div>
-      <div class="fg"><label>내 연락처</label><input type="text" id="c_contact" placeholder="오픈카카오 링크 또는 연락처"></div>
-      <div class="fg"><label>메시지 (선택)</label><textarea id="c_msg" placeholder="가격 제안이나 문의사항..."></textarea></div>
+      <div class="fg"><label>내 연락처 <span style="color:var(--red)">*</span></label><input type="text" id="c_contact" placeholder="오픈카카오 링크, 카카오ID, 전화번호 등"></div>
+      <div class="fg"><label>메시지 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label><textarea id="c_msg" placeholder="문의사항이나 가격 제안을 남겨주세요..."></textarea></div>
       <div class="contact-sent" id="contact-sent">
         <div style="font-size:18px;margin-bottom:3px">✅</div>
         <div style="font-size:13px;font-weight:600;color:var(--green)">연락 요청이 전달됐어요!</div>
