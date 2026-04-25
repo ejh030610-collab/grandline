@@ -1279,6 +1279,10 @@ function filterSellCards() {
 function openSell(prefill) {
   if (!curUser) { openAuth('login'); return; }
   sellFront = null; sellBack = null; aiData = {};
+  sellGrade = '미등급';
+  // 등급 버튼 초기화
+  document.querySelectorAll('.gtype').forEach(b=>b.classList.remove('active'));
+  document.querySelector('.gtype')?.classList.add('active');
   document.getElementById('front-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div>';
   document.getElementById('back-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div>';
   document.getElementById('ai-result').classList.remove('on');
@@ -1444,7 +1448,7 @@ async function submitSell() {
       seller_username: curUser.username,
       seller_name: curUser.nickname || curUser.username,
       price,
-      condition: sellGrade,
+      condition: sellGrade || '미등급',
       version: document.getElementById('s_ver').value,
       series: document.getElementById('s_set').value,
       grade_type: sellGrade,
