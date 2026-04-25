@@ -1302,6 +1302,9 @@ function switchGrade(type, btn) {
   document.getElementById('grade-sec').classList.toggle('on', type!=='미등급');
 }
 
+function resetChecklist() {}
+function getChecklistData() { return {}; }
+
 function previewPhoto(side, e) {
   const file = e.target.files[0]; if (!file) return;
   if (side==='front') sellFront=file; else sellBack=file;
@@ -1311,6 +1314,8 @@ function previewPhoto(side, e) {
     document.getElementById(id).innerHTML = `<img src="${ev.target.result}" class="photo-preview">`;
   };
   reader.readAsDataURL(file);
+  // 오류 후 재선택을 위해 input value 초기화
+  e.target.value = '';
   if (sellFront || sellBack) document.getElementById('ai-btn').disabled = false;
 }
 
@@ -1405,42 +1410,63 @@ async function submitSell() {
   const price = parseInt(document.getElementById('s_price').value);
   if (!card_id) { toast('카드를 선택해주세요'); return; }
   if (!price||price<=0) { toast('올바른 가격을 입력해주세요'); return; }
+
+  const btn = document.querySelector('#sellOv .mbtn-ok');
+  if (btn) { btn.disabled = true; btn.textContent = '등록 중...'; }
   toast('등록 중...');
-  let frontUrl=null, backUrl=null;
-  const ts = Date.now();
-  async function upload(file, suffix) {
-    // 리사이즈 후 항상 jpeg이므로 확장자 고정
-    const path = `listings/${curUser.username}_${card_id}_${ts}_${suffix}.jpg`;
-    const { error } = await sb.storage.from('card-images').upload(path, file, {
-      upsert: true,
-      contentType: 'image/jpeg'
-    });
-    if (error) { console.error('업로드 오류:', error.message); return null; }
-    const { data: { publicUrl } } = sb.storage.from('card-images').getPublicUrl(path);
-    return publicUrl;
+
+  try {
+    let frontUrl = null, backUrl = null;
+    const ts = Date.now();
+
+    async function upload(file, suffix) {
+      const path = `listings/${curUser.username}_${card_id}_${ts}_${suffix}.jpg`;
+      const { error } = await sb.storage.from('card-images').upload(path, file, {
+        upsert: true, contentType: 'image/jpeg'
+      });
+      if (error) { console.error('업로드 오류:', error.message); return null; }
+      const { data: { publicUrl } } = sb.storage.from('card-images').getPublicUrl(path);
+      return publicUrl;
+    }
+
+    // 사진 리사이즈 후 업로드
+    if (sellFront || sellBack) {
+      const [rFront, rBack] = await Promise.all([
+        sellFront ? resizeImage(sellFront) : Promise.resolve(null),
+        sellBack  ? resizeImage(sellBack)  : Promise.resolve(null),
+      ]);
+      if (rFront) frontUrl = await upload(rFront, 'front');
+      if (rBack)  backUrl  = await upload(rBack,  'back');
+    }
+
+    const { data, error } = await sb.from('listings').insert({
+      card_id,
+      seller_username: curUser.username,
+      seller_name: curUser.nickname || curUser.username,
+      price,
+      version: document.getElementById('s_ver').value,
+      series: document.getElementById('s_set').value,
+      grade_type: sellGrade,
+      sleeve: document.getElementById('s_sleeve').value,
+      description: document.getElementById('s_desc').value || null,
+      image_front: frontUrl,
+      image_back: backUrl,
+      status: 'active'
+    }).select().single();
+
+    if (error) throw new Error(error.message);
+
+    if (!listings[card_id]) listings[card_id] = [];
+    listings[card_id].push(data);
+    closeSell(); renderCards(); loadHome();
+    toast('판매 등록 완료! 🎉');
+
+  } catch(e) {
+    toast('등록 실패: ' + e.message);
+    console.error('submitSell 오류:', e);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '등록하기'; }
   }
-  // 리사이즈 먼저 한 후 업로드
-  const [rFront, rBack] = await Promise.all([
-    sellFront ? resizeImage(sellFront) : Promise.resolve(null),
-    sellBack  ? resizeImage(sellBack)  : Promise.resolve(null),
-  ]);
-  if (rFront) frontUrl = await upload(rFront, 'front');
-  if (rBack)  backUrl  = await upload(rBack,  'back');
-  const { data, error } = await sb.from('listings').insert({
-    card_id, seller_username:curUser.username, seller_name:curUser.nickname||curUser.username,
-    price, condition:sellGrade, sleeve:document.getElementById('s_sleeve').value,
-    description:document.getElementById('s_desc').value,
-    version:document.getElementById('s_ver').value, series:document.getElementById('s_set').value,
-    grade_type:sellGrade, grade_score:document.getElementById('s_grade_score')?.value||null,
-    condition_detail:JSON.stringify(getChecklistData()),
-    auto_grade:aiData.grade||null, auto_grade_score:aiData.score||null, auto_grade_reason:aiData.reason||null,
-    image_front:frontUrl, image_back:backUrl, status:'active'
-  }).select().single();
-  if (error) { toast('등록 실패: '+error.message); return; }
-  if (!listings[card_id]) listings[card_id]=[];
-  listings[card_id].push(data);
-  closeSell(); renderCards(); loadHome();
-  toast('판매 등록 완료! 🎉');
 }
 
 // ─── CONTACT ───
