@@ -1,6 +1,3 @@
-// Vercel Serverless Function - AI 카드 등급 분석
-// 파일 위치: api/analyze.js
-
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -9,11 +6,10 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  // ── API 키 체크 ──
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
     return res.status(401).json({
-      error: 'ANTHROPIC_API_KEY가 설정되지 않았어요. Vercel 환경변수를 확인해주세요.',
+      error: 'ANTHROPIC_API_KEY가 설정되지 않았어요.',
       code: 'API_KEY_MISSING'
     });
   }
@@ -32,30 +28,23 @@ export default async function handler(req, res) {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',  // 최신 모델 (이미지 분석 지원)
+        model: 'claude-sonnet-4-6',
         max_tokens: 1000,
         messages,
       }),
     });
 
-    // Anthropic API 오류 처리
     if (!response.ok) {
       const errData = await response.json().catch(() => ({}));
-      const status = response.status;
-      if (status === 401) {
-        return res.status(401).json({ error: 'API 키가 유효하지 않아요', code: 'API_KEY_INVALID' });
-      }
-      if (status === 429) {
-        return res.status(429).json({ error: 'API 요청 한도를 초과했어요. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMIT' });
-      }
-      return res.status(status).json({ error: errData?.error?.message || `API 오류 (${status})` });
+      if (response.status === 401) return res.status(401).json({ error: 'API 키가 유효하지 않아요', code: 'API_KEY_INVALID' });
+      if (response.status === 429) return res.status(429).json({ error: '요청 한도 초과. 잠시 후 다시 시도해주세요.', code: 'RATE_LIMIT' });
+      return res.status(response.status).json({ error: errData?.error?.message || `API 오류 (${response.status})` });
     }
 
     const data = await response.json();
     res.status(200).json(data);
 
   } catch (e) {
-    console.error('analyze.js error:', e);
-    res.status(500).json({ error: e.message || '알 수 없는 오류가 발생했어요' });
+    res.status(500).json({ error: e.message || '알 수 없는 오류' });
   }
 }
