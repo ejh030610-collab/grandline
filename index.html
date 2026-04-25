@@ -597,11 +597,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="fg"><label>카드 사진 (앞면 + 뒷면)</label>
           <div class="photo-row">
             <div class="photo-slot" onclick="document.getElementById('photo-front').click()">
-              <input type="file" id="photo-front" accept="image/*" capture="environment" onchange="previewPhoto('front',event)">
+              <input type="file" id="photo-front" accept="image/*" onchange="previewPhoto('front',event)" style="display:none">
               <div id="front-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div></div>
             </div>
             <div class="photo-slot" onclick="document.getElementById('photo-back').click()">
-              <input type="file" id="photo-back" accept="image/*" capture="environment" onchange="previewPhoto('back',event)">
+              <input type="file" id="photo-back" accept="image/*" onchange="previewPhoto('back',event)" style="display:none">
               <div id="back-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div></div>
             </div>
           </div>
@@ -1409,15 +1409,23 @@ async function submitSell() {
   let frontUrl=null, backUrl=null;
   const ts = Date.now();
   async function upload(file, suffix) {
-    const ext = file.name.split('.').pop();
-    const path = `listings/${card_id}_${ts}_${suffix}.${ext}`;
-    const { error } = await sb.storage.from('card-images').upload(path, file, {upsert:true});
-    if (error) return null;
+    // 리사이즈 후 항상 jpeg이므로 확장자 고정
+    const path = `listings/${curUser.username}_${card_id}_${ts}_${suffix}.jpg`;
+    const { error } = await sb.storage.from('card-images').upload(path, file, {
+      upsert: true,
+      contentType: 'image/jpeg'
+    });
+    if (error) { console.error('업로드 오류:', error.message); return null; }
     const { data: { publicUrl } } = sb.storage.from('card-images').getPublicUrl(path);
     return publicUrl;
   }
-  if (sellFront) frontUrl = await upload(sellFront, 'front');
-  if (sellBack) backUrl = await upload(sellBack, 'back');
+  // 리사이즈 먼저 한 후 업로드
+  const [rFront, rBack] = await Promise.all([
+    sellFront ? resizeImage(sellFront) : Promise.resolve(null),
+    sellBack  ? resizeImage(sellBack)  : Promise.resolve(null),
+  ]);
+  if (rFront) frontUrl = await upload(rFront, 'front');
+  if (rBack)  backUrl  = await upload(rBack,  'back');
   const { data, error } = await sb.from('listings').insert({
     card_id, seller_username:curUser.username, seller_name:curUser.nickname||curUser.username,
     price, condition:sellGrade, sleeve:document.getElementById('s_sleeve').value,
