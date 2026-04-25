@@ -503,7 +503,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="ftag" data-type="리더" onclick="setType(this)">리더</button>
       <button class="ftag" data-type="이벤트" onclick="setType(this)">이벤트</button>
       <div class="fdiv"></div>
-      <div class="price-wrap">
+      <button class="ftag" id="onlyListedBtn" onclick="toggleOnlyListed(this)">🛒 판매있는것만</button>
+      <div class="fdiv"></div>
         <input type="number" id="priceMin" placeholder="최저가" oninput="renderCards()">
         <span style="font-size:11px;color:var(--muted)">~</span>
         <input type="number" id="priceMax" placeholder="최고가" oninput="renderCards()">
@@ -563,9 +564,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="sell-body">
       <div class="fg-2" style="margin-bottom:10px">
-        <div class="fg" style="margin-bottom:0"><label>버전</label><select id="s_ver"><option>한글판</option><option>일판</option></select></div>
+        <div class="fg" style="margin-bottom:0"><label>버전</label><select id="s_ver" onchange="filterSellCards()"><option>한글판</option><option>일판</option></select></div>
         <div class="fg" style="margin-bottom:0"><label>시리즈</label>
-          <select id="s_set">
+          <select id="s_set" onchange="filterSellCards()">
             <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
             <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
             <option>OP-09</option><option>OP-10</option><option>OP-11</option>
@@ -575,7 +576,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           </select>
         </div>
       </div>
-      <div class="fg"><label>카드 선택</label><select id="s_card"><option value="">-- 카드 선택 --</option></select></div>
+      <div class="fg">
+        <label>카드 선택 <span id="s_card_cnt" style="font-size:11px;color:var(--muted);font-weight:400"></span></label>
+        <input type="text" id="s_search" placeholder="🔍 카드명 또는 번호 검색..." oninput="filterSellCards()" style="margin-bottom:6px;font-size:13px;">
+        <select id="s_card"><option value="">-- 카드 선택 --</option></select>
+      </div>
       <div class="fg">
         <label>등급 유형</label>
         <div class="grade-type-row">
@@ -731,7 +736,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div style="background:var(--blue-light);border:1px solid #BFDBFE;border-radius:var(--r2);padding:11px 14px;margin-bottom:14px;font-size:13px;color:#1e40af;">
           <b>🤖 전체 카드 자동 수집</b> — OP-01~OP-11 전체 카드를 Limitless CDN 이미지와 함께 자동 등록해요.<br>
           <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
-            <button class="mbtn-ok" onclick="autoFetch()" id="autoFetchBtn" style="padding:7px 16px;font-size:12px;flex:none">🤖 전체 카드 자동 수집 (OP01~OP11)</button>
+            <button class="mbtn-ok" onclick="autoFetch()" id="autoFetchBtn" style="padding:7px 16px;font-size:12px;flex:none">🤖 전체 카드 자동 수집 (OP01~OP12)</button>
             <button class="mbtn-cancel" onclick="autoImgOnly()" style="padding:7px 14px;font-size:12px;flex:none;border:1px solid var(--border)">🖼️ 이미지만 업데이트</button>
           </div>
           <div class="fetch-status" id="fetchStatus"></div>
@@ -829,6 +834,13 @@ const CDN = 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/one-piece';
 let allCards = [], listings = {}, trades = {}, wishSet = new Set();
 let curUser = null, curProfile = null, priceChart = null;
 let curFilter = { ver:'한글판', grade:'미등급', set:'OP-01', rarity:'all', type:'all' };
+let onlyListed = false;
+
+function toggleOnlyListed(btn) {
+  onlyListed = !onlyListed;
+  btn.classList.toggle('active', onlyListed);
+  renderCards();
+}
 let sellFront = null, sellBack = null, sellGrade = '미등급';
 let aiData = {};
 let adminCards = [];
@@ -878,10 +890,8 @@ async function init() {
     wishSet = new Set((wData||[]).map(w=>w.card_id));
   }
 
-  // 판매 셀렉트 채우기
-  const sel = document.getElementById('s_card');
-  sel.innerHTML = '<option value="">-- 카드 선택 --</option>';
-  allCards.forEach(c => { const o = document.createElement('option'); o.value=c.id; o.textContent=`${c.id} · ${c.name} (${c.rarity})`; sel.appendChild(o); });
+  // 판매 셀렉트 채우기 (초기 OP-01만, 이후 filterSellCards로 갱신)
+  filterSellCards();
 
   // 사이드바 카운트 업데이트 (모든 시리즈)
   document.querySelectorAll('.s-series[data-set]').forEach(el => {
@@ -1020,6 +1030,7 @@ function renderCards() {
     if (curFilter.set !== 'all' && c.series !== curFilter.set) return false;
     if (curFilter.rarity !== 'all' && c.rarity !== curFilter.rarity) return false;
     if (curFilter.type !== 'all' && c.card_type !== curFilter.type) return false;
+    if (onlyListed && !getLs(c.id).length) return false;
     if (minV > 0 || maxV < Infinity) {
       const lp = getLP(c.id);
       if (!lp) return maxV === Infinity;
@@ -1262,12 +1273,44 @@ async function toggleWish(id, btn) {
 }
 
 // ─── SELL ───
+// 판매 등록 모달 — 시리즈/버전 변경 시 카드 select 갱신
+function filterSellCards() {
+  const ver = document.getElementById('s_ver')?.value || '한글판';
+  const set = document.getElementById('s_set')?.value || 'OP-01';
+  const q   = (document.getElementById('s_search')?.value || '').trim().toLowerCase();
+  const sel = document.getElementById('s_card');
+  if (!sel) return;
+  const prev = sel.value;
+  const filtered = allCards.filter(c => {
+    if (c.series !== set) return false;
+    if (c.version && c.version !== ver) return false;
+    if (q && !c.name.toLowerCase().includes(q) && !c.id.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  sel.innerHTML = '<option value="">-- 카드 선택 --</option>';
+  filtered.forEach(c => {
+    const o = document.createElement('option');
+    o.value = c.id;
+    o.textContent = `${c.id} · ${c.name} (${c.rarity})`;
+    sel.appendChild(o);
+  });
+  // 이전 선택값 유지
+  if (prev && filtered.find(c=>c.id===prev)) sel.value = prev;
+  document.getElementById('s_card_cnt').textContent = filtered.length + '종';
+}
+
 function openSell(prefill) {
   if (!curUser) { openAuth('login'); return; }
-  if (prefill) document.getElementById('s_card').value = prefill;
+  if (prefill) {
+    const pc = allCards.find(c=>c.id===prefill);
+    if (pc) document.getElementById('s_set').value = pc.series;
+  }
   sellFront = null; sellBack = null; aiData = {};
+  document.getElementById('s_search').value = '';
   document.getElementById('s_contact').value = '';
   document.getElementById('s_price').value = '';
+  filterSellCards();
+  if (prefill) document.getElementById('s_card').value = prefill;
   document.getElementById('front-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div>';
   document.getElementById('back-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div>';
   document.getElementById('ai-result').classList.remove('on');
@@ -1296,6 +1339,26 @@ function previewPhoto(side, e) {
   if (sellFront || sellBack) document.getElementById('ai-btn').disabled = false;
 }
 
+// 이미지 리사이즈 (HTTP 413 방지 — Vercel 4.5MB 제한)
+async function resizeImage(file, maxW=900, quality=0.72) {
+  return new Promise(res => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxW / img.width);
+      const w = Math.round(img.width * scale);
+      const h = Math.round(img.height * scale);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      canvas.toBlob(b => res(new File([b], file.name, {type:'image/jpeg'})), 'image/jpeg', quality);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); res(file); };
+    img.src = url;
+  });
+}
+
 async function analyzeCard() {
   const btn = document.getElementById('ai-btn');
   btn.disabled = true;
@@ -1305,10 +1368,14 @@ async function analyzeCard() {
   document.getElementById('ai-reason').textContent = 'AI가 PSA 기준으로 카드 상태를 분석하고 있어요...';
   document.getElementById('ai-checks').innerHTML = '';
   try {
-    const toB64 = f => new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});
+    const toB64 = f => new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(",")[1]);r.onerror=rej;r.readAsDataURL(f);});
     const imgs = [];
-    if (sellFront) { imgs.push({type:'image',source:{type:'base64',media_type:sellFront.type,data:await toB64(sellFront)}}); imgs.push({type:'text',text:'위 이미지는 카드 앞면입니다.'}); }
-    if (sellBack) { imgs.push({type:'image',source:{type:'base64',media_type:sellBack.type,data:await toB64(sellBack)}}); imgs.push({type:'text',text:'위 이미지는 카드 뒷면입니다.'}); }
+    const [rFront, rBack] = await Promise.all([
+      sellFront ? resizeImage(sellFront) : Promise.resolve(null),
+      sellBack  ? resizeImage(sellBack)  : Promise.resolve(null),
+    ]);
+    if (rFront) { imgs.push({type:"image",source:{type:"base64",media_type:"image/jpeg",data:await toB64(rFront)}}); imgs.push({type:"text",text:"위 이미지는 카드 앞면입니다."}); }
+    if (rBack)  { imgs.push({type:"image",source:{type:"base64",media_type:"image/jpeg",data:await toB64(rBack)}}); imgs.push({type:"text",text:"위 이미지는 카드 뒷면입니다."}); }
     imgs.push({type:'text',text:`당신은 PSA(Professional Sports Authenticator) 기준으로 트레이딩 카드를 감정하는 전문가입니다.
 PSA 등급 기준:
 - PSA 10 (Gem Mint): 완벽한 상태, 흠집/구김/마모 전혀 없음, 완벽한 센터링
