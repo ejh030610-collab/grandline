@@ -1699,20 +1699,26 @@ async function loadMyReq() {
         </div>` : ''}
 
       ${t.status==='pending' ? `
-        <button onclick="cancelTrade('${t.id}')" style="margin-top:4px;padding:7px 16px;background:#fff;color:var(--muted);border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;cursor:pointer">
+        <button onclick="cancelTrade('${t.id}', this)" style="margin-top:4px;padding:7px 16px;background:#fff;color:var(--muted);border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;cursor:pointer">
           요청 취소
         </button>` : ''}
     </div>`;
   }).join('');
 }
 
-async function cancelTrade(tradeId) {
+async function cancelTrade(tradeId, btn) {
   if (!confirm('구매 요청을 취소할까요?')) return;
+  // 즉시 DOM에서 제거
+  const item = btn?.closest('div[style*="padding:14px"]');
+  if (item) item.remove();
+  // 빈 목록 체크
+  const el = document.getElementById('my-myreq-list');
+  if (el && !el.querySelector('div[style*="padding:14px"]')) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">보낸 구매 요청이 없어요</div>';
+  }
   const { error } = await sb.from('trades').update({ status: 'cancelled' }).eq('id', tradeId);
-  if (error) { toast('취소 실패: ' + error.message); return; }
+  if (error) { toast('취소 실패: ' + error.message); loadMyReq(); return; }
   toast('요청이 취소됐어요');
-  loadMyReq();
-  loadPurchaseHistory();
 }
 
 async function loadPurchaseHistory() {
