@@ -628,6 +628,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <select id="s_sleeve"><option>하드 슬리브</option><option>소프트 슬리브</option><option>슬리브 없음</option></select>
         </div>
       </div>
+      <div class="fg" style="margin-top:10px"><label>판매자 연락처 <span style="color:var(--red)">*</span></label><input type="text" id="s_contact" placeholder="구매 승인 시 구매자에게 공개 (오픈카카오, 전화번호 등)"></div>
       <div class="fg" style="margin-top:10px"><label>추가 설명</label><textarea id="s_desc" placeholder="직거래 가능 지역, 특이사항 등..."></textarea></div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
@@ -1293,6 +1294,7 @@ function openSell(prefill) {
   document.getElementById('ai-result').classList.remove('on');
   document.getElementById('ai-btn').disabled = true;
   document.getElementById('s_search').value = '';
+  document.getElementById('s_contact').value = '';
   if (prefill) {
     const pc = allCards.find(c=>c.id===prefill);
     if (pc) document.getElementById('s_set').value = pc.series;
@@ -1417,8 +1419,10 @@ async function submitSell() {
   if (!curUser) { openAuth('login'); return; }
   const card_id = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
+  const contact_info = document.getElementById('s_contact').value.trim();
   if (!card_id) { toast('카드를 선택해주세요'); return; }
   if (!price||price<=0) { toast('올바른 가격을 입력해주세요'); return; }
+  if (!contact_info) { toast('판매자 연락처를 입력해주세요'); return; }
 
   const btn = document.querySelector('#sellOv .mbtn-ok');
   if (btn) { btn.disabled = true; btn.textContent = '등록 중...'; }
@@ -1459,6 +1463,7 @@ async function submitSell() {
       grade_type: sellGrade,
       sleeve: document.getElementById('s_sleeve').value,
       description: document.getElementById('s_desc').value || null,
+      contact_info: contact_info,
       image_front: frontUrl,
       image_back: backUrl,
       status: 'active'
@@ -1586,6 +1591,7 @@ async function loadMyRequests() {
   const { data } = await sb.from('trades')
     .select('*, listings(card_id, price, grade_type, image_front, status), cards:listings(card_id(name,emoji))')
     .eq('seller_username', curUser.username)
+    .neq('status', 'cancelled')
     .order('created_at', { ascending: false });
   if (!data?.length) {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
@@ -1650,20 +1656,57 @@ async function loadMyReq() {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">보낸 구매 요청이 없어요</div>';
     return;
   }
-  const statusMap = { pending:'⏳ 답변 대기중', approved:'✅ 승인됨', rejected:'❌ 거절됨', completed:'🎉 거래완료' };
-  const statusColor = { pending:'var(--gold)', approved:'var(--green)', rejected:'#dc2626', completed:'var(--blue)' };
-  el.innerHTML = data.map(t => `
-    <div style="padding:14px 0;border-bottom:1px solid var(--border)">
+  const statusMap = { pending:'⏳ 답변 대기중', completed:'✅ 승인됨', rejected:'❌ 거절됨' };
+  const statusColor = { pending:'var(--gold)', completed:'var(--green)', rejected:'#dc2626' };
+
+  // 승인된 건들의 listing 정보(판매자 연락처) 가져오기
+  const approvedIds = data.filter(t=>t.status==='completed').map(t=>t.listing_id).filter(Boolean);
+  let listingMap = {};
+  if (approvedIds.length) {
+    const { data: ls } = await sb.from('listings').select('id,contact_info,seller_name').in('id', approvedIds);
+    (ls||[]).forEach(l => { listingMap[l.id] = l; });
+  }
+
+  el.innerHTML = data.map(t => {
+    const listing = listingMap[t.listing_id];
+    return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <div style="font-size:13px;font-weight:700">${t.card_id}</div>
         <span style="font-size:12px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">판매자: ${t.seller_username} · ${t.price?.toLocaleString()}원</div>
-      ${t.message ? `<div style="font-size:12px;color:var(--muted)">"${t.message}"</div>` : ''}
-      <div style="font-size:10px;color:var(--dim);margin-top:4px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
-      ${t.status==='completed' ? `<div style="margin-top:8px;padding:8px 12px;background:var(--green-light);border:1px solid #bbf7d0;border-radius:var(--r3);font-size:12px;color:var(--green);font-weight:600">📦 거래가 승인됐어요! 내 연락처(${t.buyer_contact})로 판매자가 연락할 거예요</div>` : ''}
-      ${t.status==='rejected' ? `<div style="margin-top:8px;padding:8px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r3);font-size:12px;color:var(--red)">이 요청은 거절됐어요. 다른 판매자에게 연락해보세요.</div>` : ''}
-    </div>`).join('');
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">
+        판매자: <b>${t.seller_username}</b> · ${t.price?.toLocaleString()}원
+      </div>
+      ${t.message ? `<div style="font-size:12px;color:var(--muted);margin-bottom:4px">"${t.message}"</div>` : ''}
+      <div style="font-size:10px;color:var(--dim);margin-bottom:8px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
+
+      ${t.status==='completed' ? `
+        <div style="background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:12px 14px">
+          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px">🎉 거래가 승인됐어요!</div>
+          <div style="font-size:12px;margin-bottom:3px"><b>판매자:</b> ${listing?.seller_name || t.seller_username}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:3px">📱 ${listing?.contact_info || '연락처 정보 없음'}</div>
+          <div style="font-size:11px;color:var(--muted)">위 연락처로 먼저 연락해서 택배 주소를 알려드리세요</div>
+        </div>` : ''}
+
+      ${t.status==='rejected' ? `
+        <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r3);padding:10px 12px;font-size:12px;color:var(--red)">
+          거절됐어요. 다른 판매자에게 연락해보세요.
+        </div>` : ''}
+
+      ${t.status==='pending' ? `
+        <button onclick="cancelTrade('${t.id}')" style="margin-top:4px;padding:7px 16px;background:#fff;color:var(--muted);border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;cursor:pointer">
+          요청 취소
+        </button>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function cancelTrade(tradeId) {
+  if (!confirm('구매 요청을 취소할까요?')) return;
+  const { error } = await sb.from('trades').update({ status: 'cancelled' }).eq('id', tradeId);
+  if (error) { toast('취소 실패: ' + error.message); return; }
+  toast('요청이 취소됐어요');
+  loadMyReq();
 }
 
 async function loadMyWish() {
