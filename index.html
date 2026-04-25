@@ -275,8 +275,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .my-name{font-size:18px;font-weight:700;color:#fff;}
 .my-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;}
 .my-close{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;}
-.my-tabs{display:flex;border-bottom:1px solid var(--border);}
-.my-tab{flex:1;padding:11px;font-size:13px;font-weight:500;border:none;background:#fff;color:var(--muted);border-bottom:2px solid transparent;font-family:inherit;}
+.my-tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;}
+.my-tab{flex-shrink:0;padding:11px 14px;font-size:12px;font-weight:500;border:none;background:#fff;color:var(--muted);border-bottom:2px solid transparent;font-family:inherit;cursor:pointer;white-space:nowrap;}
 .my-tab.active{color:var(--red);border-bottom-color:var(--red);}
 .my-body{padding:16px;min-height:220px;}
 .my-page{display:none;}
@@ -670,7 +670,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <div class="my-tabs">
       <button class="my-tab active" onclick="switchMyTab('stats',this)">📊 현황</button>
       <button class="my-tab" onclick="switchMyTab('listings',this)">🛒 내 판매</button>
-      <button class="my-tab" onclick="switchMyTab('wish',this)">♥ 찜 목록</button>
+      <button class="my-tab" onclick="switchMyTab('requests',this)">📨 구매요청</button>
+      <button class="my-tab" onclick="switchMyTab('myreq',this)">🙋 내 요청</button>
+      <button class="my-tab" onclick="switchMyTab('wish',this)">♥ 찜</button>
     </div>
     <div class="my-body">
       <div class="my-page active" id="mp-stats">
@@ -683,6 +685,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       </div>
       <div class="my-page" id="mp-listings">
         <div id="my-listings-list">불러오는 중...</div>
+      </div>
+      <div class="my-page" id="mp-requests">
+        <div id="my-requests-list">불러오는 중...</div>
+      </div>
+      <div class="my-page" id="mp-myreq">
+        <div id="my-myreq-list">불러오는 중...</div>
       </div>
       <div class="my-page" id="mp-wish">
         <div id="my-wish-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px"></div>
@@ -1495,12 +1503,33 @@ function openContact(lid, cid) {
   document.getElementById('contactOv').classList.add('on');
 }
 function closeContact() { document.getElementById('contactOv').classList.remove('on'); }
-function sendContact() {
-  if (!document.getElementById('c_contact').value.trim()) { toast('연락처를 입력해주세요'); return; }
-  document.getElementById('contact-sent').classList.add('on');
-  document.getElementById('contact-btns').style.display='none';
-  toast('연락 요청이 전달됐어요! 📨');
-  setTimeout(closeContact, 2500);
+async function sendContact() {
+  const contact = document.getElementById('c_contact').value.trim();
+  if (!contact) { toast('연락처를 입력해주세요'); return; }
+  const btn = document.querySelector('#contactOv .mbtn-ok');
+  if (btn) { btn.disabled = true; btn.textContent = '전송 중...'; }
+  try {
+    const { l } = contactData;
+    const { error } = await sb.from('trades').insert({
+      listing_id: l.id,
+      card_id: l.card_id,
+      seller_username: l.seller_username,
+      buyer_username: curUser.username,
+      buyer_contact: contact,
+      message: document.getElementById('c_msg').value.trim() || null,
+      price: l.price,
+      status: 'pending',
+    });
+    if (error) throw new Error(error.message);
+    document.getElementById('contact-sent').classList.add('on');
+    document.getElementById('contact-btns').style.display = 'none';
+    toast('구매 요청이 전달됐어요! 📨');
+    setTimeout(closeContact, 2500);
+  } catch(e) {
+    toast('전송 실패: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '연락하기'; }
+  }
 }
 
 // ─── MYPAGE ───
@@ -1510,7 +1539,7 @@ async function openMyPage() {
   document.getElementById('my-name').textContent = curUser.nickname||curUser.username;
   document.getElementById('my-sub').textContent = '아이디: '+curUser.username;
   document.getElementById('myOv').classList.add('on');
-  loadMyStats(); loadMyListings(); loadMyWish();
+  loadMyStats(); loadMyListings(); loadMyWish(); loadMyRequests(); loadMyReq();
 }
 function closeMyPage() { document.getElementById('myOv').classList.remove('on'); }
 function switchMyTab(id, btn) {
@@ -1550,6 +1579,93 @@ async function cancelListing(id) {
   await sb.from('listings').update({status:'cancelled'}).eq('id',id);
   toast('판매가 취소됐어요'); loadMyListings(); loadMyStats(); renderCards();
 }
+// ─── 구매요청 탭 (판매자용) ───
+async function loadMyRequests() {
+  const el = document.getElementById('my-requests-list');
+  if (!el || !curUser) return;
+  const { data } = await sb.from('trades')
+    .select('*, listings(card_id, price, grade_type, image_front, status), cards:listings(card_id(name,emoji))')
+    .eq('seller_username', curUser.username)
+    .order('created_at', { ascending: false });
+  if (!data?.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
+    return;
+  }
+  el.innerHTML = data.map(t => {
+    const statusMap = { pending:'⏳ 대기중', approved:'✅ 승인됨', rejected:'❌ 거절됨', completed:'🎉 거래완료' };
+    const statusColor = { pending:'var(--gold)', approved:'var(--green)', rejected:'var(--red)', completed:'var(--blue)' };
+    const isPending = t.status === 'pending';
+    return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-size:13px;font-weight:700">${t.card_id}</div>
+          <div style="font-size:12px;color:var(--muted)">${t.price?.toLocaleString()}원 · ${t.listings?.grade_type||'미등급'}</div>
+        </div>
+        <span style="font-size:11px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
+      </div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
+        <div style="font-weight:600;margin-bottom:2px">구매자: ${t.buyer_username}</div>
+        <div style="color:var(--blue);font-weight:600;margin-bottom:2px">📱 ${t.buyer_contact}</div>
+        ${t.message ? `<div style="color:var(--muted)">"${t.message}"</div>` : ''}
+        <div style="font-size:10px;color:var(--dim);margin-top:4px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
+      </div>
+      ${isPending ? `<div style="display:flex;gap:7px">
+        <button onclick="approveTrade('${t.id}','${t.listing_id}')" style="flex:1;padding:8px;background:var(--green);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">✅ 승인</button>
+        <button onclick="rejectTrade('${t.id}')" style="flex:1;padding:8px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">❌ 거절</button>
+      </div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+async function approveTrade(tradeId, listingId) {
+  if (!confirm('구매 요청을 승인할까요? 판매 완료로 처리돼요.')) return;
+  const { error: e1 } = await sb.from('trades').update({ status: 'completed' }).eq('id', tradeId);
+  const { error: e2 } = await sb.from('listings').update({ status: 'sold' }).eq('id', listingId);
+  if (e1 || e2) { toast('처리 실패'); return; }
+  // 로컬 캐시 업데이트
+  Object.keys(listings).forEach(cid => {
+    listings[cid] = listings[cid].filter(l => l.id !== listingId);
+  });
+  toast('🎉 승인 완료! 거래가 성사됐어요');
+  loadMyRequests(); loadMyListings(); loadMyStats(); renderCards();
+}
+
+async function rejectTrade(tradeId) {
+  if (!confirm('구매 요청을 거절할까요?')) return;
+  const { error } = await sb.from('trades').update({ status: 'rejected' }).eq('id', tradeId);
+  if (error) { toast('처리 실패'); return; }
+  toast('거절했어요');
+  loadMyRequests();
+}
+
+// ─── 내 구매요청 탭 (구매자용) ───
+async function loadMyReq() {
+  const el = document.getElementById('my-myreq-list');
+  if (!el || !curUser) return;
+  const { data } = await sb.from('trades')
+    .select('*')
+    .eq('buyer_username', curUser.username)
+    .order('created_at', { ascending: false });
+  if (!data?.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">보낸 구매 요청이 없어요</div>';
+    return;
+  }
+  const statusMap = { pending:'⏳ 답변 대기중', approved:'✅ 승인됨', rejected:'❌ 거절됨', completed:'🎉 거래완료' };
+  const statusColor = { pending:'var(--gold)', approved:'var(--green)', rejected:'#dc2626', completed:'var(--blue)' };
+  el.innerHTML = data.map(t => `
+    <div style="padding:14px 0;border-bottom:1px solid var(--border)">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <div style="font-size:13px;font-weight:700">${t.card_id}</div>
+        <span style="font-size:12px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
+      </div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">판매자: ${t.seller_username} · ${t.price?.toLocaleString()}원</div>
+      ${t.message ? `<div style="font-size:12px;color:var(--muted)">"${t.message}"</div>` : ''}
+      <div style="font-size:10px;color:var(--dim);margin-top:4px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
+      ${t.status==='completed' ? `<div style="margin-top:8px;padding:8px 12px;background:var(--green-light);border:1px solid #bbf7d0;border-radius:var(--r3);font-size:12px;color:var(--green);font-weight:600">📦 거래가 승인됐어요! 내 연락처(${t.buyer_contact})로 판매자가 연락할 거예요</div>` : ''}
+      ${t.status==='rejected' ? `<div style="margin-top:8px;padding:8px 12px;background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r3);font-size:12px;color:var(--red)">이 요청은 거절됐어요. 다른 판매자에게 연락해보세요.</div>` : ''}
+    </div>`).join('');
+}
+
 async function loadMyWish() {
   const ids = [...wishSet].slice(0,20);
   if (!ids.length) { document.getElementById('my-wish-grid').innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--muted);padding:20px">찜한 카드가 없어요</div>'; return; }
