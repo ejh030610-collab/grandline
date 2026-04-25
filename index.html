@@ -503,8 +503,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="ftag" data-type="리더" onclick="setType(this)">리더</button>
       <button class="ftag" data-type="이벤트" onclick="setType(this)">이벤트</button>
       <div class="fdiv"></div>
-      <button class="ftag" id="onlyListedBtn" onclick="toggleOnlyListed(this)">🛒 판매있는것만</button>
-      <div class="fdiv"></div>
         <input type="number" id="priceMin" placeholder="최저가" oninput="renderCards()">
         <span style="font-size:11px;color:var(--muted)">~</span>
         <input type="number" id="priceMax" placeholder="최고가" oninput="renderCards()">
@@ -799,7 +797,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">카드 수정</h3>
     <input type="hidden" id="edit-id">
     <div class="af-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px">
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드 번호</label><input type="text" id="edit-id-show" disabled style="width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;color:var(--muted)"></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드 번호</label><input type="text" id="edit-id-show" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>한글판</option><option>일판</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
@@ -834,12 +832,8 @@ const CDN = 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/one-piece';
 let allCards = [], listings = {}, trades = {}, wishSet = new Set();
 let curUser = null, curProfile = null, priceChart = null;
 let curFilter = { ver:'한글판', grade:'미등급', set:'OP-01', rarity:'all', type:'all' };
-let onlyListed = false;
 
 function toggleOnlyListed(btn) {
-  onlyListed = !onlyListed;
-  btn.classList.toggle('active', onlyListed);
-  renderCards();
 }
 let sellFront = null, sellBack = null, sellGrade = '미등급';
 let aiData = {};
@@ -1030,7 +1024,6 @@ function renderCards() {
     if (curFilter.set !== 'all' && c.series !== curFilter.set) return false;
     if (curFilter.rarity !== 'all' && c.rarity !== curFilter.rarity) return false;
     if (curFilter.type !== 'all' && c.card_type !== curFilter.type) return false;
-    if (onlyListed && !getLs(c.id).length) return false;
     if (minV > 0 || maxV < Infinity) {
       const lp = getLP(c.id);
       if (!lp) return maxV === Infinity;
@@ -2009,11 +2002,13 @@ function closeEditCard() {
 }
 
 async function submitEditCard() {
-  const cid = document.getElementById('edit-id').value;
+  const oldId = document.getElementById('edit-id').value;
+  const newId = document.getElementById('edit-id-show').value.trim();
   const name = document.getElementById('edit-name').value.trim();
+  if (!newId) { toast('카드 번호를 입력해주세요'); return; }
   if (!name) { toast('카드명을 입력해주세요'); return; }
   const rarity = document.getElementById('edit-rarity').value;
-  const {error} = await sb.from('cards').update({
+  const updateData = {
     name,
     version: document.getElementById('edit-ver').value,
     series: document.getElementById('edit-series').value,
@@ -2024,7 +2019,10 @@ async function submitEditCard() {
     power: parseInt(document.getElementById('edit-power').value)||0,
     feature: document.getElementById('edit-feature').value||null,
     image_url: document.getElementById('edit-imgurl').value||null,
-  }).eq('id', cid);
+  };
+  // 카드 번호가 바뀐 경우 id도 업데이트
+  if (newId !== oldId) updateData.id = newId;
+  const {error} = await sb.from('cards').update(updateData).eq('id', oldId);
   if (error) { toast('저장 실패: '+error.message); return; }
   toast('✅ 카드 수정 완료!');
   closeEditCard();
