@@ -1444,6 +1444,7 @@ async function submitSell() {
       seller_username: curUser.username,
       seller_name: curUser.nickname || curUser.username,
       price,
+      condition: sellGrade,
       version: document.getElementById('s_ver').value,
       series: document.getElementById('s_set').value,
       grade_type: sellGrade,
