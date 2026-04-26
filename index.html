@@ -880,9 +880,15 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 카드 관리 -->
       <div class="ap" id="ap-cardlist">
         <div class="a-search">
-          <input type="text" id="a-q" placeholder="카드명, 번호..." oninput="aFilterCards()" style="width:170px">
+          <input type="text" id="a-q" placeholder="카드명, 번호..." oninput="aFilterCards()" style="width:150px">
+          <select id="a-series" onchange="aFilterCards()" style="min-width:130px">
+            <option value="">전체 시리즈</option>
+            <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
+            <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
+            <option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option>
+            <option>EBK-01</option><option>EBK-02</option>
+          </select>
           <select id="a-rarity" onchange="aFilterCards()"><option value="">전체 희귀도</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option></select>
-          <select id="a-imgf" onchange="aFilterCards()"><option value="">전체</option><option value="noimg">이미지 없음</option><option value="hasimg">이미지 있음</option></select>
         </div>
         <div class="atbl"><table>
           <thead><tr><th>이미지</th><th>번호</th><th>카드명</th><th>희귀도</th><th>버전</th><th>관리</th></tr></thead>
@@ -2278,14 +2284,13 @@ function aRenderCards(cards) {
     : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">카드 없음</td></tr>';
 }
 function aFilterCards() {
-  const q=document.getElementById('a-q').value.toLowerCase();
-  const r=document.getElementById('a-rarity').value;
-  const img=document.getElementById('a-imgf').value;
-  aRenderCards(adminCards.filter(c=>{
-    if(q&&!c.name.toLowerCase().includes(q)&&!c.id.toLowerCase().includes(q)) return false;
-    if(r&&c.rarity!==r) return false;
-    if(img==='noimg'&&c.image_url) return false;
-    if(img==='hasimg'&&!c.image_url) return false;
+  const q = document.getElementById('a-q').value.toLowerCase();
+  const r = document.getElementById('a-rarity').value;
+  const s = document.getElementById('a-series').value;
+  aRenderCards(adminCards.filter(c => {
+    if (q && !c.name?.toLowerCase().includes(q) && !c.id.toLowerCase().includes(q)) return false;
+    if (r && c.rarity !== r) return false;
+    if (s && c.series !== s) return false;
     return true;
   }));
 }
