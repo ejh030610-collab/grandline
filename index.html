@@ -1011,11 +1011,28 @@ async function init() {
   document.querySelectorAll('.s-series[data-set]').forEach(el => {
     const set = el.dataset.set;
     const ver = el.dataset.ver;
+    const type = el.dataset.type;
     const cnt = el.querySelector('.s-cnt');
     if (!cnt || set === 'all') return;
+    // 박스 카테고리는 카드 수 적용 안 함 → 0 표시
+    if (type === 'box') { cnt.textContent = '0'; return; }
     const n = allCards.filter(c => c.series === set && (!ver || c.version === ver)).length;
     cnt.textContent = n || '-';
   });
+
+  // 박스 카운트 — 실제 판매 건수로 업데이트
+  const { data: boxCounts } = await sb.from('listings')
+    .select('series')
+    .eq('listing_type', 'box')
+    .eq('status', 'active');
+  if (boxCounts?.length) {
+    const boxCountMap = {};
+    boxCounts.forEach(l => { boxCountMap[l.series] = (boxCountMap[l.series]||0) + 1; });
+    document.querySelectorAll('.s-series[data-type="box"]').forEach(el => {
+      const cnt = el.querySelector('.s-cnt');
+      if (cnt) cnt.textContent = boxCountMap[el.dataset.set] || '0';
+    });
+  }
 
   renderCards();
   loadHome();
