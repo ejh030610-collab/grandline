@@ -506,6 +506,16 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="ftag" data-type="리더" onclick="setType(this)">리더</button>
       <button class="ftag" data-type="이벤트" onclick="setType(this)">이벤트</button>
       <div class="fdiv"></div>
+      <span style="font-size:11px;font-weight:600;color:var(--muted)">컬러</span>
+      <button class="ftag active" data-color="all" onclick="setColor(this)">전체</button>
+      <button class="ftag" data-color="적색" onclick="setColor(this)">적색</button>
+      <button class="ftag" data-color="녹색" onclick="setColor(this)">녹색</button>
+      <button class="ftag" data-color="청색" onclick="setColor(this)">청색</button>
+      <button class="ftag" data-color="자색" onclick="setColor(this)">자색</button>
+      <button class="ftag" data-color="흑색" onclick="setColor(this)">흑색</button>
+      <button class="ftag" data-color="황색" onclick="setColor(this)">황색</button>
+      <button class="ftag" data-color="다색" onclick="setColor(this)">다색</button>
+      <div class="fdiv"></div>
       <div class="price-wrap">
         <input type="number" id="priceMin" placeholder="최저가" oninput="renderCards()">
         <span style="font-size:11px;color:var(--muted)">~</span>
@@ -831,7 +841,7 @@ const CDN = 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/one-piece';
 
 let allCards = [], listings = {}, trades = {}, wishSet = new Set();
 let curUser = null, curProfile = null, priceChart = null;
-let curFilter = { ver:'한글판', grade:'미등급', set:'OP-01', rarity:'all', type:'all' };
+let curFilter = { ver:'한글판', grade:'미등급', set:'OP-01', rarity:'all', type:'all', color:'all' };
 let sellFront = null, sellBack = null, sellGrade = '미등급';
 let aiData = {};
 let adminCards = [];
@@ -989,9 +999,15 @@ function setRarity(el) {
   renderCards();
 }
 function setType(el) {
-  document.querySelectorAll('.ftag').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('[data-type]').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   curFilter.type = el.dataset.type;
+  renderCards();
+}
+function setColor(el) {
+  document.querySelectorAll('[data-color]').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  curFilter.color = el.dataset.color;
   renderCards();
 }
 function toggleMob() {
@@ -1024,6 +1040,7 @@ function renderCards() {
     if (curFilter.set !== 'all' && c.series !== curFilter.set) return false;
     if (curFilter.rarity !== 'all' && c.rarity !== curFilter.rarity) return false;
     if (curFilter.type !== 'all' && c.card_type !== curFilter.type) return false;
+    if (curFilter.color !== 'all' && c.color !== curFilter.color) return false;
     if (minV > 0 || maxV < Infinity) {
       const lp = getLP(c.id);
       if (!lp) return maxV === Infinity;
