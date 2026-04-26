@@ -625,6 +625,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <div><div class="ai-grade-lbl" id="ai-lbl">분석 중...</div><div class="ai-grade-sub" id="ai-sub"></div></div>
           </div>
           <div class="ai-reason" id="ai-reason"></div>
+          <!-- 센터링 시각화 -->
+          <div id="ai-centering-wrap" style="display:none;margin:10px 0;border-radius:8px;overflow:hidden;position:relative;max-width:160px;margin-left:auto;margin-right:auto;border:1px solid var(--border)">
+            <img id="ai-centering-img" style="width:100%;display:block">
+            <canvas id="ai-centering-canvas" style="position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none"></canvas>
+          </div>
+          <div id="ai-centering-info" style="display:none;text-align:center;font-size:11px;color:var(--muted);margin-bottom:6px"></div>
           <div class="ai-checks" id="ai-checks"></div>
         </div>
       </div>
@@ -1421,6 +1427,52 @@ async function resizeImage(file, maxW=900, quality=0.72) {
   });
 }
 
+function drawCenteringOverlay(centering) {
+  const wrap = document.getElementById('ai-centering-wrap');
+  const info = document.getElementById('ai-centering-info');
+  const img = document.getElementById('ai-centering-img');
+  const canvas = document.getElementById('ai-centering-canvas');
+  if (!wrap || !sellFront) return;
+
+  // 앞면 이미지를 미리보기에 표시
+  const url = URL.createObjectURL(sellFront);
+  img.src = url;
+  img.onload = () => {
+    canvas.width = img.clientWidth || img.naturalWidth;
+    canvas.height = img.clientHeight || img.naturalHeight;
+    const ctx = canvas.getContext('2d');
+    const w = canvas.width;
+    const h = canvas.height;
+
+    // 빨간선 — 이상적인 중앙
+    ctx.strokeStyle = 'rgba(220,38,38,0.8)';
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(w/2,0); ctx.lineTo(w/2,h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,h/2); ctx.lineTo(w,h/2); ctx.stroke();
+    ctx.setLineDash([]);
+
+    // 파란선 — 실제 센터링
+    const lp = (centering.left||50) / 100;
+    const tp = (centering.top||50) / 100;
+    const ax = lp * w;
+    const ay = tp * h;
+
+    ctx.strokeStyle = 'rgba(37,99,235,0.9)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(ax,0); ctx.lineTo(ax,h); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,ay); ctx.lineTo(w,ay); ctx.stroke();
+
+    // 좌측 빨간 반투명 영역
+    ctx.fillStyle = 'rgba(220,38,38,0.08)';
+    ctx.fillRect(0, 0, ax, h);
+
+    wrap.style.display = 'block';
+    info.style.display = 'block';
+    info.textContent = `L/R: ${centering.left}:${centering.right}  T/B: ${centering.top}:${centering.bottom}`;
+  };
+}
+
 async function analyzeCard() {
   const btn = document.getElementById('ai-btn');
   btn.disabled = true;
@@ -1429,6 +1481,8 @@ async function analyzeCard() {
   document.getElementById('ai-lbl').textContent = 'PSA 등급 분석 중...';
   document.getElementById('ai-reason').textContent = 'AI가 PSA 기준으로 카드 상태를 분석하고 있어요...';
   document.getElementById('ai-checks').innerHTML = '';
+  document.getElementById('ai-centering-wrap').style.display = 'none';
+  document.getElementById('ai-centering-info').style.display = 'none';
   try {
     const toB64 = f => new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});
     const imgs = [];
@@ -1449,8 +1503,15 @@ PSA 등급 기준:
 - PSA 4 (VG-EX): 심한 마모, 모서리 손상
 - PSA 3 이하: 심각한 손상
 
+센터링 기준 (좌:우, 상:하 비율):
+- PSA 10: 55:45 이내
+- PSA 9: 60:40 이내
+- PSA 8: 65:35 이내
+
+카드 앞면 이미지를 분석해서 센터링 비율을 최대한 정확하게 추정해주세요.
+
 아래 JSON 형식으로만 응답하세요 (다른 텍스트 없이):
-{"psa_grade":10,"reason":"한국어로 2~3문장 설명","checks":{"corner":"상태설명","surface":"상태설명","edge":"상태설명","centering":"상태설명","print":"상태설명"}}`});
+{"psa_grade":10,"reason":"한국어로 2~3문장 설명","centering":{"left":50,"right":50,"top":50,"bottom":50},"checks":{"corner":"상태설명","surface":"상태설명","edge":"상태설명","centering":"상태설명","print":"상태설명"}}`});
     const res = await fetch('/api/analyze', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
@@ -1476,6 +1537,11 @@ PSA 등급 기준:
     document.getElementById('ai-reason').textContent = r.reason||'';
     const checks = [{k:'corner',l:'모서리'},{k:'surface',l:'표면'},{k:'edge',l:'엣지'},{k:'centering',l:'센터링'},{k:'print',l:'인쇄'}];
     document.getElementById('ai-checks').innerHTML = checks.map(c=>`<div class="ai-check-item"><span class="ai-check-key">${c.l}</span><span class="ai-check-val">${r.checks?.[c.k]||'-'}</span></div>`).join('');
+
+    // 센터링 시각화
+    if (r.centering && sellFront) {
+      drawCenteringOverlay(r.centering);
+    }
   } catch(err) {
     const isKeyErr = err.message.includes('API_KEY_MISSING') || err.message.includes('401');
     document.getElementById('ai-lbl').textContent = isKeyErr ? '🔑 API 키 미설정' : '분석 실패';
