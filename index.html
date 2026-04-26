@@ -426,20 +426,20 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <span>📦</span> 박스 <span class="s-arrow" id="arr-kr-box" style="margin-left:auto">▶</span>
       </div>
       <div id="grp-kr-box" style="display:none">
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-01" onclick="selectCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-02" onclick="selectCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-03" onclick="selectCat(this)">OP-03 강대한 적<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-04" onclick="selectCat(this)">OP-04 모략의 왕국<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-05" onclick="selectCat(this)">OP-05 신시대의 주역<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-06" onclick="selectCat(this)">OP-06 쌍벽의 패자<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-07" onclick="selectCat(this)">OP-07 500년 후의 미래<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-08" onclick="selectCat(this)">OP-08 두 전설<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-09" onclick="selectCat(this)">OP-09 악인의 시대<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-10" onclick="selectCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-11" onclick="selectCat(this)">OP-11 신속의 권<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-12" onclick="selectCat(this)">OP-12 사제의 연<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="EBK-01" onclick="selectCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="EBK-02" onclick="selectCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-01" onclick="selectBoxCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-02" onclick="selectBoxCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-03" onclick="selectBoxCat(this)">OP-03 강대한 적<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-04" onclick="selectBoxCat(this)">OP-04 모략의 왕국<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-05" onclick="selectBoxCat(this)">OP-05 신시대의 주역<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-06" onclick="selectBoxCat(this)">OP-06 쌍벽의 패자<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-07" onclick="selectBoxCat(this)">OP-07 500년 후의 미래<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-08" onclick="selectBoxCat(this)">OP-08 두 전설<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-09" onclick="selectBoxCat(this)">OP-09 악인의 시대<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-10" onclick="selectBoxCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-11" onclick="selectBoxCat(this)">OP-11 신속의 권<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="OP-12" onclick="selectBoxCat(this)">OP-12 사제의 연<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="EBK-01" onclick="selectBoxCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
+        <div class="s-series" data-type="box" data-set="EBK-02" onclick="selectBoxCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
       </div>
       <!-- 미등급 싱글 -->
       <div class="s-grade-hd" onclick="toggleGrp('kr-free')">
@@ -561,8 +561,19 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="list-title" id="listTitle">OP-01 ROMANCE DAWN</div>
       <div class="list-cnt" id="listCnt"></div>
     </div>
+    <!-- 카드 그리드 -->
     <div class="grid" id="cardGrid">
       <div class="empty-grid"><div class="spinner"></div>카드 불러오는 중...</div>
+    </div>
+    <!-- 박스 목록 (박스 카테고리 선택 시 표시) -->
+    <div id="boxWrap" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+        <div id="boxTitle" style="font-size:16px;font-weight:700"></div>
+        <button onclick="openBoxSell()" style="padding:8px 16px;background:var(--red);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">+ 박스 판매 등록</button>
+      </div>
+      <div id="boxGrid" style="display:flex;flex-direction:column;gap:12px">
+        <div class="empty-grid">박스 판매 목록이 없어요</div>
+      </div>
     </div>
   </main>
 </div>
@@ -596,7 +607,58 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   </div>
 </div>
 
-<!-- SELL OVERLAY -->
+<!-- BOX SELL OVERLAY -->
+<div class="ov" id="boxSellOv" onclick="if(event.target===this)closeBoxSell()">
+  <div class="modal sell-modal">
+    <div class="head">
+      <h3>📦 박스 판매 등록</h3>
+      <p>미개봉 박스를 판매해보세요</p>
+    </div>
+    <div class="sell-body">
+      <div class="fg-2" style="margin-bottom:10px">
+        <div class="fg" style="margin-bottom:0"><label>시리즈</label>
+          <select id="box_set">
+            <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
+            <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
+            <option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option>
+            <option>EBK-01</option><option>EBK-02</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-bottom:0"><label>단위</label>
+          <select id="box_unit">
+            <option value="1BOX">1BOX</option>
+            <option value="1CARTON">1CARTON (12BOX)</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg">
+        <label>수량 <span style="font-size:11px;color:var(--muted);font-weight:400">(보유 수량)</span></label>
+        <input type="number" id="box_qty" placeholder="예: 3" min="1" max="100" value="1">
+      </div>
+      <div class="fg"><label>판매가 (원) <span style="font-size:11px;color:var(--muted);font-weight:400">단위당 가격</span></label>
+        <input type="number" id="box_price" placeholder="0">
+      </div>
+      <div class="fg"><label>박스 사진</label>
+        <div class="photo-row" style="justify-content:flex-start">
+          <div class="photo-slot" onclick="document.getElementById('box_photo').click()" style="position:relative;max-width:160px">
+            <input type="file" id="box_photo" accept="image/*" onchange="previewBoxPhoto(event)" style="display:none">
+            <div id="box-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">박스 사진</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="fg"><label>판매자 연락처 <span style="color:var(--red)">*</span></label>
+        <input type="text" id="box_contact" placeholder="오픈카카오 링크, 카카오ID, 전화번호 등">
+      </div>
+      <div class="fg"><label>추가 설명 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
+        <textarea id="box_desc" placeholder="박스 상태, 구매처, 특이사항 등..."></textarea>
+      </div>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-cancel" onclick="closeBoxSell()">취소</button>
+      <button class="mbtn-ok" onclick="submitBoxSell()">등록하기</button>
+    </div>
+  </div>
+</div>
 <div class="ov" id="sellOv" onclick="if(event.target===this)closeSell()">
   <div class="modal sell-modal">
     <div class="head">
@@ -1044,6 +1106,7 @@ function selectCat(el) {
   curFilter.set = el.dataset.set;
   document.getElementById('listTitle').textContent = el.dataset.set === 'all' ? el.dataset.grade : `${el.dataset.set}`;
   hideHome();
+  showCardView();
   renderCards();
   if (window.innerWidth <= 700) toggleMob();
 }
@@ -1382,6 +1445,189 @@ async function toggleWish(id, btn) {
 }
 
 // ─── SELL ───
+// ─── 박스 카테고리 ───
+let curBoxSet = null;
+let boxPhoto = null;
+
+function selectBoxCat(el) {
+  document.querySelectorAll('.s-series').forEach(s=>s.classList.remove('active'));
+  el.classList.add('active');
+  curBoxSet = el.dataset.set;
+  // 박스 뷰 표시, 카드 뷰 숨기기
+  document.getElementById('cardGrid').style.display = 'none';
+  document.getElementById('filter-bar')?.style && (document.querySelector('.filter-bar').style.display='none');
+  document.getElementById('homeWrap').style.display = 'none';
+  document.getElementById('boxWrap').style.display = 'block';
+  document.getElementById('boxTitle').textContent = `📦 ${curBoxSet} 박스 판매 목록`;
+  loadBoxListings(curBoxSet);
+}
+
+async function loadBoxListings(series) {
+  const el = document.getElementById('boxGrid');
+  el.innerHTML = '<div class="empty-grid"><div class="spinner"></div>불러오는 중...</div>';
+
+  // boxes 테이블에서 해당 시리즈 기본 상품 로드
+  const { data: boxProducts } = await sb.from('boxes').select('*').eq('series', series).order('unit_type');
+  // 실제 판매 listings 로드
+  const { data: listings } = await sb.from('listings')
+    .select('*')
+    .eq('listing_type', 'box')
+    .eq('series', series)
+    .eq('status', 'active')
+    .order('price', { ascending: true });
+
+  if (!boxProducts?.length && !listings?.length) {
+    el.innerHTML = `<div class="empty-grid"><div style="font-size:36px;margin-bottom:10px">📦</div><div>등록된 박스 상품이 없어요</div></div>`;
+    return;
+  }
+
+  // 박스 상품별로 판매 목록 그룹핑
+  const byUnit = {};
+  (boxProducts||[]).forEach(b => { byUnit[b.unit_type] = { product: b, listings: [] }; });
+  (listings||[]).forEach(l => {
+    const key = l.unit_type || '1BOX';
+    if (!byUnit[key]) byUnit[key] = { product: null, listings: [] };
+    byUnit[key].listings.push(l);
+  });
+
+  el.innerHTML = Object.entries(byUnit).map(([unit, { product, listings: ls }]) => `
+    <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;box-shadow:var(--sh)">
+      <!-- 박스 상품 헤더 -->
+      <div style="padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--bg2)">
+        ${product?.image_url
+          ? `<img src="${product.image_url}" style="width:52px;height:66px;object-fit:cover;border-radius:var(--r3);border:1px solid var(--border)">`
+          : `<div style="width:52px;height:66px;background:var(--bg3);border-radius:var(--r3);display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--border)">📦</div>`}
+        <div>
+          <div style="font-size:15px;font-weight:700">${series}</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">${unit === '1CARTON' ? '1CARTON (12BOX)' : '1BOX'}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:1px">판매 ${ls.length}건</div>
+        </div>
+      </div>
+      <!-- 판매 목록 -->
+      ${ls.length ? ls.map(l => `
+        <div style="padding:12px 16px;display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--border)">
+          ${l.image_front ? `<img src="${l.image_front}" style="width:44px;height:56px;object-fit:cover;border-radius:var(--r3);cursor:pointer" onclick="openLB('${l.image_front}')">` : `<div style="width:44px;height:56px;background:var(--bg3);border-radius:var(--r3);display:flex;align-items:center;justify-content:center;font-size:20px">📦</div>`}
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:700;color:var(--red)">${l.price?.toLocaleString()}원 <span style="font-size:11px;color:var(--muted);font-weight:400">/ ${unit}</span></div>
+            <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.quantity||1}개 보유 · 판매자: ${l.seller_name}</div>
+            ${l.description ? `<div style="font-size:11px;color:var(--muted);margin-top:2px">${l.description}</div>` : ''}
+          </div>
+          <button onclick="openBoxContact('${l.id}')" style="padding:8px 14px;background:var(--red);color:#fff;border:none;border-radius:var(--r3);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap">구매하기</button>
+        </div>`).join('')
+      : `<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">판매 중인 ${unit}이 없어요</div>`}
+    </div>`).join('');
+}
+
+function openBoxSell() {
+  if (!curUser) { openAuth('login'); return; }
+  boxPhoto = null;
+  document.getElementById('box-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">박스 사진</div>';
+  document.getElementById('box_price').value = '';
+  document.getElementById('box_qty').value = '1';
+  document.getElementById('box_contact').value = '';
+  document.getElementById('box_desc').value = '';
+  if (curBoxSet) document.getElementById('box_set').value = curBoxSet;
+  document.getElementById('boxSellOv').classList.add('on');
+}
+
+function closeBoxSell() {
+  document.getElementById('boxSellOv').classList.remove('on');
+}
+
+function previewBoxPhoto(e) {
+  const file = e.target.files[0]; if (!file) return;
+  boxPhoto = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('box-preview').innerHTML = `<img src="${ev.target.result}" class="photo-preview">`;
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+async function submitBoxSell() {
+  if (!curUser) return;
+  const series = document.getElementById('box_set').value;
+  const unit_type = document.getElementById('box_unit').value;
+  const quantity = parseInt(document.getElementById('box_qty').value) || 1;
+  const price = parseInt(document.getElementById('box_price').value);
+  const contact_info = document.getElementById('box_contact').value.trim();
+  if (!price||price<=0) { toast('가격을 입력해주세요'); return; }
+  if (!contact_info) { toast('연락처를 입력해주세요'); return; }
+
+  const btn = document.querySelector('#boxSellOv .mbtn-ok');
+  if (btn) { btn.disabled=true; btn.textContent='등록 중...'; }
+
+  try {
+    let imageUrl = null;
+    if (boxPhoto) {
+      const resized = await resizeImage(boxPhoto);
+      const toB64 = f => new Promise((res,rej)=>{const r=new FileReader();r.onload=e=>res(e.target.result.split(',')[1]);r.onerror=rej;r.readAsDataURL(f);});
+      const path = `boxes/${curUser.username}_${Date.now()}.jpg`;
+      const { error: upErr } = await sb.storage.from('card-images').upload(path, resized, { upsert:true, contentType:'image/jpeg' });
+      if (!upErr) {
+        const { data: { publicUrl } } = sb.storage.from('card-images').getPublicUrl(path);
+        imageUrl = publicUrl;
+      }
+    }
+    const { error } = await sb.from('listings').insert({
+      card_id: `BOX-${series}`,
+      seller_username: curUser.username,
+      seller_name: curUser.nickname || curUser.username,
+      price, series, unit_type, quantity,
+      listing_type: 'box',
+      condition: '미개봉',
+      contact_info,
+      description: document.getElementById('box_desc').value || null,
+      image_front: imageUrl,
+      status: 'active',
+    });
+    if (error) throw new Error(error.message);
+    closeBoxSell();
+    toast('📦 박스 판매 등록 완료!');
+    loadBoxListings(series);
+  } catch(e) {
+    toast('등록 실패: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled=false; btn.textContent='등록하기'; }
+  }
+}
+
+async function openBoxContact(lid) {
+  if (!curUser) { openAuth('login'); return; }
+  const { data: l } = await sb.from('listings').select('*').eq('id', lid).single();
+  if (!l) return;
+  // 기존 연락하기 모달 재활용
+  contactData = { l, c: { name: `${l.series} ${l.unit_type}` } };
+  document.getElementById('contact-info').innerHTML = `
+    <div class="c-avatar" style="background:${AVA[l.seller_name.charCodeAt(0)%5]}">${l.seller_name[0]}</div>
+    <div>
+      <div style="font-size:14px;font-weight:600">${l.seller_name}</div>
+      <div style="font-size:12px;color:var(--muted)">${l.series} · ${l.unit_type} · ${l.quantity}개 보유
+        <span style="font-weight:700;color:var(--red);margin-left:7px">${l.price?.toLocaleString()}원/${l.unit_type}</span>
+      </div>
+    </div>`;
+  const contactBox = document.getElementById('seller-contact-box');
+  if (l.contact_info) {
+    contactBox.style.display = 'block';
+    document.getElementById('seller-contact-text').textContent = l.contact_info;
+  } else {
+    contactBox.style.display = 'none';
+  }
+  document.getElementById('contact-sent').classList.remove('on');
+  document.getElementById('contact-btns').style.display = 'flex';
+  document.getElementById('c_contact').value = '';
+  document.getElementById('c_msg').value = '';
+  document.getElementById('contactOv').classList.add('on');
+}
+
+// 카드 뷰로 돌아오면 박스 뷰 숨기기
+function showCardView() {
+  document.getElementById('boxWrap').style.display = 'none';
+  document.getElementById('cardGrid').style.display = 'grid';
+  document.querySelector('.filter-bar').style.display = 'flex';
+}
+
 function filterSellCards() {
   const ver = document.getElementById('s_ver')?.value || '한글판';
   const set = document.getElementById('s_set')?.value || 'OP-01';
