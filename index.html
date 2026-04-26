@@ -888,7 +888,15 @@ async function init() {
   filterSellCards();
 
   // 카운트
-  document.getElementById('cnt-op01').textContent = allCards.filter(c=>c.series==='OP-01').length;
+  // 사이드바 전체 시리즈 카운트 업데이트
+  document.querySelectorAll('.s-series[data-set]').forEach(el => {
+    const set = el.dataset.set;
+    const ver = el.dataset.ver;
+    const cnt = el.querySelector('.s-cnt');
+    if (!cnt || set === 'all') return;
+    const n = allCards.filter(c => c.series === set && (!ver || c.version === ver)).length;
+    cnt.textContent = n || '-';
+  });
 
   renderCards();
   loadHome();
