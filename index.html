@@ -786,7 +786,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 카드 추가 -->
       <div class="ap" id="ap-addcard">
         <div style="background:var(--blue-light);border:1px solid #BFDBFE;border-radius:var(--r2);padding:11px 14px;margin-bottom:14px;font-size:13px;color:#1e40af;">
-          <b>🤖 전체 카드 자동 수집</b> — OP-01~OP-11 전체 카드를 Limitless CDN 이미지와 함께 자동 등록해요.<br>
+          <b>📝 전체 이름/정보 자동 수집</b> — 한국 공식 사이트에서 카드 이름, 색깔, 희귀도, 코스트, 파워를 수집해요. <b>이미지는 건드리지 않아요.</b><br>
           <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
             <button class="mbtn-ok" onclick="autoFetch()" id="autoFetchBtn" style="padding:7px 16px;font-size:12px;flex:none">📝 전체 이름/정보 자동 수집 (OP01~OP12)</button>
             <button class="mbtn-cancel" onclick="autoNameOnly()" style="padding:7px 14px;font-size:12px;flex:none;border:1px solid var(--blue);color:var(--blue)">📝 이름만 수집</button>
@@ -2263,7 +2263,7 @@ async function autoFetch() {
           const resp = await fetch(KR_PROXY + encodeURIComponent(targetUrl));
           if (!resp.ok) { await new Promise(r=>setTimeout(r,1000*retry+500)); continue; }
           const html = await resp.text();
-          if (!html.includes('cardno')) { success=true; break; }
+          if (!html.includes('fileDownload?downname=')) { success=true; break; }
           pageCards = parseKrCards(html, set);
           success = true;
           break;
@@ -2332,7 +2332,7 @@ async function autoNameOnly() {
           const resp = await fetch(KR_PROXY + encodeURIComponent(targetUrl));
           if (!resp.ok) { await new Promise(r=>setTimeout(r,800)); continue; }
           const html = await resp.text();
-          if (!html.includes('cardno')) { success=true; break; }
+          if (!html.includes('fileDownload?downname=')) { success=true; break; }
 
           // 카드 정보 파싱
           const cards = parseKrCards(html, set);
