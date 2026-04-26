@@ -788,8 +788,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div style="background:var(--blue-light);border:1px solid #BFDBFE;border-radius:var(--r2);padding:11px 14px;margin-bottom:14px;font-size:13px;color:#1e40af;">
           <b>🤖 전체 카드 자동 수집</b> — OP-01~OP-11 전체 카드를 Limitless CDN 이미지와 함께 자동 등록해요.<br>
           <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
-            <button class="mbtn-ok" onclick="autoFetch()" id="autoFetchBtn" style="padding:7px 16px;font-size:12px;flex:none">🤖 전체 카드 자동 수집 (OP01~OP12)</button>
-            <button class="mbtn-cancel" onclick="autoImgOnly()" style="padding:7px 14px;font-size:12px;flex:none;border:1px solid var(--border)">🖼️ 이미지만 업데이트</button>
+            <button class="mbtn-ok" onclick="autoFetch()" id="autoFetchBtn" style="padding:7px 16px;font-size:12px;flex:none">📝 전체 이름/정보 자동 수집 (OP01~OP12)</button>
             <button class="mbtn-cancel" onclick="autoNameOnly()" style="padding:7px 14px;font-size:12px;flex:none;border:1px solid var(--blue);color:var(--blue)">📝 이름만 수집</button>
           </div>
           <div class="fetch-status" id="fetchStatus"></div>
@@ -2246,35 +2245,29 @@ function setStatus(msg, type='loading') {
 
 async function autoFetch() {
   const btn = document.getElementById('autoFetchBtn');
-  btn.disabled=true; btn.textContent='⏳ 수집 중...';
+  btn.disabled=true; btn.textContent='⏳ 이름 수집 중...';
   let total=0;
 
   for (const set of SETS) {
-    setStatus(`⏳ <b>${set.id} ${set.name}</b> 한국 공식 수집 중...`);
+    setStatus(`⏳ <b>${set.id} ${set.name}</b> 이름/정보 수집 중...`);
     const allCards=[];
-    // 세트 간 딜레이 (연속 요청 방지)
     await new Promise(r=>setTimeout(r,1500));
 
     for (let page=0; page<10; page++) {
       let pageCards = [];
       let success = false;
-      // 최대 3번 재시도
       for (let retry=0; retry<3; retry++) {
         try {
           const seriesParam = encodeURIComponent(`[${set.id.replace('OP','OPK-0').replace('OPK-010','OPK-10').replace('OPK-011','OPK-11').replace('OPK-012','OPK-12')}] 부스터 팩 ${set.name}`);
           const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
-          const proxyUrl = KR_PROXY + encodeURIComponent(targetUrl);
-
-          const resp = await fetch(proxyUrl);
+          const resp = await fetch(KR_PROXY + encodeURIComponent(targetUrl));
           if (!resp.ok) { await new Promise(r=>setTimeout(r,1000*retry+500)); continue; }
           const html = await resp.text();
-
-          if (!html.includes('fileDownload?downname=')) { success=true; break; }
+          if (!html.includes('cardno')) { success=true; break; }
           pageCards = parseKrCards(html, set);
           success = true;
           break;
         } catch(e) {
-          console.warn(`${set.id} page${page} retry${retry}:`, e.message);
           await new Promise(r=>setTimeout(r,1000*(retry+1)));
         }
       }
@@ -2286,48 +2279,37 @@ async function autoFetch() {
     }
 
     if (allCards.length) {
-      for (let i=0;i<allCards.length;i+=20) {
-        const {error}=await sb.from('cards').upsert(allCards.slice(i,i+20),{onConflict:'id',ignoreDuplicates:false});
-        if (!error) total+=Math.min(20,allCards.length-i);
+      // ⚠️ 이미지는 절대 건드리지 않음 — 이름/정보만 업데이트
+      for (let i=0; i<allCards.length; i+=10) {
+        const chunk = allCards.slice(i, i+10);
+        await Promise.all(chunk.map(c => {
+          const update = {};
+          if (c.name && c.name !== c.id) update.name = c.name;
+          if (c.color) update.color = c.color;
+          if (c.rarity) update.rarity = c.rarity;
+          if (c.card_type) update.card_type = c.card_type;
+          if (c.cost !== undefined) update.cost = c.cost;
+          if (c.power !== undefined) update.power = c.power;
+          if (c.feature) update.feature = c.feature;
+          if (c.emoji) update.emoji = c.emoji;
+          // image_url 절대 포함하지 않음!
+          return Object.keys(update).length
+            ? sb.from('cards').update(update).eq('id', c.id)
+            : Promise.resolve();
+        }));
+        total += chunk.length;
         await new Promise(r=>setTimeout(r,80));
       }
-      setStatus(`✅ [${set.id}] ${allCards.length}종 완료 (총 ${total}종)`);
+      setStatus(`✅ [${set.id}] ${allCards.length}종 이름 업데이트 (총 ${total}종)`);
     } else {
-      // 한국 사이트 실패 시 → 기존 이미지 보존, 카드 골격만 생성
-      setStatus(`⚠️ [${set.id}] 한국 수집 실패 → 기존 이미지 보존하며 카드 등록`);
-      const batch=[];
-      for (let n=1;n<=set.total;n++) {
-        const pad=String(n).padStart(3,'0');
-        const cid=`${set.id}-${pad}`;
-        const rarity=getCardRarity(set.id,n,set.total);
-        batch.push({id:cid,name:cid,series:set.series,rarity,card_type:rarity==='L'?'리더':'캐릭터',color:'적색',cost:0,power:0,emoji:rarity==='SEC'?'⭐':'🃏',version:'한글판'});
-        // ⚠️ image_url 없음 → 기존 DB 값 보존
-      }
-      for (let i=0;i<batch.length;i+=20) {
-        const chunk = batch.slice(i,i+20);
-        // 기존 카드 이름 + 이미지 보존
-        const {data: existing} = await sb.from('cards').select('id,name,image_url').in('id', chunk.map(c=>c.id));
-        const existingData = {};
-        (existing||[]).forEach(c=>{ existingData[c.id] = c; });
-        const finalChunk = chunk.map(c => {
-          const ex = existingData[c.id];
-          return {
-            ...c,
-            name: (ex?.name && ex.name !== c.id) ? ex.name : c.name,
-            image_url: ex?.image_url || null, // 기존 이미지 보존
-          };
-        });
-        const {error}=await sb.from('cards').upsert(finalChunk,{onConflict:'id',ignoreDuplicates:false});
-        if (!error) total+=Math.min(20,batch.length-i);
-        await new Promise(r=>setTimeout(r,60));
-      }
+      setStatus(`⚠️ [${set.id}] 수집 실패 — 스킵 (이미지 보존)`);
     }
   }
 
-  setStatus(`🎉 완료! 총 <b>${total}종</b> 등록!`, 'done');
+  setStatus(`🎉 완료! 총 <b>${total}종</b> 이름/정보 업데이트!`, 'done');
   btn.disabled=false; btn.textContent='🤖 전체 카드 자동 수집 (OP01~OP12)';
   await aLoadCards(); await init();
-  toast('🎉 '+total+'종 등록 완료!');
+  toast('🎉 '+total+'종 이름 업데이트 완료!');
 }
 
 // 이름만 수집 — 이미지 URL 절대 건드리지 않음
@@ -2403,55 +2385,6 @@ async function autoNameOnly() {
   await aLoadCards(); await init();
 }
 
-async function autoImgOnly() {
-  setStatus('🖼️ 한국 공식 이미지 복원 중... (시간이 걸려요)');
-  let total = 0;
-  await new Promise(r=>setTimeout(r,500));
-
-  for (const set of SETS) {
-    setStatus(`🖼️ [${set.id}] 이미지 수집 중...`);
-    const imgMap = {}; // cardId → imageUrl
-    await new Promise(r=>setTimeout(r,1000));
-
-    for (let page=0; page<10; page++) {
-      let success = false;
-      for (let retry=0; retry<3; retry++) {
-        try {
-          const seriesParam = encodeURIComponent(`[${set.id.replace('OP','OPK-0').replace('OPK-010','OPK-10').replace('OPK-011','OPK-11').replace('OPK-012','OPK-12')}] 부스터 팩 ${set.name}`);
-          const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
-          const resp = await fetch(KR_PROXY + encodeURIComponent(targetUrl));
-          if (!resp.ok) { await new Promise(r=>setTimeout(r,800)); continue; }
-          const html = await resp.text();
-          if (!html.includes('fileDownload?downname=')) { success=true; break; }
-          // 이미지 URL만 추출
-          const cards = parseKrCards(html, set);
-          cards.forEach(c => { if (c.image_url) imgMap[c.id] = c.image_url; });
-          success = true;
-          break;
-        } catch(e) {
-          await new Promise(r=>setTimeout(r,800*(retry+1)));
-        }
-      }
-      if (!success) break;
-      await new Promise(r=>setTimeout(r,500));
-    }
-
-    // DB 업데이트 — 이미지만
-    const entries = Object.entries(imgMap);
-    for (let i=0; i<entries.length; i+=10) {
-      const chunk = entries.slice(i, i+10);
-      await Promise.all(chunk.map(([id, url]) =>
-        sb.from('cards').update({image_url: url}).eq('id', id)
-      ));
-      total += chunk.length;
-      await new Promise(r=>setTimeout(r,100));
-    }
-    if (entries.length) setStatus(`✅ [${set.id}] ${entries.length}장 이미지 복원 (총 ${total}장)`);
-    else setStatus(`⚠️ [${set.id}] 이미지 수집 실패 (스킵)`);
-  }
-  setStatus(`✅ 총 ${total}장 이미지 복원 완료!`, 'done');
-  await aLoadCards(); await init();
-}
 
 // ======== 카드 수정 모달 ========
 function openEditCard(cid) {
