@@ -1034,7 +1034,12 @@ function renderCards() {
   document.getElementById('listCnt').textContent = '총 '+cards.length+'종';
 
   if (!cards.length) {
-    document.getElementById('cardGrid').innerHTML = '<div class="empty-grid">🃏 카드가 없어요</div>';
+    document.getElementById('cardGrid').innerHTML = `
+      <div class="empty-grid">
+        <div style="font-size:36px;margin-bottom:10px">🃏</div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px">카드가 없어요</div>
+        <div style="font-size:12px">필터를 바꿔보세요</div>
+      </div>`;
     return;
   }
 
@@ -1079,7 +1084,15 @@ function doSearch() {
   const filtered = allCards.filter(c => c.name.toLowerCase().includes(q)||c.id.toLowerCase().includes(q)||(c.feature||'').toLowerCase().includes(q));
   document.getElementById('listCnt').textContent = '검색 결과 '+filtered.length+'종';
   document.getElementById('listTitle').textContent = '"'+q+'" 검색결과';
-  if (!filtered.length) { document.getElementById('cardGrid').innerHTML='<div class="empty-grid">🔍 검색 결과가 없어요</div>'; return; }
+  if (!filtered.length) {
+    document.getElementById('cardGrid').innerHTML = `
+      <div class="empty-grid">
+        <div style="font-size:36px;margin-bottom:10px">🔍</div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px">"${q}" 검색 결과가 없어요</div>
+        <div style="font-size:12px">카드명, 카드번호, 특징어로 검색해보세요</div>
+      </div>`;
+    return;
+  }
   document.getElementById('cardGrid').innerHTML = filtered.map(c => {
     const lp = getLP(c.id);
     const img = c.image_url||'';
@@ -1158,20 +1171,44 @@ async function openDetail(cid) {
       </div>`).join('')}
     </div>` : '';
 
+  // 판매자별 완료 거래 횟수 가져오기
+  const sellerNames = [...new Set(ls.map(l=>l.seller_username))];
+  let tradeCountMap = {};
+  if (sellerNames.length) {
+    const { data: tCounts } = await sb.from('trades')
+      .select('seller_username')
+      .in('seller_username', sellerNames)
+      .eq('status', 'completed');
+    (tCounts||[]).forEach(t => {
+      tradeCountMap[t.seller_username] = (tradeCountMap[t.seller_username]||0) + 1;
+    });
+  }
+
   // 판매 목록
   const lsHtml = ls.length ? ls.map((l,i) => {
     const fi = l.image_front ? `<img src="${l.image_front}" class="l-img" onclick="event.stopPropagation();openLB('${l.image_front}')">` : `<div class="l-img-x">앞</div>`;
     const bi = l.image_back ? `<img src="${l.image_back}" class="l-img" onclick="event.stopPropagation();openLB('${l.image_back}')">` : `<div class="l-img-x">뒤</div>`;
     const ag = l.auto_grade ? `<span class="grade-dot ${GC(l.auto_grade)}" style="position:static;margin-left:4px">${l.auto_grade}</span>` : '';
     const eg = (l.grade_type && l.grade_type!=='미등급') ? `<span style="font-size:10px;font-weight:700;color:var(--gold);margin-left:4px">${l.grade_type}${l.grade_score?' '+l.grade_score:''}</span>` : '';
+    const tradeCnt = tradeCountMap[l.seller_username]||0;
+    const tradeTag = tradeCnt>0
+      ? `<span style="font-size:10px;color:var(--green);font-weight:600;margin-left:5px">✅ ${tradeCnt}회 거래</span>`
+      : `<span style="font-size:10px;color:var(--muted);margin-left:5px">신규</span>`;
     return `<div class="l-item">
       <div class="l-imgs">${fi}${bi}</div>
       <div class="l-avatar" style="background:${AVA[i%5]}">${l.seller_name[0]}</div>
-      <div class="l-info"><div class="l-seller">${l.seller_name}${ag}${eg}</div><div class="l-meta">${l.condition||'미등급'}${l.sleeve?' · '+l.sleeve:''}</div></div>
+      <div class="l-info">
+        <div class="l-seller">${l.seller_name}${ag}${eg}</div>
+        <div class="l-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">
+          <span style="font-size:10px;color:var(--dim)">@${l.seller_username}</span>
+          ${tradeTag}
+        </div>
+        <div class="l-meta">${l.condition||'미등급'}${l.sleeve?' · '+l.sleeve:''}</div>
+      </div>
       <span class="l-price">${l.price.toLocaleString()}원</span>
       <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
     </div>`;
-  }).join('') : '<div class="no-listings">현재 판매 중인 카드가 없어요</div>';
+  }).join('') : '<div class="no-listings">현재 판매 중인 카드가 없어요<br><small style="color:var(--dim)">첫 번째 판매자가 되어보세요!</small></div>';
 
   document.getElementById('detailWrap').innerHTML = `
     <div class="detail-top">
@@ -1221,7 +1258,9 @@ async function openDetail(cid) {
     </div>
     <div class="listings-sec"><h4>판매 목록 (${ls.length}건)</h4>${lsHtml}</div>`;
 
-  document.getElementById('detailOv').classList.add('on');
+  const ov = document.getElementById('detailOv');
+  ov.dataset.cid = cid;
+  ov.classList.add('on');
   setTimeout(() => loadChart(cid, 30, null), 80);
 }
 
@@ -1478,6 +1517,11 @@ async function submitSell() {
     if (!listings[card_id]) listings[card_id] = [];
     listings[card_id].push(data);
     closeSell(); renderCards(); loadHome();
+    // 해당 카드 상세가 열려있으면 즉시 갱신
+    const detailOv = document.getElementById('detailOv');
+    if (detailOv?.classList.contains('on') && detailOv.dataset.cid === card_id) {
+      openDetail(card_id);
+    }
     toast('판매 등록 완료! 🎉');
 
   } catch(e) {
