@@ -619,9 +619,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </div>
       </div>
       <!-- 등급: 점수 입력 -->
-      <div class="grade-score-sec" id="grade-sec">
-        <div class="fg"><label>등급 점수</label><input type="text" id="s_grade_score" placeholder="예: PSA 9, CCG 8.5"></div>
-      </div>
       <div class="fg-2">
         <div class="fg" style="margin-bottom:0"><label>판매가 (원)</label><input type="number" id="s_price" placeholder="0"></div>
         <div class="fg" style="margin-bottom:0"><label>슬리브</label>
@@ -737,7 +734,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div style="background:var(--blue-light);border:1px solid #BFDBFE;border-radius:var(--r2);padding:11px 14px;margin-bottom:14px;font-size:13px;color:#1e40af;">
           <b>🤖 전체 카드 자동 수집</b> — OP-01~OP-11 전체 카드를 Limitless CDN 이미지와 함께 자동 등록해요.<br>
           <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
-            <button class="mbtn-ok" onclick="autoFetch()" id="autoFetchBtn" style="padding:7px 16px;font-size:12px;flex:none">🤖 전체 카드 자동 수집 (OP01~OP11)</button>
+            <button class="mbtn-ok" onclick="autoFetch()" id="autoFetchBtn" style="padding:7px 16px;font-size:12px;flex:none">🤖 전체 카드 자동 수집 (OP01~OP12)</button>
             <button class="mbtn-cancel" onclick="autoImgOnly()" style="padding:7px 14px;font-size:12px;flex:none;border:1px solid var(--border)">🖼️ 이미지만 업데이트</button>
           </div>
           <div class="fetch-status" id="fetchStatus"></div>
@@ -1068,8 +1065,8 @@ function renderCards() {
 
     return `<div class="card" onclick="openDetail('${c.id}')">
       <div class="card-thumb">
-        ${img ? `<img src="${img}" loading="lazy" onerror="this.style.display='none'">` : ''}
-        <span style="${img?'display:none':''}">${c.emoji||'🃏'}</span>
+        ${img ? `<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
+        <span style="${img?'display:none':''}display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:48px">${c.emoji||'🃏'}</span>
         <span class="rtag ${RC(c.rarity)}">${c.rarity}</span>
         ${gb}
         <button class="wish-btn${wOn}" onclick="event.stopPropagation();toggleWish('${c.id}',this)">♥</button>
@@ -1105,7 +1102,7 @@ function doSearch() {
     const lp = getLP(c.id);
     const img = c.image_url||'';
     return `<div class="card" onclick="openDetail('${c.id}')">
-      <div class="card-thumb">${img?`<img src="${img}" loading="lazy" onerror="this.style.display='none'">`:''}
+      <div class="card-thumb">${img?`<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
         <span style="${img?'display:none':''}">${c.emoji||'🃏'}</span>
         <span class="rtag ${RC(c.rarity)}">${c.rarity}</span>
       </div>
@@ -1137,21 +1134,26 @@ async function loadHome() {
   }
   const hot = allCards.filter(c=>['SEC','SR'].includes(c.rarity)).slice(0,6);
   const hEl = document.getElementById('hotHome');
-  if (hEl && hot.length) {
-    hEl.innerHTML = hot.map(c => {
-      const lp = getLP(c.id);
-      const img = c.image_url||'';
-      return `<div class="card" onclick="openDetail('${c.id}')">
-        <div class="card-thumb">${img?`<img src="${img}" loading="lazy" onerror="this.style.display='none'">`:''}
-          <span style="${img?'display:none':''}">${c.emoji||'🃏'}</span>
-          <span class="rtag ${RC(c.rarity)}">${c.rarity}</span>
-        </div>
-        <div class="card-info">
-          <div class="card-name">${c.name}</div>
-          <div>${lp?`<div class="card-price">${lp.toLocaleString()}<small>원~</small></div>`:`<span class="no-price">판매 없음</span>`}</div>
-        </div>
-      </div>`;
-    }).join('');
+  if (hEl) {
+    if (hot.length) {
+      hEl.innerHTML = hot.map(c => {
+        const lp = getLP(c.id);
+        const img = c.image_url||'';
+        return `<div class="card" onclick="openDetail('${c.id}')">
+          <div class="card-thumb">
+            ${img?`<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:'' }
+            <span style="${img?'display:none':''}display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:36px">${c.emoji||'🃏'}</span>
+            <span class="rtag ${RC(c.rarity)}">${c.rarity}</span>
+          </div>
+          <div class="card-info">
+            <div class="card-name">${(c.name && c.name!=='-') ? c.name : c.id}</div>
+            <div>${lp?`<div class="card-price">${lp.toLocaleString()}<small>원~</small></div>`:`<span class="no-price">판매 없음</span>`}</div>
+          </div>
+        </div>`;
+      }).join('');
+    } else {
+      hEl.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:18px;color:var(--muted);font-size:13px">카드 데이터를 불러오는 중이에요...</div>';
+    }
   }
 }
 
@@ -1346,6 +1348,8 @@ function openSell(prefill) {
   document.getElementById('ai-btn').disabled = true;
   document.getElementById('s_search').value = '';
   document.getElementById('s_contact').value = '';
+  document.getElementById('s_price').value = '';
+  document.getElementById('s_desc').value = '';
   if (prefill) {
     const pc = allCards.find(c=>c.id===prefill);
     if (pc) document.getElementById('s_set').value = pc.series;
@@ -1672,32 +1676,44 @@ async function loadMyRequests() {
         <div style="font-size:10px;color:var(--dim);margin-top:4px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
       </div>
       ${isPending ? `<div style="display:flex;gap:7px">
-        <button onclick="approveTrade('${t.id}','${t.listing_id}')" style="flex:1;padding:8px;background:var(--green);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">✅ 승인</button>
-        <button onclick="rejectTrade('${t.id}')" style="flex:1;padding:8px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">❌ 거절</button>
+        <button onclick="approveTrade('${t.id}','${t.listing_id}', this)" style="flex:1;padding:8px;background:var(--green);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">✅ 승인</button>
+        <button onclick="rejectTrade('${t.id}', this)" style="flex:1;padding:8px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">❌ 거절</button>
       </div>` : ''}
     </div>`;
   }).join('');
 }
 
-async function approveTrade(tradeId, listingId) {
+async function approveTrade(tradeId, listingId, btn) {
   if (!confirm('구매 요청을 승인할까요? 판매 완료로 처리돼요.')) return;
+  // 즉시 DOM에서 제거
+  const item = btn?.closest('div[style*="padding:14px"]');
+  if (item) item.remove();
+  const el = document.getElementById('my-requests-list');
+  if (el && !el.querySelector('div[style*="padding:14px"]')) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
+  }
   const { error: e1 } = await sb.from('trades').update({ status: 'completed' }).eq('id', tradeId);
   const { error: e2 } = await sb.from('listings').update({ status: 'sold' }).eq('id', listingId);
-  if (e1 || e2) { toast('처리 실패'); return; }
-  // 로컬 캐시 업데이트
+  if (e1 || e2) { toast('처리 실패'); loadMyRequests(); return; }
   Object.keys(listings).forEach(cid => {
     listings[cid] = listings[cid].filter(l => l.id !== listingId);
   });
   toast('🎉 승인 완료! 거래가 성사됐어요');
-  loadMyRequests(); loadMyListings(); loadMyStats(); renderCards();
+  loadMyListings(); loadMyStats(); renderCards();
 }
 
-async function rejectTrade(tradeId) {
+async function rejectTrade(tradeId, btn) {
   if (!confirm('구매 요청을 거절할까요?')) return;
+  // 즉시 DOM에서 제거
+  const item = btn?.closest('div[style*="padding:14px"]');
+  if (item) item.remove();
+  const el = document.getElementById('my-requests-list');
+  if (el && !el.querySelector('div[style*="padding:14px"]')) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
+  }
   const { error } = await sb.from('trades').update({ status: 'rejected' }).eq('id', tradeId);
-  if (error) { toast('처리 실패'); return; }
+  if (error) { toast('처리 실패'); loadMyRequests(); return; }
   toast('거절했어요');
-  loadMyRequests();
 }
 
 // ─── 내 구매요청 탭 (구매자용) ───
