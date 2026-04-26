@@ -2125,27 +2125,37 @@ async function autoFetch() {
   for (const set of SETS) {
     setStatus(`⏳ <b>${set.id} ${set.name}</b> 한국 공식 수집 중...`);
     const allCards=[];
+    // 세트 간 딜레이 (연속 요청 방지)
+    await new Promise(r=>setTimeout(r,1500));
 
     for (let page=0; page<10; page++) {
-      try {
-        const seriesParam = encodeURIComponent(`[${set.id.replace('OP','OPK-0').replace('OPK-010','OPK-10').replace('OPK-011','OPK-11').replace('OPK-012','OPK-12')}] 부스터 팩 ${set.name}`);
-        const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
-        const proxyUrl = KR_PROXY + encodeURIComponent(targetUrl);
+      let pageCards = [];
+      let success = false;
+      // 최대 3번 재시도
+      for (let retry=0; retry<3; retry++) {
+        try {
+          const seriesParam = encodeURIComponent(`[${set.id.replace('OP','OPK-0').replace('OPK-010','OPK-10').replace('OPK-011','OPK-11').replace('OPK-012','OPK-12')}] 부스터 팩 ${set.name}`);
+          const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
+          const proxyUrl = KR_PROXY + encodeURIComponent(targetUrl);
 
-        const resp = await fetch(proxyUrl);
-        if (!resp.ok) { console.warn(`${set.id} page${page}: ${resp.status}`); break; }
-        const html = await resp.text();
+          const resp = await fetch(proxyUrl);
+          if (!resp.ok) { await new Promise(r=>setTimeout(r,1000*retry+500)); continue; }
+          const html = await resp.text();
 
-        if (!html.includes('fileDownload?downname=')) break;
-        const pageCards = parseKrCards(html, set);
-        if (!pageCards.length) break;
-        allCards.push(...pageCards);
-        setStatus(`⏳ [${set.id}] 페이지 ${page+1} (${allCards.length}종)...`);
-        await new Promise(r=>setTimeout(r,300));
-      } catch(e) {
-        console.warn(`${set.id} page${page}:`, e.message);
-        break;
+          if (!html.includes('fileDownload?downname=')) { success=true; break; }
+          pageCards = parseKrCards(html, set);
+          success = true;
+          break;
+        } catch(e) {
+          console.warn(`${set.id} page${page} retry${retry}:`, e.message);
+          await new Promise(r=>setTimeout(r,1000*(retry+1)));
+        }
       }
+      if (!success) break;
+      if (!pageCards.length) break;
+      allCards.push(...pageCards);
+      setStatus(`⏳ [${set.id}] 페이지 ${page+1} (${allCards.length}종)...`);
+      await new Promise(r=>setTimeout(r,600));
     }
 
     if (allCards.length) {
@@ -2156,23 +2166,31 @@ async function autoFetch() {
       }
       setStatus(`✅ [${set.id}] ${allCards.length}종 완료 (총 ${total}종)`);
     } else {
-      // 한국 사이트 실패 시 영문 공식으로 폴백
-      setStatus(`⚠️ [${set.id}] 한국 수집 실패 → 영문 이미지로 등록`);
+      // 한국 사이트 실패 시 → 기존 이미지 보존, 카드 골격만 생성
+      setStatus(`⚠️ [${set.id}] 한국 수집 실패 → 기존 이미지 보존하며 카드 등록`);
       const batch=[];
       for (let n=1;n<=set.total;n++) {
         const pad=String(n).padStart(3,'0');
         const cid=`${set.id}-${pad}`;
         const rarity=getCardRarity(set.id,n,set.total);
-        batch.push({id:cid,name:cid,series:set.series,rarity,card_type:rarity==='L'?'리더':'캐릭터',color:'적색',cost:0,power:0,emoji:rarity==='SEC'?'⭐':'🃏',image_url:`https://en.onepiece-cardgame.com/images/cardlist/card/${cid}.png`,version:'한글판'});
+        batch.push({id:cid,name:cid,series:set.series,rarity,card_type:rarity==='L'?'리더':'캐릭터',color:'적색',cost:0,power:0,emoji:rarity==='SEC'?'⭐':'🃏',version:'한글판'});
+        // ⚠️ image_url 없음 → 기존 DB 값 보존
       }
       for (let i=0;i<batch.length;i+=20) {
         const chunk = batch.slice(i,i+20);
-      // 기존에 이름이 있는 카드는 이름 보존, 이미지만 업데이트
-      const {data: existing} = await sb.from('cards').select('id,name').in('id', chunk.map(c=>c.id));
-      const existingNames = {};
-      (existing||[]).forEach(c=>{ if(c.name !== c.id) existingNames[c.id] = c.name; });
-      const finalChunk = chunk.map(c => existingNames[c.id] ? {...c, name: existingNames[c.id]} : c);
-      const {error}=await sb.from('cards').upsert(finalChunk,{onConflict:'id',ignoreDuplicates:false});
+        // 기존 카드 이름 + 이미지 보존
+        const {data: existing} = await sb.from('cards').select('id,name,image_url').in('id', chunk.map(c=>c.id));
+        const existingData = {};
+        (existing||[]).forEach(c=>{ existingData[c.id] = c; });
+        const finalChunk = chunk.map(c => {
+          const ex = existingData[c.id];
+          return {
+            ...c,
+            name: (ex?.name && ex.name !== c.id) ? ex.name : c.name,
+            image_url: ex?.image_url || null, // 기존 이미지 보존
+          };
+        });
+        const {error}=await sb.from('cards').upsert(finalChunk,{onConflict:'id',ignoreDuplicates:false});
         if (!error) total+=Math.min(20,batch.length-i);
         await new Promise(r=>setTimeout(r,60));
       }
@@ -2186,19 +2204,52 @@ async function autoFetch() {
 }
 
 async function autoImgOnly() {
-  setStatus('🖼️ 이미지 URL 업데이트 중...');
-  const { data: dbCards } = await sb.from('cards').select('id').order('id');
-  if (!dbCards?.length) { setStatus('카드 없음. 먼저 카드 수집을 해주세요.','err'); return; }
-  let done=0;
-  for (const c of dbCards) {
-    const parts = c.id.split('-');
-    const url = `${CDN}/${parts[0]}/${c.id.replace('-','')}_p4_EN.webp`;
-    await sb.from('cards').update({image_url:url}).eq('id',c.id);
-    done++;
-    if (done%30===0) setStatus(`🖼️ ${done}/${dbCards.length} 업데이트 중...`);
-    await new Promise(r=>setTimeout(r,40));
+  setStatus('🖼️ 한국 공식 이미지 복원 중... (시간이 걸려요)');
+  let total = 0;
+  await new Promise(r=>setTimeout(r,500));
+
+  for (const set of SETS) {
+    setStatus(`🖼️ [${set.id}] 이미지 수집 중...`);
+    const imgMap = {}; // cardId → imageUrl
+    await new Promise(r=>setTimeout(r,1000));
+
+    for (let page=0; page<10; page++) {
+      let success = false;
+      for (let retry=0; retry<3; retry++) {
+        try {
+          const seriesParam = encodeURIComponent(`[${set.id.replace('OP','OPK-0').replace('OPK-010','OPK-10').replace('OPK-011','OPK-11').replace('OPK-012','OPK-12')}] 부스터 팩 ${set.name}`);
+          const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
+          const resp = await fetch(KR_PROXY + encodeURIComponent(targetUrl));
+          if (!resp.ok) { await new Promise(r=>setTimeout(r,800)); continue; }
+          const html = await resp.text();
+          if (!html.includes('fileDownload?downname=')) { success=true; break; }
+          // 이미지 URL만 추출
+          const cards = parseKrCards(html, set);
+          cards.forEach(c => { if (c.image_url) imgMap[c.id] = c.image_url; });
+          success = true;
+          break;
+        } catch(e) {
+          await new Promise(r=>setTimeout(r,800*(retry+1)));
+        }
+      }
+      if (!success) break;
+      await new Promise(r=>setTimeout(r,500));
+    }
+
+    // DB 업데이트 — 이미지만
+    const entries = Object.entries(imgMap);
+    for (let i=0; i<entries.length; i+=10) {
+      const chunk = entries.slice(i, i+10);
+      await Promise.all(chunk.map(([id, url]) =>
+        sb.from('cards').update({image_url: url}).eq('id', id)
+      ));
+      total += chunk.length;
+      await new Promise(r=>setTimeout(r,100));
+    }
+    if (entries.length) setStatus(`✅ [${set.id}] ${entries.length}장 이미지 복원 (총 ${total}장)`);
+    else setStatus(`⚠️ [${set.id}] 이미지 수집 실패 (스킵)`);
   }
-  setStatus(`✅ ${done}종 이미지 업데이트 완료!`,'done');
+  setStatus(`✅ 총 ${total}장 이미지 복원 완료!`, 'done');
   await aLoadCards(); await init();
 }
 
