@@ -48,8 +48,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 @media(max-width:700px){.menu-btn{display:flex;align-items:center;}.h-search{max-width:180px;}}
 
 /* ── LAYOUT ── */
-.layout{display:flex;min-height:calc(100vh - 58px);max-width:1600px;margin:0 auto;}
-.sidebar{width:240px;min-height:100%;border-right:1px solid var(--border);background:#fff;flex-shrink:0;overflow-y:auto;padding:10px 0;}
+.layout{display:flex;min-height:calc(100vh - 58px);max-width:1600px;margin:0 auto;align-items:flex-start;}
+.scroll-top{position:fixed;bottom:24px;right:24px;width:44px;height:44px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:18px;cursor:pointer;box-shadow:var(--sh2);display:none;align-items:center;justify-content:center;z-index:200;transition:all .2s;}
+.scroll-top.on{display:flex;}
+.scroll-top:hover{background:#b91c1c;transform:translateY(-2px);}
+/* ── STICKY SIDEBAR ── */
+.sidebar{width:240px;height:calc(100vh - 58px);position:sticky;top:58px;border-right:1px solid var(--border);background:#fff;flex-shrink:0;overflow-y:auto;padding:10px 0;}
 .sidebar.mobile-open{display:block;}
 .mob-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99;}
 .mob-overlay.on{display:block;}
@@ -417,8 +421,29 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <span class="s-arrow open" id="arr-kr">▶</span>
     </div>
     <div id="vg-kr">
+      <!-- 박스 -->
+      <div class="s-grade-hd" onclick="toggleGrp('kr-box')">
+        <span>📦</span> 박스 <span class="s-arrow" id="arr-kr-box" style="margin-left:auto">▶</span>
+      </div>
+      <div id="grp-kr-box" style="display:none">
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-01" onclick="selectCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-02" onclick="selectCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-03" onclick="selectCat(this)">OP-03 강대한 적<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-04" onclick="selectCat(this)">OP-04 모략의 왕국<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-05" onclick="selectCat(this)">OP-05 신시대의 주역<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-06" onclick="selectCat(this)">OP-06 쌍벽의 패자<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-07" onclick="selectCat(this)">OP-07 500년 후의 미래<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-08" onclick="selectCat(this)">OP-08 두 전설<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-09" onclick="selectCat(this)">OP-09 악인의 시대<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-10" onclick="selectCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-11" onclick="selectCat(this)">OP-11 신속의 권<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="OP-12" onclick="selectCat(this)">OP-12 사제의 연<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="EBK-01" onclick="selectCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="한글판" data-grade="박스" data-set="EBK-02" onclick="selectCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
+      </div>
+      <!-- 미등급 싱글 -->
       <div class="s-grade-hd" onclick="toggleGrp('kr-free')">
-        <span>📋</span> 미등급 <span class="s-arrow open" id="arr-kr-free" style="margin-left:auto">▶</span>
+        <span>📋</span> 미등급 싱글 <span class="s-arrow open" id="arr-kr-free" style="margin-left:auto">▶</span>
       </div>
       <div id="grp-kr-free">
         <div class="s-series active" data-ver="한글판" data-grade="미등급" data-set="OP-01" onclick="selectCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt" id="cnt-op01">-</span></div>
@@ -436,10 +461,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-01" onclick="selectCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-02" onclick="selectCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
       </div>
+      <!-- 등급 싱글 (SEC/SR/R 이상만) -->
       <div class="s-grade-hd" onclick="toggleGrp('kr-grade')">
-        <span>🏆</span> 등급 <span class="s-arrow" id="arr-kr-grade" style="margin-left:auto">▶</span>
+        <span>🏆</span> 등급 싱글 <span class="s-arrow" id="arr-kr-grade" style="margin-left:auto">▶</span>
       </div>
       <div id="grp-kr-grade" style="display:none">
+        <div style="font-size:10px;color:var(--muted);padding:4px 14px">SEC · SR · R 등급만 등록</div>
         <div class="s-series" data-ver="한글판" data-grade="PSA" data-set="all" onclick="selectCat(this)">🥇 PSA<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="CCG" data-set="all" onclick="selectCat(this)">🥈 CCG<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="BRG" data-set="all" onclick="selectCat(this)">🥉 BRG<span class="s-cnt">-</span></div>
@@ -559,6 +586,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="fg"><label>아이디</label><input type="text" id="authId" placeholder="영문 소문자+숫자 4~12자" maxlength="12" autocomplete="username"></div>
       <div class="fg"><label>비밀번호</label><input type="password" id="authPw" placeholder="6자 이상" autocomplete="current-password" onkeydown="if(event.key==='Enter')submitAuth()"></div>
       <div class="fg" id="nickField" style="display:none"><label>닉네임</label><input type="text" id="authNick" placeholder="예: 밀짚모자루피" maxlength="12"></div>
+      <div class="fg" id="phoneField" style="display:none"><label>전화번호 <span style="color:var(--red)">*</span></label><input type="tel" id="authPhone" placeholder="010-0000-0000"></div>
+      <div class="fg" id="addrField" style="display:none"><label>주소 <span style="color:var(--red)">*</span></label><input type="text" id="authAddr" placeholder="배송을 위한 기본 주소 (예: 서울시 강남구...)"></div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeAuth()">취소</button>
         <button class="mbtn-ok" id="authBtn" onclick="submitAuth()">로그인</button>
@@ -605,14 +634,23 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 미등급: 앞뒤사진 + AI -->
       <div id="ungr-sec">
         <div class="fg"><label>카드 사진 (앞면 + 뒷면)</label>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px">📐 카드를 가이드 테두리 안에 맞춰서 촬영해주세요</div>
           <div class="photo-row">
-            <div class="photo-slot" onclick="document.getElementById('photo-front').click()">
+            <div class="photo-slot" onclick="document.getElementById('photo-front').click()" style="position:relative">
               <input type="file" id="photo-front" accept="image/*" onchange="previewPhoto('front',event)" style="display:none">
               <div id="front-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div></div>
+              <!-- 가이드 테두리 -->
+              <div id="front-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none;display:flex;align-items:center;justify-content:center">
+                <div style="font-size:9px;color:rgba(220,38,38,0.7);text-align:center;line-height:1.4">카드를<br>여기에</div>
+              </div>
             </div>
-            <div class="photo-slot" onclick="document.getElementById('photo-back').click()">
+            <div class="photo-slot" onclick="document.getElementById('photo-back').click()" style="position:relative">
               <input type="file" id="photo-back" accept="image/*" onchange="previewPhoto('back',event)" style="display:none">
               <div id="back-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div></div>
+              <!-- 가이드 테두리 -->
+              <div id="back-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none;display:flex;align-items:center;justify-content:center">
+                <div style="font-size:9px;color:rgba(220,38,38,0.7);text-align:center;line-height:1.4">카드를<br>여기에</div>
+              </div>
             </div>
           </div>
         </div>
@@ -923,6 +961,8 @@ function switchAuth(mode) {
   document.getElementById('tab-login').classList.toggle('active', isLogin);
   document.getElementById('tab-signup').classList.toggle('active', !isLogin);
   document.getElementById('nickField').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('phoneField').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('addrField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('authBtn').textContent = isLogin ? '로그인' : '가입하기';
   document.getElementById('authErr').style.display = 'none';
 }
@@ -930,6 +970,8 @@ async function submitAuth() {
   const id = document.getElementById('authId').value.trim().toLowerCase();
   const pw = document.getElementById('authPw').value;
   const nick = document.getElementById('authNick').value.trim();
+  const phone = document.getElementById('authPhone').value.trim();
+  const addr = document.getElementById('authAddr').value.trim();
   const errEl = document.getElementById('authErr');
   const btn = document.getElementById('authBtn');
   errEl.style.display = 'none';
@@ -944,9 +986,16 @@ async function submitAuth() {
     else { localStorage.setItem('gl_session', JSON.stringify(data)); await onLogin(data); closeAuth(); toast('로그인 했어요!'); }
   } else {
     if (!nick) { errEl.textContent='닉네임을 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
+    if (!phone) { errEl.textContent='전화번호를 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
+    if (!addr) { errEl.textContent='주소를 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
     const { data, error } = await sb.rpc('sign_up', {p_username:id, p_password:pw, p_nickname:nick});
     if (error || data?.error) { errEl.textContent = data?.error||'가입 실패'; errEl.style.display='block'; }
-    else { localStorage.setItem('gl_session', JSON.stringify(data)); await onLogin(data); closeAuth(); toast(`환영해요 ${nick}님! 🏴‍☠️`); }
+    else {
+      // 전화번호/주소 accounts 테이블에 추가 저장
+      await sb.from('accounts').update({phone, address: addr}).eq('username', id).catch(()=>{});
+      localStorage.setItem('gl_session', JSON.stringify(data));
+      await onLogin(data); closeAuth(); toast(`환영해요 ${nick}님! 🏴‍☠️`);
+    }
   }
   btn.disabled = false;
   btn.textContent = isLogin ? '로그인' : '가입하기';
@@ -1400,10 +1449,13 @@ function previewPhoto(side, e) {
   const reader = new FileReader();
   reader.onload = ev => {
     const id = side==='front' ? 'front-preview' : 'back-preview';
+    const guideId = side==='front' ? 'front-guide' : 'back-guide';
     document.getElementById(id).innerHTML = `<img src="${ev.target.result}" class="photo-preview">`;
+    // 사진 올리면 가이드 숨기기
+    const guide = document.getElementById(guideId);
+    if (guide) guide.style.display = 'none';
   };
   reader.readAsDataURL(file);
-  // 오류 후 재선택을 위해 input value 초기화
   e.target.value = '';
   if (sellFront || sellBack) document.getElementById('ai-btn').disabled = false;
 }
@@ -1713,14 +1765,22 @@ async function loadMyStats() {
 async function loadMyListings() {
   const { data } = await sb.from('listings').select('*,cards(name,image_url,emoji,rarity)').eq('seller_username',curUser.username).order('created_at',{ascending:false});
   if (!data?.length) { document.getElementById('my-listings-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">판매 중인 카드가 없어요</div>'; return; }
-  document.getElementById('my-listings-list').innerHTML = data.map(l=>`
-    <div class="my-l-item">
+  document.getElementById('my-listings-list').innerHTML = data.map(l => {
+    const psaColor = l.auto_grade>=9?'#16a34a':l.auto_grade>=7?'#2563eb':l.auto_grade>=5?'#d97706':'#dc2626';
+    const aiTag = l.auto_grade
+      ? `<span style="font-size:10px;font-weight:700;color:#fff;background:${psaColor};border-radius:4px;padding:1px 5px;margin-left:4px">PSA ${l.auto_grade}</span>`
+      : '';
+    return `<div class="my-l-item">
       ${l.cards?.image_url ? `<img src="${l.cards.image_url}" class="my-l-img" onerror="this.style.display='none'">` : `<div class="my-l-img-x">${l.cards?.emoji||'🃏'}</div>`}
-      <div style="flex:1"><div style="font-size:13px;font-weight:600">${l.cards?.name||l.card_id}</div><div style="font-size:11px;color:var(--muted)">${l.grade_type||'미등급'}${l.auto_grade?' · '+l.auto_grade+'등급':''}</div></div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:3px">${l.cards?.name||l.card_id}${aiTag}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.grade_type||'미등급'} · ${l.card_id}</div>
+      </div>
       <span class="sbadge ${l.status==='active'?'sb-active':'sb-sold'}">${l.status==='active'?'판매중':'완료'}</span>
       <span style="font-size:14px;font-weight:700;color:var(--red);margin-left:8px">${l.price.toLocaleString()}원</span>
       ${l.status==='active'?`<button class="cancel-btn" onclick="cancelListing('${l.id}')">취소</button>`:''}
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 async function cancelListing(id) {
   if (!confirm('판매를 취소할까요?')) return;
@@ -2370,6 +2430,15 @@ async function submitEditCard() {
 }
 
 init();
+</script>
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
+
+<script>
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('scrollTopBtn');
+  if (btn) btn.classList.toggle('on', window.scrollY > 400);
+});
 </script>
 </body>
 </html>
