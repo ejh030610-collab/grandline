@@ -790,6 +790,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <div style="display:flex;gap:7px;margin-top:8px;flex-wrap:wrap">
             <button class="mbtn-ok" onclick="autoFetch()" id="autoFetchBtn" style="padding:7px 16px;font-size:12px;flex:none">🤖 전체 카드 자동 수집 (OP01~OP12)</button>
             <button class="mbtn-cancel" onclick="autoImgOnly()" style="padding:7px 14px;font-size:12px;flex:none;border:1px solid var(--border)">🖼️ 이미지만 업데이트</button>
+            <button class="mbtn-cancel" onclick="autoNameOnly()" style="padding:7px 14px;font-size:12px;flex:none;border:1px solid var(--blue);color:var(--blue)">📝 이름만 수집</button>
           </div>
           <div class="fetch-status" id="fetchStatus"></div>
         </div>
@@ -2327,6 +2328,79 @@ async function autoFetch() {
   btn.disabled=false; btn.textContent='🤖 전체 카드 자동 수집 (OP01~OP12)';
   await aLoadCards(); await init();
   toast('🎉 '+total+'종 등록 완료!');
+}
+
+// 이름만 수집 — 이미지 URL 절대 건드리지 않음
+async function autoNameOnly() {
+  setStatus('📝 카드 이름/정보 수집 중... (이미지는 보존)');
+  let total = 0;
+  await new Promise(r=>setTimeout(r,500));
+
+  for (const set of SETS) {
+    setStatus(`📝 [${set.id}] 이름 수집 중...`);
+    const nameMap = {}; // cardId → {name, color, rarity, cost, power, feature}
+    await new Promise(r=>setTimeout(r,1200));
+
+    for (let page=0; page<15; page++) {
+      let success = false;
+      for (let retry=0; retry<3; retry++) {
+        try {
+          const seriesParam = encodeURIComponent(`[${set.id.replace('OP','OPK-0').replace('OPK-010','OPK-10').replace('OPK-011','OPK-11').replace('OPK-012','OPK-12')}] 부스터 팩 ${set.name}`);
+          const targetUrl = `${KR_BASE}/cardlist.do?page=${page}&size=20&freewords=&categories=&illustrations=&colors=&blockIcons=&series=${seriesParam}`;
+          const resp = await fetch(KR_PROXY + encodeURIComponent(targetUrl));
+          if (!resp.ok) { await new Promise(r=>setTimeout(r,800)); continue; }
+          const html = await resp.text();
+          if (!html.includes('cardno')) { success=true; break; }
+
+          // 카드 정보 파싱
+          const cards = parseKrCards(html, set);
+          if (!cards.length) { success=true; break; }
+          cards.forEach(c => {
+            if (c.id && c.name && c.name !== c.id) {
+              nameMap[c.id] = {
+                name: c.name,
+                color: c.color||null,
+                rarity: c.rarity||null,
+                cost: c.cost||null,
+                power: c.power||null,
+                feature: c.feature||null,
+              };
+            }
+          });
+          success = true;
+          setStatus(`📝 [${set.id}] 페이지 ${page+1} (${Object.keys(nameMap).length}종)...`);
+          break;
+        } catch(e) {
+          await new Promise(r=>setTimeout(r,800*(retry+1)));
+        }
+      }
+      if (!success) break;
+      await new Promise(r=>setTimeout(r,500));
+    }
+
+    // DB 업데이트 — 이름/정보만, image_url 절대 건드리지 않음
+    const entries = Object.entries(nameMap);
+    for (let i=0; i<entries.length; i+=10) {
+      const chunk = entries.slice(i, i+10);
+      await Promise.all(chunk.map(([id, info]) => {
+        const update = {};
+        if (info.name) update.name = info.name;
+        if (info.color) update.color = info.color;
+        if (info.rarity) update.rarity = info.rarity;
+        if (info.cost !== null) update.cost = info.cost;
+        if (info.power !== null) update.power = info.power;
+        if (info.feature) update.feature = info.feature;
+        return sb.from('cards').update(update).eq('id', id);
+      }));
+      total += chunk.length;
+      await new Promise(r=>setTimeout(r,80));
+    }
+
+    if (entries.length) setStatus(`✅ [${set.id}] ${entries.length}종 이름 업데이트 (총 ${total}종)`);
+    else setStatus(`⚠️ [${set.id}] 수집 실패 — 스킵`);
+  }
+  setStatus(`✅ 총 ${total}종 이름 수집 완료!`, 'done');
+  await aLoadCards(); await init();
 }
 
 async function autoImgOnly() {
