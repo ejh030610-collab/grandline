@@ -1155,7 +1155,10 @@ function toggleMob() {
   document.getElementById('sidebar').classList.toggle('mobile-open');
   document.getElementById('mobOverlay').classList.toggle('on');
 }
-function showHome() { document.getElementById('homeWrap').style.display='block'; }
+function showHome() {
+  document.getElementById('homeWrap').style.display='block';
+  document.getElementById('boxWrap').style.display='none';
+}
 function hideHome() { document.getElementById('homeWrap').style.display='none'; }
 
 // ─── RENDER CARDS ───
@@ -1364,7 +1367,7 @@ async function openDetail(cid) {
       : `<span style="font-size:10px;color:var(--muted);margin-left:5px">신규</span>`;
     return `<div class="l-item">
       <div class="l-imgs">${fi}${bi}</div>
-      <div class="l-avatar" style="background:${AVA[i%5]}">${l.seller_name[0]}</div>
+      <div class="l-avatar" style="background:${AVA[i%5]}">${(l.seller_name||'?')[0]}</div>
       <div class="l-info">
         <div class="l-seller">${l.seller_name}${ag}${eg}</div>
         <div class="l-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">
@@ -1478,7 +1481,8 @@ function selectBoxCat(el) {
   curBoxSet = el.dataset.set;
   // 박스 뷰 표시, 카드 뷰 숨기기
   document.getElementById('cardGrid').style.display = 'none';
-  document.getElementById('filter-bar')?.style && (document.querySelector('.filter-bar').style.display='none');
+  const fb = document.querySelector('.filter-bar');
+  if (fb) fb.style.display = 'none';
   document.getElementById('homeWrap').style.display = 'none';
   document.getElementById('boxWrap').style.display = 'block';
   document.getElementById('boxTitle').textContent = `📦 ${curBoxSet} 박스 판매 목록`;
@@ -1623,7 +1627,7 @@ async function openBoxContact(lid) {
   // 기존 연락하기 모달 재활용
   contactData = { l, c: { name: `${l.series} ${l.unit_type}` } };
   document.getElementById('contact-info').innerHTML = `
-    <div class="c-avatar" style="background:${AVA[l.seller_name.charCodeAt(0)%5]}">${l.seller_name[0]}</div>
+    <div class="c-avatar" style="background:${AVA[(l.seller_name||'?').charCodeAt(0)%5]}">${(l.seller_name||'?')[0]}</div>
     <div>
       <div style="font-size:14px;font-weight:600">${l.seller_name}</div>
       <div style="font-size:12px;color:var(--muted)">${l.series} · ${l.unit_type} · ${l.quantity}개 보유
@@ -1958,7 +1962,7 @@ function openContact(lid, cid) {
   if (l.seller_username===curUser.username) { toast('내 판매 글이에요'); return; }
   contactData = {l,c};
   document.getElementById('contact-info').innerHTML = `
-    <div class="c-avatar" style="background:${AVA[l.seller_name.charCodeAt(0)%5]}">${l.seller_name[0]}</div>
+    <div class="c-avatar" style="background:${AVA[(l.seller_name||'?').charCodeAt(0)%5]}">${(l.seller_name||'?')[0]}</div>
     <div>
       <div style="font-size:14px;font-weight:600">${l.seller_name}</div>
       <div style="font-size:12px;color:var(--muted);margin-top:1px">${c?.name||cid} · ${l.grade_type||'미등급'}${l.auto_grade?' ('+l.auto_grade+'등급)':''}
@@ -2017,7 +2021,7 @@ function switchMyTab(id, btn) {
   document.getElementById('mp-'+id).classList.add('active'); btn.classList.add('active');
 }
 async function loadMyStats() {
-  const { data: ls } = await sb.from('listings').select('id,status').eq('seller_username',curUser.username);
+  const { data: ls } = await sb.from('listings').select('id,status').eq('seller_username',curUser.username).neq('listing_type','box');
   document.getElementById('my-s-active').textContent = (ls||[]).filter(l=>l.status==='active').length;
   document.getElementById('my-s-sold').textContent = (ls||[]).filter(l=>l.status==='sold').length;
   document.getElementById('my-s-wish').textContent = wishSet.size;
@@ -2032,7 +2036,10 @@ async function loadMyStats() {
     : '<div style="text-align:center;color:var(--muted);padding:20px">아직 판매 내역이 없어요</div>';
 }
 async function loadMyListings() {
-  const { data } = await sb.from('listings').select('*,cards(name,image_url,emoji,rarity)').eq('seller_username',curUser.username).order('created_at',{ascending:false});
+  const { data } = await sb.from('listings').select('*,cards(name,image_url,emoji,rarity)')
+    .eq('seller_username',curUser.username)
+    .neq('listing_type','box')
+    .order('created_at',{ascending:false});
   if (!data?.length) { document.getElementById('my-listings-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">판매 중인 카드가 없어요</div>'; return; }
   document.getElementById('my-listings-list').innerHTML = data.map(l => {
     const psaColor = l.auto_grade>=9?'#16a34a':l.auto_grade>=7?'#2563eb':l.auto_grade>=5?'#d97706':'#dc2626';
@@ -2061,7 +2068,7 @@ async function loadMyRequests() {
   const el = document.getElementById('my-requests-list');
   if (!el || !curUser) return;
   const { data } = await sb.from('trades')
-    .select('*, listings(card_id, price, grade_type, image_front, status), cards:listings(card_id(name,emoji))')
+    .select('*, listings(card_id, price, grade_type, image_front, status, contact_info)')
     .eq('seller_username', curUser.username)
     .eq('status', 'pending')
     .order('created_at', { ascending: false });
