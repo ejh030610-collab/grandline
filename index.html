@@ -771,6 +771,39 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   </div>
 </div>
 
+<!-- REVIEW OVERLAY -->
+<div class="ov" id="reviewOv" onclick="if(event.target===this)closeReview()">
+  <div class="modal" style="max-width:420px">
+    <div class="head">
+      <h3>⭐ 거래 후기 작성</h3>
+      <p id="review-seller-name" style="font-size:13px;color:var(--muted)"></p>
+    </div>
+    <div style="padding:16px 20px">
+      <!-- 별점 -->
+      <div style="margin-bottom:16px">
+        <label style="font-size:13px;font-weight:600;display:block;margin-bottom:8px">별점</label>
+        <div id="star-row" style="display:flex;gap:6px;font-size:32px">
+          <span class="star" data-v="1" onclick="setStar(1)" style="cursor:pointer;opacity:.3">⭐</span>
+          <span class="star" data-v="2" onclick="setStar(2)" style="cursor:pointer;opacity:.3">⭐</span>
+          <span class="star" data-v="3" onclick="setStar(3)" style="cursor:pointer;opacity:.3">⭐</span>
+          <span class="star" data-v="4" onclick="setStar(4)" style="cursor:pointer;opacity:.3">⭐</span>
+          <span class="star" data-v="5" onclick="setStar(5)" style="cursor:pointer;opacity:.3">⭐</span>
+        </div>
+        <div id="star-label" style="font-size:12px;color:var(--muted);margin-top:4px">별점을 선택해주세요</div>
+      </div>
+      <!-- 코멘트 -->
+      <div class="fg">
+        <label>한줄 후기 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
+        <textarea id="review-comment" placeholder="거래는 어떠셨나요? 다른 구매자에게 도움이 돼요." style="height:80px"></textarea>
+      </div>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-cancel" onclick="closeReview()">취소</button>
+      <button class="mbtn-ok" id="review-submit-btn" onclick="submitReview()">후기 등록</button>
+    </div>
+  </div>
+</div>
+
 <!-- CONTACT OVERLAY -->
 <div class="ov" id="contactOv" onclick="if(event.target===this)closeContact()">
   <div class="modal contact-modal">
@@ -807,6 +840,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="my-tab" onclick="switchMyTab('requests',this)">📨 구매요청</button>
       <button class="my-tab" onclick="switchMyTab('myreq',this)">🙋 내 요청</button>
       <button class="my-tab" onclick="switchMyTab('purchased',this)">📦 구매내역</button>
+      <button class="my-tab" onclick="switchMyTab('reviews',this)">⭐ 받은 리뷰</button>
       <button class="my-tab" onclick="switchMyTab('wish',this)">♥ 찜</button>
     </div>
     <div class="my-body">
@@ -815,6 +849,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <div class="stat-box"><div class="stat-n" style="color:var(--red)" id="my-s-active">0</div><div class="stat-l">판매 중</div></div>
           <div class="stat-box"><div class="stat-n" style="color:var(--green)" id="my-s-sold">0</div><div class="stat-l">판매 완료</div></div>
           <div class="stat-box"><div class="stat-n" style="color:var(--blue)" id="my-s-wish">0</div><div class="stat-l">찜한 카드</div></div>
+          <div class="stat-box"><div class="stat-n" style="color:var(--gold)" id="my-s-rating">-</div><div class="stat-l">평균 별점</div></div>
         </div>
         <div id="my-recent" style="font-size:13px;color:var(--muted);text-align:center;padding:18px">불러오는 중...</div>
       </div>
@@ -829,6 +864,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       </div>
       <div class="my-page" id="mp-purchased">
         <div id="my-purchased-list">불러오는 중...</div>
+      </div>
+      <div class="my-page" id="mp-reviews">
+        <div id="my-reviews-list">불러오는 중...</div>
       </div>
       <div class="my-page" id="mp-wish">
         <div id="my-wish-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px"></div>
@@ -1362,9 +1400,10 @@ async function openDetail(cid) {
       </div>`).join('')}
     </div>` : '';
 
-  // 판매자별 완료 거래 횟수 가져오기
+  // 판매자별 완료 거래 횟수 + 별점 가져오기
   const sellerNames = [...new Set(ls.map(l=>l.seller_username))];
   let tradeCountMap = {};
+  let ratingMap = {};
   if (sellerNames.length) {
     const { data: tCounts } = await sb.from('trades')
       .select('seller_username')
@@ -1372,6 +1411,13 @@ async function openDetail(cid) {
       .eq('status', 'completed');
     (tCounts||[]).forEach(t => {
       tradeCountMap[t.seller_username] = (tradeCountMap[t.seller_username]||0) + 1;
+    });
+    const { data: rData } = await sb.from('reviews')
+      .select('seller_username, rating')
+      .in('seller_username', sellerNames);
+    (rData||[]).forEach(r => {
+      if (!ratingMap[r.seller_username]) ratingMap[r.seller_username] = [];
+      ratingMap[r.seller_username].push(r.rating);
     });
   }
 
@@ -1382,9 +1428,14 @@ async function openDetail(cid) {
     const ag = l.auto_grade ? `<span class="grade-dot ${GC(l.auto_grade)}" style="position:static;margin-left:4px">${l.auto_grade}</span>` : '';
     const eg = (l.grade_type && l.grade_type!=='미등급') ? `<span style="font-size:10px;font-weight:700;color:var(--gold);margin-left:4px">${l.grade_type}${l.grade_score?' '+l.grade_score:''}</span>` : '';
     const tradeCnt = tradeCountMap[l.seller_username]||0;
+    const ratings = ratingMap[l.seller_username];
+    const avgRating = ratings?.length ? (ratings.reduce((a,b)=>a+b,0)/ratings.length).toFixed(1) : null;
     const tradeTag = tradeCnt>0
       ? `<span style="font-size:10px;color:var(--green);font-weight:600;margin-left:5px">✅ ${tradeCnt}회 거래</span>`
       : `<span style="font-size:10px;color:var(--muted);margin-left:5px">신규</span>`;
+    const ratingTag = avgRating
+      ? `<span style="font-size:10px;color:var(--gold);font-weight:600;margin-left:5px">⭐ ${avgRating} (${ratings.length})</span>`
+      : '';
     return `<div class="l-item">
       <div class="l-imgs">${fi}${bi}</div>
       <div class="l-avatar" style="background:${AVA[i%5]}">${(l.seller_name||'?')[0]}</div>
@@ -1392,7 +1443,7 @@ async function openDetail(cid) {
         <div class="l-seller">${l.seller_name}${ag}${eg}</div>
         <div class="l-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">
           <span style="font-size:10px;color:var(--dim)">@${l.seller_username}</span>
-          ${tradeTag}
+          ${tradeTag}${ratingTag}
         </div>
         <div class="l-meta">${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red);font-size:11px">'+l.card_condition+'</span>' : ' · 양호'}</div>
       </div>
@@ -2042,7 +2093,7 @@ async function openMyPage() {
   document.getElementById('my-name').textContent = curUser.nickname||curUser.username;
   document.getElementById('my-sub').textContent = '아이디: '+curUser.username;
   document.getElementById('myOv').classList.add('on');
-  loadMyStats(); loadMyListings(); loadMyWish(); loadMyRequests(); loadMyReq(); loadPurchaseHistory();
+  loadMyStats(); loadMyListings(); loadMyWish(); loadMyRequests(); loadMyReq(); loadPurchaseHistory(); loadMyReviews();
 }
 function closeMyPage() { document.getElementById('myOv').classList.remove('on'); }
 function switchMyTab(id, btn) {
@@ -2270,15 +2321,20 @@ async function loadPurchaseHistory() {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">완료된 구매 내역이 없어요</div>';
     return;
   }
-  // 판매자 연락처 가져오기
   const listingIds = data.map(t=>t.listing_id).filter(Boolean);
   let listingMap = {};
   if (listingIds.length) {
     const { data: ls } = await sb.from('listings').select('id,contact_info,seller_name').in('id', listingIds);
     (ls||[]).forEach(l => { listingMap[l.id] = l; });
   }
+  // 이미 리뷰 쓴 trade_id
+  const tradeIds = data.map(t=>t.id);
+  const { data: myReviews } = await sb.from('reviews').select('trade_id').in('trade_id', tradeIds);
+  const reviewedSet = new Set((myReviews||[]).map(r=>r.trade_id));
+
   el.innerHTML = data.map(t => {
     const listing = listingMap[t.listing_id];
+    const reviewed = reviewedSet.has(t.id);
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <div style="font-size:14px;font-weight:700">${t.card_id}</div>
@@ -2287,14 +2343,100 @@ async function loadPurchaseHistory() {
       <div style="font-size:12px;color:var(--muted);margin-bottom:8px">
         ${t.created_at?.slice(0,10)} · 판매자: <b>${listing?.seller_name || t.seller_username}</b>
       </div>
-      <div style="background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:10px 14px">
+      <div style="background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:10px 14px;margin-bottom:8px">
         <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:4px">📱 판매자 연락처</div>
         <div style="font-size:13px;font-weight:700;color:var(--blue)">${listing?.contact_info || '연락처 정보 없음'}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:3px">연락처로 먼저 연락해서 송금 및 배송 주소를 안내해드리세요</div>
       </div>
+      ${reviewed
+        ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px">✅ 후기를 작성했어요</div>`
+        : `<button onclick="openReview('${t.id}','${t.seller_username}','${listing?.seller_name||t.seller_username}')"
+            style="width:100%;padding:9px;background:#fff;border:1px solid var(--gold);color:var(--gold);border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
+            ⭐ 거래 후기 작성
+          </button>`
+      }
     </div>`;
   }).join('');
 }
+
+// ─── 리뷰 ───
+let reviewData = null;
+let curStar = 0;
+
+function openReview(tradeId, sellerUsername, sellerName) {
+  reviewData = { tradeId, sellerUsername };
+  curStar = 0;
+  setStar(0);
+  document.getElementById('review-seller-name').textContent = `판매자: ${sellerName}`;
+  document.getElementById('review-comment').value = '';
+  document.getElementById('reviewOv').classList.add('on');
+}
+function closeReview() { document.getElementById('reviewOv').classList.remove('on'); }
+
+function setStar(n) {
+  curStar = n;
+  const labels = ['', '별로예요', '그저그래요', '보통이에요', '좋아요', '최고예요!'];
+  document.querySelectorAll('.star').forEach(s => {
+    s.style.opacity = parseInt(s.dataset.v) <= n ? '1' : '0.3';
+  });
+  document.getElementById('star-label').textContent = n ? `${n}점 — ${labels[n]}` : '별점을 선택해주세요';
+}
+
+async function submitReview() {
+  if (!curStar) { toast('별점을 선택해주세요'); return; }
+  const btn = document.getElementById('review-submit-btn');
+  btn.disabled = true; btn.textContent = '등록 중...';
+  try {
+    const { error } = await sb.from('reviews').insert({
+      trade_id: reviewData.tradeId,
+      reviewer_username: curUser.username,
+      seller_username: reviewData.sellerUsername,
+      rating: curStar,
+      comment: document.getElementById('review-comment').value.trim() || null,
+    });
+    if (error) throw new Error(error.message);
+    closeReview();
+    toast('⭐ 후기가 등록됐어요!');
+    loadPurchaseHistory();
+  } catch(e) {
+    toast('등록 실패: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '후기 등록';
+  }
+}
+
+async function loadMyReviews() {
+  const el = document.getElementById('my-reviews-list');
+  if (!el || !curUser) return;
+  const { data } = await sb.from('reviews')
+    .select('*')
+    .eq('seller_username', curUser.username)
+    .order('created_at', { ascending: false });
+  if (!data?.length) {
+    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 받은 후기가 없어요</div>';
+    return;
+  }
+  const avg = (data.reduce((s,r)=>s+r.rating,0) / data.length).toFixed(1);
+  const stars = n => '⭐'.repeat(n) + '☆'.repeat(5-n);
+  el.innerHTML = `
+    <div style="text-align:center;padding:16px 0 12px;border-bottom:1px solid var(--border);margin-bottom:12px">
+      <div style="font-size:36px;font-weight:700;color:var(--gold)">${avg}</div>
+      <div style="font-size:18px;margin:4px 0">${stars(Math.round(avg))}</div>
+      <div style="font-size:12px;color:var(--muted)">총 ${data.length}개 후기</div>
+    </div>
+    ${data.map(r=>`
+      <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <div style="font-size:14px">${stars(r.rating)}</div>
+          <div style="font-size:11px;color:var(--muted)">${r.created_at?.slice(0,10)}</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);margin-bottom:3px">@${r.reviewer_username}</div>
+        ${r.comment ? `<div style="font-size:13px">${r.comment}</div>` : ''}
+      </div>`).join('')}`;
+
+  // 현황 탭 평균 별점 업데이트
+  document.getElementById('my-s-rating').textContent = avg + '점';
+}
+
 
 async function loadMyWish() {
   const ids = [...wishSet].slice(0,20);
