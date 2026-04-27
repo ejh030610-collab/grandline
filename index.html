@@ -702,17 +702,13 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
               <input type="file" id="photo-front" accept="image/*" onchange="previewPhoto('front',event)" style="display:none">
               <div id="front-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div></div>
               <!-- 가이드 테두리 -->
-              <div id="front-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none;display:flex;align-items:center;justify-content:center">
-                <div style="font-size:9px;color:rgba(220,38,38,0.7);text-align:center;line-height:1.4">카드를<br>여기에</div>
-              </div>
+              <div id="front-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none"></div>
             </div>
             <div class="photo-slot" onclick="document.getElementById('photo-back').click()" style="position:relative">
               <input type="file" id="photo-back" accept="image/*" onchange="previewPhoto('back',event)" style="display:none">
               <div id="back-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div></div>
               <!-- 가이드 테두리 -->
-              <div id="back-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none;display:flex;align-items:center;justify-content:center">
-                <div style="font-size:9px;color:rgba(220,38,38,0.7);text-align:center;line-height:1.4">카드를<br>여기에</div>
-              </div>
+              <div id="back-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none"></div>
             </div>
           </div>
         </div>
@@ -737,12 +733,35 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 등급: 점수 입력 -->
       <div class="fg-2">
         <div class="fg" style="margin-bottom:0"><label>판매가 (원)</label><input type="number" id="s_price" placeholder="0"></div>
-        <div class="fg" style="margin-bottom:0"><label>슬리브</label>
-          <select id="s_sleeve"><option>하드 슬리브</option><option>소프트 슬리브</option><option>슬리브 없음</option></select>
-        </div>
       </div>
-      <div class="fg" style="margin-top:10px"><label>판매자 연락처 <span style="color:var(--red)">*</span></label><input type="text" id="s_contact" placeholder="구매 승인 시 구매자에게 공개 (오픈카카오, 전화번호 등)"></div>
-      <div class="fg" style="margin-top:10px"><label>추가 설명</label><textarea id="s_desc" placeholder="직거래 가능 지역, 특이사항 등..."></textarea></div>
+      <!-- 카드 상태 체크박스 -->
+      <div class="fg" style="margin-top:10px">
+        <label>카드 상태 <span style="font-size:11px;color:var(--muted);font-weight:400">(해당 항목 체크)</span></label>
+        <div style="display:flex;flex-direction:column;gap:7px;margin-top:6px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
+            <input type="checkbox" id="cond_scratch" style="width:15px;height:15px;accent-color:var(--red)">
+            스크래치 — 카드 표면에 긁힘이 있어요
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
+            <input type="checkbox" id="cond_whitening" style="width:15px;height:15px;accent-color:var(--red)">
+            화이트닝 — 카드 모서리/면에 흰 점이 있어요
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
+            <input type="checkbox" id="cond_bend" style="width:15px;height:15px;accent-color:var(--red)">
+            휨/구김 — 카드가 휘거나 눌린 자국이 있어요
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
+            <input type="checkbox" id="cond_stain" style="width:15px;height:15px;accent-color:var(--red)">
+            오염/지문 — 이물질이나 지문이 있어요
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
+            <input type="checkbox" id="cond_centering" style="width:15px;height:15px;accent-color:var(--red)">
+            센터링 불량 — 카드 인쇄 중심이 한쪽으로 치우쳐 있어요
+          </label>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">해당 없으면 모두 체크 해제 → 양호 상태로 등록돼요</div>
+      </div>
+      <div class="fg" style="margin-top:10px"><label>판매자 연락처 <span style="color:var(--red)">*</span></label><input type="text" id="s_contact" placeholder="거래 승인 후 구매자에게 공개 (오픈카카오, 전화번호 등)"></div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
         <button class="mbtn-ok" onclick="submitSell()">등록하기</button>
@@ -1374,7 +1393,7 @@ async function openDetail(cid) {
           <span style="font-size:10px;color:var(--dim)">@${l.seller_username}</span>
           ${tradeTag}
         </div>
-        <div class="l-meta">${l.condition||'미등급'}${l.sleeve?' · '+l.sleeve:''}</div>
+        <div class="l-meta">${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red);font-size:11px">'+l.card_condition+'</span>' : ' · 양호'}</div>
       </div>
       <span class="l-price">${l.price.toLocaleString()}원</span>
       <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
@@ -1694,7 +1713,9 @@ function openSell(prefill) {
   document.getElementById('s_search').value = '';
   document.getElementById('s_contact').value = '';
   document.getElementById('s_price').value = '';
-  document.getElementById('s_desc').value = '';
+  ['cond_scratch','cond_whitening','cond_bend','cond_stain','cond_centering'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.checked = false;
+  });
   if (prefill) {
     const pc = allCards.find(c=>c.id===prefill);
     if (pc) document.getElementById('s_set').value = pc.series;
@@ -1915,6 +1936,15 @@ async function submitSell() {
       if (rBack)  backUrl  = await upload(rBack,  'back');
     }
 
+    // 카드 상태 체크박스 수집
+    const condItems = [];
+    if (document.getElementById('cond_scratch')?.checked) condItems.push('스크래치');
+    if (document.getElementById('cond_whitening')?.checked) condItems.push('화이트닝');
+    if (document.getElementById('cond_bend')?.checked) condItems.push('휨/구김');
+    if (document.getElementById('cond_stain')?.checked) condItems.push('오염/지문');
+    if (document.getElementById('cond_centering')?.checked) condItems.push('센터링불량');
+    const conditionDesc = condItems.length ? condItems.join(', ') : '양호';
+
     const { data, error } = await sb.from('listings').insert({
       card_id,
       seller_username: curUser.username,
@@ -1924,8 +1954,7 @@ async function submitSell() {
       version: document.getElementById('s_ver').value,
       series: document.getElementById('s_set').value,
       grade_type: sellGrade,
-      sleeve: document.getElementById('s_sleeve').value,
-      description: document.getElementById('s_desc').value || null,
+      card_condition: conditionDesc,
       contact_info: contact_info,
       image_front: frontUrl,
       image_back: backUrl,
@@ -2076,10 +2105,20 @@ async function loadMyRequests() {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
     return;
   }
+
+  // 구매자 계정 정보 (이름+전화번호+주소) 미리 가져오기
+  const buyerNames = [...new Set(data.map(t=>t.buyer_username).filter(Boolean))];
+  let buyerAccountMap = {};
+  if (buyerNames.length) {
+    const { data: accs } = await sb.from('accounts').select('username,nickname,phone,address').in('username', buyerNames);
+    (accs||[]).forEach(a => { buyerAccountMap[a.username] = a; });
+  }
+
   el.innerHTML = data.map(t => {
     const statusMap = { pending:'⏳ 대기중', approved:'✅ 승인됨', rejected:'❌ 거절됨', completed:'🎉 거래완료' };
     const statusColor = { pending:'var(--gold)', approved:'var(--green)', rejected:'var(--red)', completed:'var(--blue)' };
     const isPending = t.status === 'pending';
+    const buyer = buyerAccountMap[t.buyer_username] || {};
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
         <div>
@@ -2089,9 +2128,11 @@ async function loadMyRequests() {
         <span style="font-size:11px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
       </div>
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
-        <div style="font-weight:600;margin-bottom:2px">구매자: ${t.buyer_username}</div>
-        <div style="color:var(--blue);font-weight:600;margin-bottom:2px">📱 ${t.buyer_contact}</div>
-        ${t.message ? `<div style="color:var(--muted)">"${t.message}"</div>` : ''}
+        <div style="font-weight:600;margin-bottom:4px">구매자: ${buyer.nickname || t.buyer_username}</div>
+        <div style="color:var(--blue);font-weight:600;margin-bottom:2px">📱 ${buyer.phone || t.buyer_contact || '전화번호 없음'}</div>
+        <div style="color:var(--muted);font-weight:600;margin-bottom:2px">💬 ${t.buyer_contact || '-'}</div>
+        <div style="color:var(--muted);margin-bottom:2px">📍 ${buyer.address || '주소 없음'}</div>
+        ${t.message ? `<div style="color:var(--muted);margin-top:4px">"${t.message}"</div>` : ''}
         <div style="font-size:10px;color:var(--dim);margin-top:4px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
       </div>
       ${isPending ? `<div style="display:flex;gap:7px">
@@ -2151,16 +2192,24 @@ async function loadMyReq() {
   const statusMap = { pending:'⏳ 답변 대기중', completed:'✅ 승인됨', rejected:'❌ 거절됨' };
   const statusColor = { pending:'var(--gold)', completed:'var(--green)', rejected:'#dc2626' };
 
-  // 승인된 건들의 listing 정보(판매자 연락처) 가져오기
+  // 승인된 건들의 판매자 연락처 가져오기 (판매자 이름+전화번호만)
   const approvedIds = data.filter(t=>t.status==='completed').map(t=>t.listing_id).filter(Boolean);
   let listingMap = {};
   if (approvedIds.length) {
-    const { data: ls } = await sb.from('listings').select('id,contact_info,seller_name').in('id', approvedIds);
-    (ls||[]).forEach(l => { listingMap[l.id] = l; });
+    const { data: ls } = await sb.from('listings').select('id,contact_info,seller_name,seller_username').in('id', approvedIds);
+    // 판매자 전화번호 가져오기
+    const sellerNames = (ls||[]).map(l=>l.seller_username).filter(Boolean);
+    let accountMap = {};
+    if (sellerNames.length) {
+      const { data: accs } = await sb.from('accounts').select('username,nickname,phone').in('username', sellerNames);
+      (accs||[]).forEach(a => { accountMap[a.username] = a; });
+    }
+    (ls||[]).forEach(l => { listingMap[l.id] = { ...l, account: accountMap[l.seller_username] }; });
   }
 
   el.innerHTML = data.map(t => {
     const listing = listingMap[t.listing_id];
+    const sellerAcc = listing?.account;
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <div style="font-size:13px;font-weight:700">${t.card_id}</div>
@@ -2174,9 +2223,9 @@ async function loadMyReq() {
 
       ${t.status==='completed' ? `
         <div style="background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:12px 14px">
-          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px">🎉 거래가 승인됐어요!</div>
-          <div style="font-size:12px;margin-bottom:3px"><b>판매자:</b> ${listing?.seller_name || t.seller_username}</div>
-          <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:3px">📱 ${listing?.contact_info || '연락처 정보 없음'}</div>
+          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">🎉 거래가 승인됐어요! 판매자에게 연락하세요.</div>
+          <div style="font-size:13px;margin-bottom:4px"><b>판매자 이름:</b> ${sellerAcc?.nickname || listing?.seller_name || t.seller_username}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px">📱 ${sellerAcc?.phone || listing?.contact_info || '연락처 없음'}</div>
           <div style="font-size:11px;color:var(--muted)">위 연락처로 먼저 연락해서 택배 주소를 알려드리세요</div>
         </div>` : ''}
 
