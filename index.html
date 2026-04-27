@@ -110,6 +110,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .rt-r{background:rgba(37,99,235,.92);color:#fff;}
 .rt-uc,.rt-c{background:rgba(107,114,128,.85);color:#fff;}
 .rt-l{background:rgba(22,163,74,.92);color:#fff;}
+.rt-none{background:rgba(200,200,200,.5);color:#999;}
 .rt-p{background:linear-gradient(135deg,#f59e0b,#ec4899,#8b5cf6);color:#fff;}
 .wish-btn{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.9);border:none;border-radius:50%;width:26px;height:26px;font-size:13px;display:flex;align-items:center;justify-content:center;color:#ccc;transition:all .15s;}
 .wish-btn.on,.wish-btn:hover{color:#e8507a;}
@@ -942,8 +943,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>한글판</option><option>일판</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P (패러렐)</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P (패러렐)</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">코스트</label><input type="number" id="edit-cost" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">파워</label><input type="number" id="edit-power" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
     </div>
@@ -978,7 +979,7 @@ let aiData = {};
 let adminCards = [];
 
 // ─── HELPERS ───
-const RC = r => ({SEC:'rt-sec',SR:'rt-sr',R:'rt-r',UC:'rt-uc',C:'rt-c',L:'rt-l',P:'rt-p'}[r]||'rt-c');
+const RC = r => ({SEC:'rt-sec',SR:'rt-sr',R:'rt-r',UC:'rt-uc',C:'rt-c',L:'rt-l',P:'rt-p'}[r]||'rt-none');
 const GC = g => ({S:'gd-s',A:'gd-a',B:'gd-b',C:'gd-c',D:'gd-d'}[g]||'');
 const GBG = g => ({S:'#16a34a',A:'#2563eb',B:'#ca8a04',C:'#dc2626',D:'#6B7280'}[g]||'#999');
 const AVA = ['#D85A30','#2563eb','#16a34a','#7c3aed','#B8860B'];
@@ -1247,7 +1248,7 @@ function renderCards() {
       <div class="card-thumb">
         ${img ? `<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">` : ''}
         <span style="${img?'display:none':''}display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:48px">${c.emoji||'🃏'}</span>
-        <span class="rtag ${RC(c.rarity)}">${c.rarity}</span>
+        ${c.rarity ? `<span class="rtag ${RC(c.rarity)}">${c.rarity}</span>` : ""}
         ${gb}
         <button class="wish-btn${wOn}" onclick="event.stopPropagation();toggleWish('${c.id}',this)">♥</button>
         ${lbadge}
@@ -1284,7 +1285,7 @@ function doSearch() {
     return `<div class="card" onclick="openDetail('${c.id}')">
       <div class="card-thumb">${img?`<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
         <span style="${img?'display:none':''}">${c.emoji||'🃏'}</span>
-        <span class="rtag ${RC(c.rarity)}">${c.rarity}</span>
+        ${c.rarity ? `<span class="rtag ${RC(c.rarity)}">${c.rarity}</span>` : ""}
       </div>
       <div class="card-info">
         <div class="card-num">${c.id}</div>
@@ -1323,7 +1324,7 @@ async function loadHome() {
           <div class="card-thumb">
             ${img?`<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:'' }
             <span style="${img?'display:none':''}display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:36px">${c.emoji||'🃏'}</span>
-            <span class="rtag ${RC(c.rarity)}">${c.rarity}</span>
+            ${c.rarity ? `<span class="rtag ${RC(c.rarity)}">${c.rarity}</span>` : ""}
           </div>
           <div class="card-info">
             <div class="card-name">${(c.name && c.name!=='-') ? c.name : c.id}</div>
@@ -2719,8 +2720,8 @@ function openEditCard(cid) {
   document.getElementById('edit-name').value = c.name || '';
   document.getElementById('edit-ver').value = c.version || '한글판';
   document.getElementById('edit-series').value = c.series || 'OP-01';
-  document.getElementById('edit-rarity').value = c.rarity || 'C';
-  document.getElementById('edit-color').value = c.color || '적색';
+  document.getElementById('edit-rarity').value = c.rarity || '';
+  document.getElementById('edit-color').value = c.color || '';
   document.getElementById('edit-cost').value = c.cost || 0;
   document.getElementById('edit-power').value = c.power || 0;
   document.getElementById('edit-feature').value = c.feature || '';
