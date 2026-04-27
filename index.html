@@ -771,6 +771,35 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   </div>
 </div>
 
+<!-- SHIPPING OVERLAY -->
+<div class="ov" id="shippingOv" onclick="if(event.target===this)closeShipping()">
+  <div class="modal" style="max-width:400px">
+    <div class="head"><h3>📦 운송장 등록</h3><p>택배 발송 후 운송장 번호를 입력해주세요</p></div>
+    <div style="padding:16px 20px">
+      <div class="fg">
+        <label>택배사</label>
+        <select id="ship-carrier">
+          <option>CJ대한통운</option>
+          <option>롯데택배</option>
+          <option>한진택배</option>
+          <option>우체국택배</option>
+          <option>로젠택배</option>
+          <option>편의점택배</option>
+          <option>기타</option>
+        </select>
+      </div>
+      <div class="fg">
+        <label>운송장 번호</label>
+        <input type="text" id="ship-tracking" placeholder="운송장 번호 입력">
+      </div>
+    </div>
+    <div class="mbtns">
+      <button class="mbtn-cancel" onclick="closeShipping()">취소</button>
+      <button class="mbtn-ok" id="ship-submit-btn" onclick="submitShipping()">발송 완료</button>
+    </div>
+  </div>
+</div>
+
 <!-- REVIEW OVERLAY -->
 <div class="ov" id="reviewOv" onclick="if(event.target===this)closeReview()">
   <div class="modal" style="max-width:420px">
@@ -2151,7 +2180,7 @@ async function loadMyRequests() {
   const { data } = await sb.from('trades')
     .select('*, listings(card_id, price, grade_type, image_front, status, contact_info)')
     .eq('seller_username', curUser.username)
-    .eq('status', 'pending')
+    .in('status', ['pending', 'approved', 'shipping'])
     .order('created_at', { ascending: false });
   if (!data?.length) {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
@@ -2167,9 +2196,20 @@ async function loadMyRequests() {
   }
 
   el.innerHTML = data.map(t => {
-    const statusMap = { pending:'⏳ 대기중', approved:'✅ 승인됨', rejected:'❌ 거절됨', completed:'🎉 거래완료' };
-    const statusColor = { pending:'var(--gold)', approved:'var(--green)', rejected:'var(--red)', completed:'var(--blue)' };
+    const statusMap = {
+      pending:  '⏳ 대기중',
+      approved: '✅ 승인됨 — 운송장 등록 필요',
+      shipping: '🚚 배송중',
+      completed:'🎉 거래완료',
+      rejected: '❌ 거절됨'
+    };
+    const statusColor = {
+      pending:'var(--gold)', approved:'var(--blue)',
+      shipping:'var(--green)', completed:'var(--muted)', rejected:'var(--red)'
+    };
     const isPending = t.status === 'pending';
+    const isApproved = t.status === 'approved';
+    const isShipping = t.status === 'shipping';
     const buyer = buyerAccountMap[t.buyer_username] || {};
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
@@ -2179,39 +2219,51 @@ async function loadMyRequests() {
         </div>
         <span style="font-size:11px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
       </div>
+      <!-- 구매자 정보 (승인 후 공개) -->
+      ${(isApproved || isShipping || t.status==='completed') ? `
+      <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
+        <div style="font-weight:700;color:var(--blue);margin-bottom:6px">📋 구매자 정보</div>
+        <div style="margin-bottom:3px"><b>${buyer.nickname || t.buyer_username}</b></div>
+        <div style="color:var(--blue);margin-bottom:2px">📱 ${buyer.phone || t.buyer_contact || '전화번호 없음'}</div>
+        <div style="color:var(--muted);margin-bottom:2px">💬 ${t.buyer_contact || '-'}</div>
+        <div style="color:var(--muted)">📍 ${buyer.address || '주소 없음'}</div>
+        ${t.message ? `<div style="color:var(--muted);margin-top:4px">"${t.message}"</div>` : ''}
+      </div>` : `
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
-        <div style="font-weight:600;margin-bottom:4px">구매자: ${buyer.nickname || t.buyer_username}</div>
-        <div style="color:var(--blue);font-weight:600;margin-bottom:2px">📱 ${buyer.phone || t.buyer_contact || '전화번호 없음'}</div>
-        <div style="color:var(--muted);font-weight:600;margin-bottom:2px">💬 ${t.buyer_contact || '-'}</div>
-        <div style="color:var(--muted);margin-bottom:2px">📍 ${buyer.address || '주소 없음'}</div>
+        <div style="font-weight:600;margin-bottom:2px">구매자: ${buyer.nickname || t.buyer_username}</div>
+        <div style="color:var(--muted);font-size:11px">승인 후 연락처가 공개돼요</div>
         ${t.message ? `<div style="color:var(--muted);margin-top:4px">"${t.message}"</div>` : ''}
         <div style="font-size:10px;color:var(--dim);margin-top:4px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
-      </div>
+      </div>`}
+      <!-- 운송장 정보 -->
+      ${isShipping || t.status==='completed' ? `
+      <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
+        <div style="font-weight:700;color:var(--green);margin-bottom:4px">🚚 배송 정보</div>
+        <div>${t.carrier||''} · ${t.tracking_number||''}</div>
+      </div>` : ''}
+      <!-- 버튼 -->
       ${isPending ? `<div style="display:flex;gap:7px">
         <button onclick="approveTrade('${t.id}','${t.listing_id}', this)" style="flex:1;padding:8px;background:var(--green);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">✅ 승인</button>
         <button onclick="rejectTrade('${t.id}', this)" style="flex:1;padding:8px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">❌ 거절</button>
       </div>` : ''}
+      ${isApproved ? `
+        <button onclick="openShipping('${t.id}')" style="width:100%;padding:9px;background:var(--blue);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
+          📦 운송장 등록
+        </button>` : ''}
+      ${isShipping ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px">구매자가 수령 확인 중이에요</div>` : ''}
     </div>`;
   }).join('');
 }
 
 async function approveTrade(tradeId, listingId, btn) {
-  if (!confirm('구매 요청을 승인할까요? 판매 완료로 처리돼요.')) return;
-  // 즉시 DOM에서 제거
+  if (!confirm('구매 요청을 승인할까요?')) return;
   const item = btn?.closest('div[style*="padding:14px"]');
   if (item) item.remove();
-  const el = document.getElementById('my-requests-list');
-  if (el && !el.querySelector('div[style*="padding:14px"]')) {
-    el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
-  }
-  const { error: e1 } = await sb.from('trades').update({ status: 'completed' }).eq('id', tradeId);
-  const { error: e2 } = await sb.from('listings').update({ status: 'sold' }).eq('id', listingId);
-  if (e1 || e2) { toast('처리 실패'); loadMyRequests(); return; }
-  Object.keys(listings).forEach(cid => {
-    listings[cid] = listings[cid].filter(l => l.id !== listingId);
-  });
-  toast('🎉 승인 완료! 거래가 성사됐어요');
-  loadMyListings(); loadMyStats(); renderCards();
+  // approved 상태로 변경 (listings는 아직 sold 아님 — 배송완료 시 sold)
+  const { error } = await sb.from('trades').update({ status: 'approved' }).eq('id', tradeId);
+  if (error) { toast('처리 실패'); loadMyRequests(); return; }
+  toast('✅ 승인 완료! 운송장을 등록해주세요');
+  loadMyRequests();
 }
 
 async function rejectTrade(tradeId, btn) {
@@ -2241,15 +2293,23 @@ async function loadMyReq() {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">보낸 구매 요청이 없어요</div>';
     return;
   }
-  const statusMap = { pending:'⏳ 답변 대기중', completed:'✅ 승인됨', rejected:'❌ 거절됨' };
-  const statusColor = { pending:'var(--gold)', completed:'var(--green)', rejected:'#dc2626' };
+  const statusMap = {
+    pending:  '⏳ 답변 대기중',
+    approved: '✅ 승인됨 — 판매자 연락처 확인',
+    shipping: '🚚 배송중',
+    completed:'🎉 거래완료',
+    rejected: '❌ 거절됨'
+  };
+  const statusColor = {
+    pending:'var(--gold)', approved:'var(--blue)',
+    shipping:'var(--green)', completed:'var(--muted)', rejected:'#dc2626'
+  };
 
-  // 승인된 건들의 판매자 연락처 가져오기 (판매자 이름+전화번호만)
-  const approvedIds = data.filter(t=>t.status==='completed').map(t=>t.listing_id).filter(Boolean);
+  // approved/shipping 건들의 판매자 연락처
+  const activeIds = data.filter(t=>['approved','shipping','completed'].includes(t.status)).map(t=>t.listing_id).filter(Boolean);
   let listingMap = {};
-  if (approvedIds.length) {
-    const { data: ls } = await sb.from('listings').select('id,contact_info,seller_name,seller_username').in('id', approvedIds);
-    // 판매자 전화번호 가져오기
+  if (activeIds.length) {
+    const { data: ls } = await sb.from('listings').select('id,contact_info,seller_name,seller_username').in('id', activeIds);
     const sellerNames = (ls||[]).map(l=>l.seller_username).filter(Boolean);
     let accountMap = {};
     if (sellerNames.length) {
@@ -2262,6 +2322,9 @@ async function loadMyReq() {
   el.innerHTML = data.map(t => {
     const listing = listingMap[t.listing_id];
     const sellerAcc = listing?.account;
+    const isApproved = t.status === 'approved';
+    const isShipping = t.status === 'shipping';
+    const isCompleted = t.status === 'completed';
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
         <div style="font-size:13px;font-weight:700">${t.card_id}</div>
@@ -2270,16 +2333,27 @@ async function loadMyReq() {
       <div style="font-size:12px;color:var(--muted);margin-bottom:4px">
         판매자: <b>${t.seller_username}</b> · ${t.price?.toLocaleString()}원
       </div>
-      ${t.message ? `<div style="font-size:12px;color:var(--muted);margin-bottom:4px">"${t.message}"</div>` : ''}
       <div style="font-size:10px;color:var(--dim);margin-bottom:8px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
 
-      ${t.status==='completed' ? `
-        <div style="background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:12px 14px">
-          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:8px">🎉 거래가 승인됐어요! 판매자에게 연락하세요.</div>
-          <div style="font-size:13px;margin-bottom:4px"><b>판매자 이름:</b> ${sellerAcc?.nickname || listing?.seller_name || t.seller_username}</div>
+      ${(isApproved || isShipping || isCompleted) ? `
+        <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">📋 판매자 연락처</div>
+          <div style="font-size:13px;margin-bottom:4px"><b>${sellerAcc?.nickname || listing?.seller_name || t.seller_username}</b></div>
           <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px">📱 ${sellerAcc?.phone || listing?.contact_info || '연락처 없음'}</div>
-          <div style="font-size:11px;color:var(--muted)">위 연락처로 먼저 연락해서 택배 주소를 알려드리세요</div>
+          <div style="font-size:11px;color:var(--muted)">위 연락처로 연락해서 입금 후 주소를 알려드리세요</div>
         </div>` : ''}
+
+      ${isShipping ? `
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px">🚚 배송 정보</div>
+          <div style="font-size:13px;margin-bottom:4px"><b>${t.carrier||''}</b> · ${t.tracking_number||''}</div>
+          <div style="font-size:11px;color:var(--muted)">배송 완료 후 수령 확인을 눌러주세요</div>
+        </div>
+        <button onclick="confirmReceipt('${t.id}','${t.listing_id}', this)" style="width:100%;padding:9px;background:var(--green);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
+          ✅ 수령 확인 (거래완료)
+        </button>` : ''}
+
+      ${isCompleted ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px">🎉 거래가 완료됐어요</div>` : ''}
 
       ${t.status==='rejected' ? `
         <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:var(--r3);padding:10px 12px;font-size:12px;color:var(--red)">
@@ -2292,6 +2366,61 @@ async function loadMyReq() {
         </button>` : ''}
     </div>`;
   }).join('');
+}
+
+// ─── 운송장 등록 ───
+let shippingTradeId = null;
+function openShipping(tradeId) {
+  shippingTradeId = tradeId;
+  document.getElementById('ship-tracking').value = '';
+  document.getElementById('shippingOv').classList.add('on');
+}
+function closeShipping() { document.getElementById('shippingOv').classList.remove('on'); }
+
+async function submitShipping() {
+  const tracking = document.getElementById('ship-tracking').value.trim();
+  const carrier = document.getElementById('ship-carrier').value;
+  if (!tracking) { toast('운송장 번호를 입력해주세요'); return; }
+  const btn = document.getElementById('ship-submit-btn');
+  btn.disabled = true; btn.textContent = '등록 중...';
+  try {
+    const { error } = await sb.from('trades').update({
+      status: 'shipping',
+      tracking_number: tracking,
+      carrier: carrier,
+      shipped_at: new Date().toISOString(),
+    }).eq('id', shippingTradeId);
+    if (error) throw new Error(error.message);
+    closeShipping();
+    toast('🚚 운송장이 등록됐어요!');
+    loadMyRequests();
+  } catch(e) {
+    toast('등록 실패: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '발송 완료';
+  }
+}
+
+// ─── 수령 확인 ───
+async function confirmReceipt(tradeId, listingId, btn) {
+  if (!confirm('수령 확인하시겠어요? 거래가 완료 처리돼요.')) return;
+  btn.disabled = true; btn.textContent = '처리 중...';
+  try {
+    const { error: e1 } = await sb.from('trades').update({
+      status: 'completed',
+      confirmed_at: new Date().toISOString(),
+    }).eq('id', tradeId);
+    const { error: e2 } = await sb.from('listings').update({ status: 'sold' }).eq('id', listingId);
+    if (e1 || e2) throw new Error('처리 실패');
+    Object.keys(listings).forEach(cid => {
+      listings[cid] = listings[cid].filter(l => l.id !== listingId);
+    });
+    toast('🎉 거래완료! 후기도 남겨주세요');
+    loadMyReq(); loadMyListings(); loadMyStats(); renderCards();
+  } catch(e) {
+    toast(e.message);
+    btn.disabled = false; btn.textContent = '✅ 수령 확인 (거래완료)';
+  }
 }
 
 async function cancelTrade(tradeId, btn) {
@@ -2316,7 +2445,7 @@ async function loadPurchaseHistory() {
     .select('*')
     .eq('buyer_username', curUser.username)
     .eq('status', 'completed')
-    .order('created_at', { ascending: false });
+    .order('confirmed_at', { ascending: false });
   if (!data?.length) {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">완료된 구매 내역이 없어요</div>';
     return;
