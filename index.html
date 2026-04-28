@@ -443,6 +443,43 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .price-stat-l{font-size:10px;color:var(--muted);margin-top:1px;}
 .no-chart-msg{text-align:center;padding:20px;color:var(--muted);font-size:13px;background:var(--bg2);border-radius:var(--r2);}
 
+/* 검색 오버레이 */
+.search-ov{display:none;position:fixed;inset:0;background:#fff;z-index:600;flex-direction:column;}
+.search-ov.on{display:flex;}
+.search-ov-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:#fff;}
+.search-ov-input{flex:1;border:2px solid var(--red);border-radius:22px;padding:10px 16px 10px 40px;font-size:15px;font-family:inherit;outline:none;color:var(--text);background:#fff;}
+.search-ov-input::placeholder{color:var(--dim);}
+.search-ov-icon{position:absolute;left:26px;font-size:16px;color:var(--muted);}
+.search-ov-cancel{font-size:14px;font-weight:600;color:var(--red);white-space:nowrap;background:none;border:none;cursor:pointer;padding:4px 6px;}
+.search-ov-body{flex:1;overflow-y:auto;padding:16px 16px;}
+.search-section-title{font-size:12px;font-weight:700;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;}
+.search-history-item{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.search-history-item:hover{background:var(--bg2);}
+.search-result-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
+.search-result-item:hover{background:var(--bg2);}
+
+</style>
+.noti-btn{position:relative;background:none;border:none;font-size:20px;cursor:pointer;padding:4px;color:var(--muted);}
+.noti-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;display:none;}
+.noti-badge.on{display:block;}
+/* 알림 드롭다운 */
+.noti-drop{position:absolute;top:52px;right:10px;width:320px;background:#fff;border:1px solid var(--border);border-radius:var(--r2);box-shadow:var(--sh2);z-index:200;display:none;max-height:400px;overflow-y:auto;}
+.noti-drop.on{display:block;}
+.noti-item{padding:12px 14px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s;}
+.noti-item:hover{background:var(--bg2);}
+.noti-item.unread{background:var(--red-light);}
+.noti-item-msg{font-size:13px;line-height:1.4;}
+.noti-item-time{font-size:11px;color:var(--dim);margin-top:3px;}
+.noti-hd{padding:12px 14px;font-size:13px;font-weight:700;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+/* 프로필 모달 */
+.profile-modal{max-width:480px;}
+.profile-hd{background:linear-gradient(135deg,var(--red),var(--red-dark));padding:24px 20px;border-radius:16px 16px 0 0;color:#fff;display:flex;align-items:center;gap:14px;}
+.profile-avatar{width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0;}
+.profile-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:16px;}
+.profile-stat{background:var(--bg2);border-radius:var(--r2);padding:10px;text-align:center;}
+.profile-stat-v{font-size:18px;font-weight:700;color:var(--red);}
+.profile-stat-l{font-size:11px;color:var(--muted);margin-top:2px;}
+
 </style>
 </head>
 <body>
@@ -455,13 +492,18 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="logo-mark">☠</div>
       <div><div class="logo-text">그랜드라인</div><span class="logo-sub">원피스 카드 C2C 마켓</span></div>
     </a>
-    <div class="h-search">
+    <div class="h-search" onclick="openSearchOv()" style="cursor:pointer">
       <span class="h-search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="카드명, 번호 검색..." oninput="doSearch()">
+      <input type="text" id="searchInput" placeholder="카드명, 번호 검색..." readonly style="cursor:pointer;pointer-events:none">
     </div>
     <div class="h-right" id="hRight">
       <button class="hbtn" onclick="openAuth('login')">로그인</button>
       <button class="hbtn primary" onclick="openSell()">+ 판매 등록</button>
+    </div>
+    <!-- 알림 드롭다운 -->
+    <div class="noti-drop" id="notiDrop">
+      <div class="noti-hd">🔔 알림 <button onclick="markAllRead()" style="font-size:11px;background:none;border:none;color:var(--muted);cursor:pointer">모두 읽음</button></div>
+      <div id="notiList"><div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">알림이 없어요</div></div>
     </div>
   </div>
 </header>
@@ -603,6 +645,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="ftag" data-color="황색" onclick="setColor(this)">황색</button>
       <button class="ftag" data-color="다색" onclick="setColor(this)">다색</button>
       <div class="fdiv"></div>
+      <button class="ftag" id="saleFilter" onclick="toggleSaleFilter(this)" style="background:var(--bg2);border-color:var(--border2)">🏷️ 판매 가능만</button>
       <div class="price-wrap">
         <input type="number" id="priceMin" placeholder="최저가" oninput="renderCards()">
         <span style="font-size:11px;color:var(--muted)">~</span>
@@ -826,6 +869,50 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
         <button class="mbtn-ok" onclick="submitSell()">등록하기</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-ov" id="searchOv">
+  <div class="search-ov-hd" style="position:relative">
+    <span class="search-ov-icon">🔍</span>
+    <input class="search-ov-input" id="searchOvInput" placeholder="카드명, 번호 검색..."
+      oninput="onSearchInput()" onkeydown="if(event.key==='Enter')submitSearch()">
+    <button class="search-ov-cancel" onclick="closeSearchOv()">취소</button>
+  </div>
+  <div class="search-ov-body" id="searchOvBody">
+    <!-- 기본: 최근 검색어 -->
+    <div id="searchHistory"></div>
+    <!-- 실시간 결과 -->
+    <div id="searchResults" style="display:none"></div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div class="ov" id="profileOv" onclick="if(event.target===this)closeProfile()">
+  <div class="modal profile-modal">
+    <div class="profile-hd">
+      <div class="profile-avatar" id="profile-avatar">?</div>
+      <div>
+        <div style="font-size:18px;font-weight:700" id="profile-name">-</div>
+        <div style="font-size:12px;opacity:.8" id="profile-id">-</div>
+        <div style="font-size:13px;margin-top:4px" id="profile-rating">-</div>
+      </div>
+      <button onclick="closeProfile()" style="margin-left:auto;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer">✕</button>
+    </div>
+    <div class="profile-stat-row">
+      <div class="profile-stat"><div class="profile-stat-v" id="profile-active">0</div><div class="profile-stat-l">판매 중</div></div>
+      <div class="profile-stat"><div class="profile-stat-v" id="profile-sold">0</div><div class="profile-stat-l">거래 완료</div></div>
+      <div class="profile-stat"><div class="profile-stat-v" id="profile-review-cnt">0</div><div class="profile-stat-l">리뷰 수</div></div>
+    </div>
+    <div style="padding:0 16px 8px;border-bottom:1px solid var(--border)">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">판매 중인 카드</div>
+      <div id="profile-listings" style="display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto"></div>
+    </div>
+    <div style="padding:14px 16px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:10px">받은 리뷰</div>
+      <div id="profile-reviews" style="max-height:180px;overflow-y:auto"></div>
     </div>
   </div>
 </div>
@@ -1235,8 +1322,12 @@ async function submitAuth() {
 async function onLogin(user) {
   if (!user?.username) return;
   curUser = user; curProfile = user;
+  loadNotifications();
   const adminBtn = user.is_admin ? `<button class="hbtn admin mob-hide" onclick="openAdmin()">⚙️ 관리</button>` : '';
   document.getElementById('hRight').innerHTML = `
+    <button class="noti-btn" onclick="toggleNoti()" title="알림">
+      🔔<span class="noti-badge" id="notiBadge"></span>
+    </button>
     <div class="user-chip" onclick="openMyPage()" title="마이페이지">
       <div class="avatar">${(user.nickname||'?')[0]}</div>
       <span class="mob-hide" style="font-size:13px;font-weight:500">${user.nickname||user.username}</span>
@@ -1286,6 +1377,11 @@ function setRarity(el) {
   curFilter.rarity = el.dataset.rarity;
   renderCards();
 }
+function toggleSaleFilter(el) {
+  curFilter.onlyForSale = !curFilter.onlyForSale;
+  el.classList.toggle('active', curFilter.onlyForSale);
+  renderCards();
+}
 function setType(el) {
   document.querySelectorAll('[data-type]').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
@@ -1332,6 +1428,7 @@ function renderCards() {
     if (curFilter.rarity !== 'all' && c.rarity !== curFilter.rarity) return false;
     if (curFilter.type !== 'all' && c.card_type !== curFilter.type) return false;
     if (curFilter.color !== 'all' && c.color !== curFilter.color) return false;
+    if (curFilter.onlyForSale && !getLs(c.id).length) return false;
     if (minV > 0 || maxV < Infinity) {
       const lp = getLP(c.id);
       if (!lp) return maxV === Infinity;
@@ -1385,6 +1482,146 @@ function renderCards() {
         <div class="card-name">${(c.name && c.name !== '-') ? c.name : c.id}</div>
         <div class="card-feat">${c.color||''} · ${c.feature||''}</div>
         <div>${priceHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── 검색 오버레이 ───
+const SEARCH_HISTORY_KEY = 'gl_search_history';
+
+function getSearchHistory() {
+  try { return JSON.parse(localStorage.getItem(SEARCH_HISTORY_KEY)||'[]'); } catch { return []; }
+}
+function saveSearchHistory(q) {
+  let h = getSearchHistory().filter(x=>x.q!==q);
+  h.unshift({q, date: new Date().toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace('. ','.')});
+  h = h.slice(0,10);
+  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(h));
+}
+function removeSearchHistory(q) {
+  const h = getSearchHistory().filter(x=>x.q!==q);
+  localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(h));
+  renderSearchHistory();
+}
+function clearSearchHistory() {
+  localStorage.removeItem(SEARCH_HISTORY_KEY);
+  renderSearchHistory();
+}
+
+function renderSearchHistory() {
+  const h = getSearchHistory();
+  const el = document.getElementById('searchHistory');
+  el.innerHTML = `
+    <div class="search-section-title">
+      최근 검색어
+      ${h.length ? `<button onclick="clearSearchHistory()" style="font-size:12px;color:var(--muted);background:none;border:none;cursor:pointer">전체삭제</button>` : ''}
+    </div>
+    ${h.length ? h.map(item=>`
+      <div class="search-history-item" onclick="selectHistory('${item.q}')">
+        <span style="font-size:16px;color:var(--dim)">🕐</span>
+        <span style="flex:1;font-size:14px">${item.q}</span>
+        <span style="font-size:12px;color:var(--dim);margin-right:8px">${item.date}</span>
+        <button onclick="event.stopPropagation();removeSearchHistory('${item.q}')" style="background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:0 4px">✕</button>
+      </div>`).join('')
+    : '<div style="color:var(--dim);font-size:13px;padding:8px 0">최근 검색어가 없어요</div>'}`;
+}
+
+function openSearchOv() {
+  document.getElementById('searchOv').classList.add('on');
+  document.getElementById('searchResults').style.display = 'none';
+  document.getElementById('searchHistory').style.display = 'block';
+  renderSearchHistory();
+  setTimeout(()=>document.getElementById('searchOvInput').focus(), 100);
+}
+
+function closeSearchOv() {
+  document.getElementById('searchOv').classList.remove('on');
+  document.getElementById('searchOvInput').value = '';
+}
+
+function selectHistory(q) {
+  document.getElementById('searchOvInput').value = q;
+  submitSearch();
+}
+
+let searchTimer = null;
+function onSearchInput() {
+  const q = document.getElementById('searchOvInput').value.trim();
+  clearTimeout(searchTimer);
+  if (!q) {
+    document.getElementById('searchResults').style.display = 'none';
+    document.getElementById('searchHistory').style.display = 'block';
+    renderSearchHistory();
+    return;
+  }
+  document.getElementById('searchHistory').style.display = 'none';
+  document.getElementById('searchResults').style.display = 'block';
+  searchTimer = setTimeout(()=>renderSearchResults(q), 150);
+}
+
+function renderSearchResults(q) {
+  const ql = q.toLowerCase();
+  const results = allCards.filter(c =>
+    (c.name||'').toLowerCase().includes(ql) || c.id.toLowerCase().includes(ql)
+  ).slice(0, 20);
+  const el = document.getElementById('searchResults');
+  if (!results.length) {
+    el.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">🔍</div>"${q}" 검색 결과가 없어요</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="search-section-title">${results.length}종 검색됨</div>` +
+    results.map(c => {
+      const lp = getLP(c.id);
+      return `<div class="search-result-item" onclick="submitSearch('${c.id}')">
+        ${c.image_url
+          ? `<img src="${c.image_url}" style="width:36px;height:48px;object-fit:cover;border-radius:5px;border:1px solid var(--border)">`
+          : `<div style="width:36px;height:48px;background:var(--bg3);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:18px">${c.emoji||'🃏'}</div>`}
+        <div style="flex:1;min-width:0">
+          <div style="font-size:14px;font-weight:600">${c.name||c.id}</div>
+          <div style="font-size:11px;color:var(--muted)">${c.id} · ${c.series||''} · ${c.rarity||''}</div>
+        </div>
+        ${lp ? `<div style="font-size:13px;font-weight:700;color:var(--red)">${lp.toLocaleString()}원~</div>` : `<div style="font-size:11px;color:var(--dim)">판매없음</div>`}
+      </div>`;
+    }).join('');
+}
+
+function submitSearch(directId=null) {
+  if (directId) {
+    closeSearchOv();
+    openDetail(directId);
+    return;
+  }
+  const q = document.getElementById('searchOvInput').value.trim();
+  if (!q) return;
+  saveSearchHistory(q);
+  closeSearchOv();
+  // 기존 doSearch 로직
+  hideHome(); showCardView();
+  const filtered = allCards.filter(c =>
+    (c.name||'').toLowerCase().includes(q.toLowerCase()) ||
+    c.id.toLowerCase().includes(q.toLowerCase())
+  );
+  document.getElementById('listCnt').textContent = '검색 결과 '+filtered.length+'종';
+  document.getElementById('listTitle').textContent = `"${q}" 검색결과`;
+  if (!filtered.length) {
+    document.getElementById('cardGrid').innerHTML = `
+      <div class="empty-grid"><div style="font-size:36px;margin-bottom:10px">🔍</div>
+      <div style="font-size:14px;font-weight:600;margin-bottom:6px">"${q}" 검색 결과가 없어요</div></div>`;
+    return;
+  }
+  document.getElementById('cardGrid').innerHTML = filtered.map(c => {
+    const lp = getLP(c.id);
+    const img = c.image_url||'';
+    return `<div class="card" onclick="openDetail('${c.id}')">
+      <div class="card-thumb">${img?`<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+        <span style="${img?'display:none':''}">${c.emoji||'🃏'}</span>
+        ${c.rarity ? `<span class="rtag ${RC(c.rarity)}">${c.rarity}</span>` : ""}
+      </div>
+      <div class="card-info">
+        <div class="card-name">${c.name||c.id}</div>
+        <div class="card-meta">${c.id}</div>
+        <div class="card-price">${lp?lp.toLocaleString()+'원~':'판매 없음'}</div>
       </div>
     </div>`;
   }).join('');
@@ -1531,7 +1768,7 @@ async function openDetail(cid) {
       <div class="l-info">
         <div class="l-seller">${l.seller_name}${ag}${eg}</div>
         <div class="l-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">
-          <span style="font-size:10px;color:var(--dim)">@${l.seller_username}</span>
+          <span style="font-size:10px;color:var(--blue);cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();openProfile('${l.seller_username}')">@${l.seller_username}</span>
           ${tradeTag}${ratingTag}
         </div>
         <div class="l-meta">${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red);font-size:11px">'+l.card_condition+'</span>' : ' · 양호'}</div>
@@ -2321,6 +2558,7 @@ async function approveTrade(tradeId, listingId, btn) {
   const { error } = await sb.from('trades').update({ status: 'approved' }).eq('id', tradeId);
   if (error) { toast('처리 실패: ' + error.message); if (btn) { btn.disabled=false; btn.textContent='✅ 승인'; } return; }
   toast('✅ 승인 완료! 운송장을 등록해주세요');
+  await notifyTrade(tradeId, 'approved');
   await loadMyRequests();
 }
 
@@ -2446,6 +2684,7 @@ async function submitShipping() {
     if (error) throw new Error(error.message);
     closeShipping();
     toast('🚚 운송장이 등록됐어요!');
+    await notifyTrade(shippingTradeId, 'shipping');
     loadMyRequests();
   } catch(e) {
     toast('등록 실패: ' + e.message);
@@ -2469,6 +2708,7 @@ async function confirmReceipt(tradeId, listingId, btn) {
       listings[cid] = listings[cid].filter(l => l.id !== listingId);
     });
     toast('🎉 거래완료! 후기도 남겨주세요');
+    await notifyTrade(tradeId, 'completed');
     loadMyReq(); loadMyListings(); loadMyStats(); renderCards();
   } catch(e) {
     toast(e.message);
@@ -2613,6 +2853,157 @@ async function loadMyReviews() {
   document.getElementById('my-s-rating').textContent = avg + '점';
 }
 
+
+// ─── 알림 시스템 ───
+let notiOpen = false;
+
+async function loadNotifications() {
+  if (!curUser) return;
+  const { data } = await sb.from('notifications')
+    .select('*')
+    .eq('username', curUser.username)
+    .order('created_at', { ascending: false })
+    .limit(30);
+  
+  const unread = (data||[]).filter(n=>!n.is_read).length;
+  const badge = document.getElementById('notiBadge');
+  if (badge) { badge.textContent = unread > 9 ? '9+' : unread; badge.classList.toggle('on', unread > 0); }
+  
+  const list = document.getElementById('notiList');
+  if (!list) return;
+  if (!data?.length) { list.innerHTML = '<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">알림이 없어요</div>'; return; }
+  
+  const timeAgo = t => {
+    const d = Math.floor((Date.now()-new Date(t))/1000);
+    if (d < 60) return '방금';
+    if (d < 3600) return Math.floor(d/60)+'분 전';
+    if (d < 86400) return Math.floor(d/3600)+'시간 전';
+    return Math.floor(d/86400)+'일 전';
+  };
+  list.innerHTML = data.map(n=>`
+    <div class="noti-item ${n.is_read?'':'unread'}" onclick="clickNoti('${n.id}','${n.link_id||''}')">
+      <div class="noti-item-msg">${n.message}</div>
+      <div class="noti-item-time">${timeAgo(n.created_at)}</div>
+    </div>`).join('');
+}
+
+async function clickNoti(notiId, linkId) {
+  await sb.from('notifications').update({ is_read: true }).eq('id', notiId);
+  loadNotifications();
+  toggleNoti();
+}
+
+async function markAllRead() {
+  if (!curUser) return;
+  await sb.from('notifications').update({ is_read: true }).eq('username', curUser.username);
+  loadNotifications();
+}
+
+function toggleNoti() {
+  notiOpen = !notiOpen;
+  document.getElementById('notiDrop').classList.toggle('on', notiOpen);
+  if (notiOpen) loadNotifications();
+}
+
+// 알림 생성 (내부 호출용)
+async function createNotification(username, type, message, linkId=null) {
+  if (!username) return;
+  await sb.from('notifications').insert({ username, type, message, link_id: linkId });
+}
+
+// 거래 관련 알림 자동 발송
+async function notifyTrade(tradeId, type) {
+  const { data: t } = await sb.from('trades').select('*').eq('id', tradeId).single();
+  if (!t) return;
+  const msgs = {
+    approved: `✅ "${t.card_id}" 구매 요청이 승인됐어요! 판매자 연락처를 확인하세요.`,
+    rejected: `❌ "${t.card_id}" 구매 요청이 거절됐어요.`,
+    shipping: `🚚 "${t.card_id}" 상품이 발송됐어요! 운송장을 확인하세요.`,
+    completed: `🎉 "${t.card_id}" 거래가 완료됐어요! 후기를 남겨주세요.`,
+  };
+  const targets = {
+    approved: t.buyer_username,
+    rejected: t.buyer_username,
+    shipping: t.buyer_username,
+    completed: t.seller_username,
+  };
+  if (msgs[type] && targets[type]) {
+    await createNotification(targets[type], type, msgs[type], tradeId);
+  }
+}
+
+// 닫기
+document.addEventListener('click', e => {
+  const drop = document.getElementById('notiDrop');
+  if (drop && !e.target.closest('#notiDrop') && !e.target.closest('.noti-btn')) {
+    drop.classList.remove('on'); notiOpen = false;
+  }
+});
+
+// ─── 프로필 모달 ───
+function closeProfile() { document.getElementById('profileOv').classList.remove('on'); }
+
+async function openProfile(username) {
+  document.getElementById('profileOv').classList.add('on');
+  document.getElementById('profile-name').textContent = '불러오는 중...';
+  document.getElementById('profile-id').textContent = '@' + username;
+  document.getElementById('profile-listings').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:8px">불러오는 중...</div>';
+  document.getElementById('profile-reviews').innerHTML = '';
+
+  // 계정 정보
+  const { data: acc } = await sb.from('accounts').select('nickname,username').eq('username', username).single();
+  const nick = acc?.nickname || username;
+  document.getElementById('profile-name').textContent = nick;
+  document.getElementById('profile-avatar').textContent = nick[0];
+
+  // 판매 통계
+  const { data: ls } = await sb.from('listings').select('id,status').eq('seller_username', username).neq('listing_type','box');
+  const active = (ls||[]).filter(l=>l.status==='active').length;
+  const sold = (ls||[]).filter(l=>l.status==='sold').length;
+  document.getElementById('profile-active').textContent = active;
+  document.getElementById('profile-sold').textContent = sold;
+
+  // 리뷰
+  const { data: reviews } = await sb.from('reviews').select('*').eq('seller_username', username).order('created_at',{ascending:false});
+  const avg = reviews?.length ? (reviews.reduce((s,r)=>s+r.rating,0)/reviews.length).toFixed(1) : null;
+  document.getElementById('profile-review-cnt').textContent = reviews?.length||0;
+  document.getElementById('profile-rating').textContent = avg ? `⭐ ${avg}점 (${reviews.length}개 리뷰)` : '리뷰 없음';
+
+  // 판매 중인 카드
+  const { data: activeLs } = await sb.from('listings')
+    .select('*,cards(name,image_url,emoji)')
+    .eq('seller_username', username)
+    .eq('status', 'active')
+    .neq('listing_type','box')
+    .order('price', {ascending:true})
+    .limit(10);
+  
+  document.getElementById('profile-listings').innerHTML = (activeLs||[]).length
+    ? (activeLs||[]).map(l=>`
+      <div style="display:flex;align-items:center;gap:10px;padding:8px;background:var(--bg2);border-radius:var(--r3);cursor:pointer" onclick="closeProfile();openDetail('${l.card_id}')">
+        ${l.cards?.image_url?`<img src="${l.cards.image_url}" style="width:32px;height:42px;object-fit:cover;border-radius:4px">`:`<div style="width:32px;height:42px;background:var(--bg3);border-radius:4px;display:flex;align-items:center;justify-content:center">${l.cards?.emoji||'🃏'}</div>`}
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${l.cards?.name||l.card_id}</div>
+          <div style="font-size:11px;color:var(--muted)">${l.grade_type||'미등급'}</div>
+        </div>
+        <div style="font-size:14px;font-weight:700;color:var(--red)">${l.price?.toLocaleString()}원</div>
+      </div>`).join('')
+    : '<div style="color:var(--muted);font-size:13px;padding:8px">판매 중인 카드가 없어요</div>';
+
+  // 리뷰 목록
+  const stars = n => '⭐'.repeat(n) + '☆'.repeat(5-n);
+  document.getElementById('profile-reviews').innerHTML = (reviews||[]).length
+    ? (reviews||[]).map(r=>`
+      <div style="padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:13px">${stars(r.rating)}</div>
+          <div style="font-size:11px;color:var(--muted)">${r.created_at?.slice(0,10)}</div>
+        </div>
+        <div style="font-size:12px;color:var(--muted)">@${r.reviewer_username}</div>
+        ${r.comment?`<div style="font-size:13px;margin-top:3px">${r.comment}</div>`:''}
+      </div>`).join('')
+    : '<div style="color:var(--muted);font-size:13px;padding:8px">받은 리뷰가 없어요</div>';
+}
 
 async function loadMyWish() {
   const ids = [...wishSet].slice(0,20);
