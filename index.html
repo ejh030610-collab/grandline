@@ -864,6 +864,40 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </div>
         <div style="font-size:11px;color:var(--muted);margin-top:6px">해당 없으면 모두 체크 해제 → 양호 상태로 등록돼요</div>
       </div>
+      <!-- 배송 방법 -->
+      <div class="fg" style="margin-top:10px">
+        <label>배송 방법 <span style="color:var(--red)">*</span></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
+          <label id="ship_label_registered" style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .15s">
+            <input type="radio" name="ship_method" id="ship_registered" value="등기" style="accent-color:var(--red);margin-top:2px" onchange="updateShipLabel()">
+            <div>
+              <div style="font-size:13px;font-weight:600">📮 등기</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">우체국 등기 발송<br>분실 시 보상 가능</div>
+            </div>
+          </label>
+          <label id="ship_label_parcel" style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .15s">
+            <input type="radio" name="ship_method" id="ship_parcel" value="일반택배" style="accent-color:var(--red);margin-top:2px" onchange="updateShipLabel()">
+            <div>
+              <div style="font-size:13px;font-weight:600">📦 일반택배</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">CJ/한진/롯데 등<br>익일~2일 배송</div>
+            </div>
+          </label>
+          <label id="ship_label_half" style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .15s">
+            <input type="radio" name="ship_method" id="ship_half" value="반값택배" style="accent-color:var(--red);margin-top:2px" onchange="updateShipLabel()">
+            <div>
+              <div style="font-size:13px;font-weight:600">💸 반값택배</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">편의점 접수<br>저렴한 요금</div>
+            </div>
+          </label>
+          <label id="ship_label_direct" style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .15s">
+            <input type="radio" name="ship_method" id="ship_direct" value="직거래가능" style="accent-color:var(--red);margin-top:2px" onchange="updateShipLabel()">
+            <div>
+              <div style="font-size:13px;font-weight:600">🤝 직거래 가능</div>
+              <div style="font-size:11px;color:var(--muted);margin-top:2px">지역 직접 거래<br>협의 필요</div>
+            </div>
+          </label>
+        </div>
+      </div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
         <button class="mbtn-ok" onclick="submitSell()">등록하기</button>
@@ -1789,7 +1823,7 @@ async function openDetail(cid) {
           <span style="font-size:10px;color:var(--blue);cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();openProfile('${l.seller_username}')">@${l.seller_username}</span>
           ${tradeTag}${ratingTag}
         </div>
-        <div class="l-meta">${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red);font-size:11px">'+l.card_condition+'</span>' : ' · 양호'}</div>
+        <div class="l-meta">${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red);font-size:11px">'+l.card_condition+'</span>' : ' · 양호'}${l.shipping_method ? ' · <span style="color:var(--blue);font-size:11px">'+l.shipping_method+'</span>' : ''}</div>
       </div>
       <span class="l-price">${l.price.toLocaleString()}원</span>
       <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
@@ -2118,7 +2152,12 @@ function openSell(prefill) {
   if (prefill) document.getElementById('s_card').value = prefill;
   document.getElementById('sellOv').classList.add('on');
 }
-function closeSell() { document.getElementById('sellOv').classList.remove('on'); resetChecklist(); }
+function closeSell() {
+  document.getElementById('sellOv').classList.remove('on');
+  resetChecklist();
+  document.querySelectorAll('input[name="ship_method"]').forEach(r => r.checked = false);
+  updateShipLabel();
+}
 
 function switchGrade(type, btn) {
   sellGrade = type;
@@ -2293,13 +2332,23 @@ PSA 등급 기준:
   btn.innerHTML = '<span>🤖</span> 다시 분석';
 }
 
+function updateShipLabel() {
+  ['registered','parcel','half','direct'].forEach(id => {
+    const radio = document.getElementById('ship_' + id);
+    const label = document.getElementById('ship_label_' + id);
+    if (label) label.style.borderColor = radio?.checked ? 'var(--red)' : 'var(--border)';
+  });
+}
+
 async function submitSell() {
   if (!curUser) { openAuth('login'); return; }
   const card_id = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
   const contact_info = curUser.phone || curUser.username;
+  const shipMethod = document.querySelector('input[name="ship_method"]:checked')?.value;
   if (!card_id) { toast('카드를 선택해주세요'); return; }
   if (!price||price<=0) { toast('올바른 가격을 입력해주세요'); return; }
+  if (!shipMethod) { toast('배송 방법을 선택해주세요'); return; }
 
   const btn = document.querySelector('#sellOv .mbtn-ok');
   if (btn) { btn.disabled = true; btn.textContent = '확인 중...'; }
@@ -2378,6 +2427,7 @@ async function submitSell() {
       grade_type: sellGrade,
       card_condition: conditionDesc,
       contact_info: contact_info,
+      shipping_method: shipMethod,
       image_front: frontUrl,
       image_back: backUrl,
       status: 'active'
