@@ -2571,6 +2571,7 @@ async function approveTrade(tradeId, listingId, btn) {
   if (error) { toast('처리 실패: ' + error.message); if (btn) { btn.disabled=false; btn.textContent='✅ 승인'; } return; }
   toast('✅ 승인 완료! 운송장을 등록해주세요');
   await notifyTrade(tradeId, 'approved');
+  await new Promise(r => setTimeout(r, 500));
   await loadMyRequests();
 }
 
@@ -2580,6 +2581,7 @@ async function rejectTrade(tradeId, btn) {
   const { error } = await sb.from('trades').update({ status: 'rejected' }).eq('id', tradeId);
   if (error) { toast('처리 실패'); if (btn) { btn.disabled=false; btn.textContent='❌ 거절'; } return; }
   toast('거절했어요');
+  await new Promise(r => setTimeout(r, 500));
   await loadMyRequests();
 }
 
