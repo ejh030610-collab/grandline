@@ -921,10 +921,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 <div class="ov" id="shippingOv" onclick="if(event.target===this)closeShipping()" style="z-index:700">
   <div class="modal" style="max-width:400px">
     <div class="head"><h3>📦 운송장 등록</h3><p>택배 발송 후 운송장 번호를 입력해주세요</p></div>
-    <div style="padding:16px 20px">
-      <div class="fg">
+    <div style="padding:20px 24px 8px">
+      <div class="fg" style="margin-bottom:16px">
         <label>택배사</label>
-        <select id="ship-carrier">
+        <select id="ship-carrier" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff">
           <option>CJ대한통운</option>
           <option>롯데택배</option>
           <option>한진택배</option>
@@ -934,12 +934,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <option>기타</option>
         </select>
       </div>
-      <div class="fg">
+      <div class="fg" style="margin-bottom:8px">
         <label>운송장 번호</label>
-        <input type="text" id="ship-tracking" placeholder="운송장 번호 입력">
+        <input type="text" id="ship-tracking" placeholder="운송장 번호를 입력해주세요" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none">
       </div>
     </div>
-    <div class="mbtns">
+    <div class="mbtns" style="padding:16px 24px 24px">
       <button class="mbtn-cancel" onclick="closeShipping()">취소</button>
       <button class="mbtn-ok" id="ship-submit-btn" onclick="submitShipping()">발송 완료</button>
     </div>
