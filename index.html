@@ -2305,7 +2305,36 @@ async function submitSell() {
   if (!contact_info) { toast('판매자 연락처를 입력해주세요'); return; }
 
   const btn = document.querySelector('#sellOv .mbtn-ok');
-  if (btn) { btn.disabled = true; btn.textContent = '등록 중...'; }
+  if (btn) { btn.disabled = true; btn.textContent = '확인 중...'; }
+
+  try {
+    // ① 카드당 10개 제한 확인
+    const { count: cardCount } = await sb.from('listings')
+      .select('id', { count: 'exact', head: true })
+      .eq('card_id', card_id)
+      .eq('status', 'active');
+    if (cardCount >= 10) {
+      toast('이 카드는 이미 10개 판매 등록이 되어있어요');
+      if (btn) { btn.disabled=false; btn.textContent='등록하기'; }
+      return;
+    }
+
+    // ② 판매자당 20장 제한 확인
+    const { count: userCount } = await sb.from('listings')
+      .select('id', { count: 'exact', head: true })
+      .eq('seller_username', curUser.username)
+      .eq('status', 'active')
+      .neq('listing_type', 'box');
+    if (userCount >= 20) {
+      toast('판매 등록은 최대 20장까지 가능해요');
+      if (btn) { btn.disabled=false; btn.textContent='등록하기'; }
+      return;
+    }
+  } catch(e) {
+    console.error('제한 확인 오류:', e);
+  }
+
+  if (btn) btn.textContent = '등록 중...';
   toast('등록 중...');
 
   try {
@@ -2669,15 +2698,19 @@ async function loadMyReq() {
         </div>` : ''}
 
       ${isShipping ? `
-        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:12px 14px;margin-bottom:10px">
           <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px">🚚 배송 정보</div>
           <div style="font-size:13px;margin-bottom:4px"><b>${t.carrier||''}</b> · ${t.tracking_number||''}</div>
           ${t.tracking_number ? `<a href="${getTrackingUrl(t.carrier, t.tracking_number)}" target="_blank" style="display:inline-block;margin-top:6px;padding:7px 14px;background:var(--blue);color:#fff;border-radius:var(--r3);font-size:12px;font-weight:600;text-decoration:none">🔍 배송 조회하기</a>` : ''}
-          <div style="font-size:11px;color:var(--muted)">배송 완료 후 수령 확인을 눌러주세요</div>
         </div>
-        <button onclick="confirmReceipt('${t.id}','${t.listing_id}', this)" style="width:100%;padding:9px;background:var(--green);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
-          ✅ 수령 확인 (거래완료)
-        </button>` : ''}
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:14px 16px">
+          <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:4px">📬 물건을 받으셨나요?</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">수령 확인 후 거래가 완료돼요. 후기도 남겨주세요!</div>
+          <button onclick="confirmReceipt('${t.id}','${t.listing_id}', this)"
+            style="width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+            ✅ 수령 확인하기
+          </button>
+        </div>` : ''}
 
       ${isCompleted ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px">🎉 거래가 완료됐어요</div>` : ''}
 
