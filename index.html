@@ -867,36 +867,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 배송 방법 -->
       <div class="fg" style="margin-top:10px">
         <label>배송 방법 <span style="color:var(--red)">*</span></label>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px">
-          <label id="ship_label_registered" style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .15s">
-            <input type="radio" name="ship_method" id="ship_registered" value="등기" style="accent-color:var(--red);margin-top:2px" onchange="updateShipLabel()">
-            <div>
-              <div style="font-size:13px;font-weight:600">📮 등기</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:2px">우체국 등기 발송<br>분실 시 보상 가능</div>
-            </div>
-          </label>
-          <label id="ship_label_parcel" style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .15s">
-            <input type="radio" name="ship_method" id="ship_parcel" value="일반택배" style="accent-color:var(--red);margin-top:2px" onchange="updateShipLabel()">
-            <div>
-              <div style="font-size:13px;font-weight:600">📦 일반택배</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:2px">CJ/한진/롯데 등<br>익일~2일 배송</div>
-            </div>
-          </label>
-          <label id="ship_label_half" style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .15s">
-            <input type="radio" name="ship_method" id="ship_half" value="반값택배" style="accent-color:var(--red);margin-top:2px" onchange="updateShipLabel()">
-            <div>
-              <div style="font-size:13px;font-weight:600">💸 반값택배</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:2px">편의점 접수<br>저렴한 요금</div>
-            </div>
-          </label>
-          <label id="ship_label_direct" style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;border:1.5px solid var(--border);border-radius:10px;padding:10px 12px;transition:border-color .15s">
-            <input type="radio" name="ship_method" id="ship_direct" value="직거래가능" style="accent-color:var(--red);margin-top:2px" onchange="updateShipLabel()">
-            <div>
-              <div style="font-size:13px;font-weight:600">🤝 직거래 가능</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:2px">지역 직접 거래<br>협의 필요</div>
-            </div>
-          </label>
-        </div>
+        <select id="ship_method_sel" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff;color:var(--text);margin-top:6px">
+          <option value="">배송 방법 선택</option>
+          <option value="등기">📮 등기 — 우체국 등기 발송 (분실 시 보상)</option>
+          <option value="일반택배">📦 일반택배 — CJ/한진/롯데 등 (익일~2일)</option>
+          <option value="반값택배">💸 반값택배 — 편의점 접수 (저렴한 요금)</option>
+        </select>
       </div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
@@ -2155,8 +2131,8 @@ function openSell(prefill) {
 function closeSell() {
   document.getElementById('sellOv').classList.remove('on');
   resetChecklist();
-  document.querySelectorAll('input[name="ship_method"]').forEach(r => r.checked = false);
-  updateShipLabel();
+  const sel = document.getElementById('ship_method_sel');
+  if (sel) sel.value = '';
 }
 
 function switchGrade(type, btn) {
@@ -2345,7 +2321,7 @@ async function submitSell() {
   const card_id = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
   const contact_info = curUser.phone || curUser.username;
-  const shipMethod = document.querySelector('input[name="ship_method"]:checked')?.value;
+  const shipMethod = document.getElementById('ship_method_sel')?.value;
   if (!card_id) { toast('카드를 선택해주세요'); return; }
   if (!price||price<=0) { toast('올바른 가격을 입력해주세요'); return; }
   if (!shipMethod) { toast('배송 방법을 선택해주세요'); return; }
