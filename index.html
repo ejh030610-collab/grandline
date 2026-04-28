@@ -744,48 +744,90 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 <!-- BOX SELL OVERLAY -->
 <div class="ov" id="boxSellOv" onclick="if(event.target===this)closeBoxSell()">
-  <div class="modal sell-modal">
-    <div class="head">
-      <h3>📦 박스 판매 등록</h3>
-      <p>미개봉 박스를 판매해보세요</p>
+  <div class="modal sell-modal" style="overflow:hidden">
+    <!-- 컬러 헤더 -->
+    <div style="background:linear-gradient(135deg,#B8860B,#D4A830);padding:20px 22px;color:#fff;position:relative">
+      <div style="font-size:24px;margin-bottom:4px">📦</div>
+      <div style="font-size:16px;font-weight:700">박스 판매 등록</div>
+      <div style="font-size:12px;opacity:.8;margin-top:2px">미개봉 박스를 판매해보세요</div>
     </div>
     <div class="sell-body">
-      <div class="fg-2" style="margin-bottom:10px">
-        <div class="fg" style="margin-bottom:0"><label>시리즈</label>
-          <select id="box_set">
+
+      <!-- 시리즈 + 단위 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">시리즈</div>
+          <select id="box_set" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;background:#fff;color:var(--text)">
             <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
             <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
             <option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option>
             <option>EBK-01</option><option>EBK-02</option>
           </select>
         </div>
-        <div class="fg" style="margin-bottom:0"><label>단위</label>
-          <select id="box_unit">
-            <option value="1BOX">1BOX</option>
-            <option value="1CARTON">1CARTON (12BOX)</option>
-          </select>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">단위</div>
+          <div style="display:flex;gap:6px">
+            <button id="box_unit_1box" onclick="selectBoxUnit('1BOX')"
+              style="flex:1;padding:9px 0;border:1.5px solid var(--red);background:var(--red);color:#fff;border-radius:var(--r3);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s">
+              1BOX
+            </button>
+            <button id="box_unit_carton" onclick="selectBoxUnit('1CARTON')"
+              style="flex:1;padding:9px 0;border:1.5px solid var(--border);background:#fff;color:var(--muted);border-radius:var(--r3);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .15s">
+              1CARTON
+            </button>
+          </div>
+          <input type="hidden" id="box_unit" value="1BOX">
         </div>
       </div>
-      <div class="fg">
-        <label>수량 <span style="font-size:11px;color:var(--muted);font-weight:400">(보유 수량)</span></label>
-        <input type="number" id="box_qty" placeholder="예: 3" min="1" max="100" value="1">
-      </div>
-      <div class="fg"><label>판매가 (원) <span style="font-size:11px;color:var(--muted);font-weight:400">단위당 가격</span></label>
-        <input type="number" id="box_price" placeholder="0">
-      </div>
-      <div class="fg"><label>박스 사진</label>
-        <div class="photo-row" style="justify-content:flex-start">
-          <div class="photo-slot" onclick="document.getElementById('box_photo').click()" style="position:relative;max-width:160px">
-            <input type="file" id="box_photo" accept="image/*" onchange="previewBoxPhoto(event)" style="display:none">
-            <div id="box-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">박스 사진</div></div>
+
+      <!-- 가격 + 수량 -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">판매가 <span style="font-weight:400;color:var(--dim)">(단위당)</span></div>
+          <div style="position:relative">
+            <input type="number" id="box_price" placeholder="0"
+              style="width:100%;padding:9px 30px 9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-weight:600;font-family:inherit;outline:none;color:var(--text)"
+              onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+            <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);pointer-events:none">원</span>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">수량 <span style="font-weight:400;color:var(--dim)">(보유)</span></div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button onclick="const i=document.getElementById('box_qty');i.value=Math.max(1,(parseInt(i.value)||1)-1)"
+              style="width:32px;height:36px;border:1.5px solid var(--border);border-radius:var(--r3);background:#fff;font-size:16px;color:var(--muted);cursor:pointer;flex-shrink:0">−</button>
+            <input type="number" id="box_qty" min="1" max="100" value="1"
+              style="flex:1;padding:7px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-weight:600;font-family:inherit;outline:none;text-align:center;color:var(--text)"
+              onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+            <button onclick="const i=document.getElementById('box_qty');i.value=Math.min(100,(parseInt(i.value)||1)+1)"
+              style="width:32px;height:36px;border:1.5px solid var(--border);border-radius:var(--r3);background:#fff;font-size:16px;color:var(--muted);cursor:pointer;flex-shrink:0">+</button>
           </div>
         </div>
       </div>
-      <div class="fg"><label>추가 설명 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
-        <textarea id="box_desc" placeholder="박스 상태, 구매처, 특이사항 등..."></textarea>
+
+      <!-- 박스 사진 -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">박스 사진 <span style="font-weight:400;color:var(--dim)">(선택)</span></div>
+        <div class="photo-slot" onclick="document.getElementById('box_photo').click()" style="width:100%;min-height:100px;border-radius:var(--r2)">
+          <input type="file" id="box_photo" accept="image/*" onchange="previewBoxPhoto(event)" style="display:none">
+          <div id="box-preview" style="display:flex;flex-direction:column;align-items:center;gap:4px">
+            <div style="font-size:24px">📸</div>
+            <div style="font-size:12px;font-weight:600;color:var(--muted)">박스 사진 추가</div>
+            <div style="font-size:10px;color:var(--dim)">미개봉 실물 사진을 올려주세요</div>
+          </div>
+        </div>
       </div>
+
+      <!-- 추가 설명 -->
+      <div>
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">추가 설명 <span style="font-weight:400;color:var(--dim)">(선택)</span></div>
+        <textarea id="box_desc" placeholder="박스 상태, 구매처, 특이사항 등..."
+          style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;resize:none;height:68px;color:var(--text)"
+          onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+      </div>
+
     </div>
-    <div class="mbtns">
+    <div class="mbtns" style="padding:0 22px 20px">
       <button class="mbtn-cancel" onclick="closeBoxSell()">취소</button>
       <button class="mbtn-ok" onclick="submitBoxSell()">등록하기</button>
     </div>
@@ -1200,6 +1242,22 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <!-- JS로 렌더링 -->
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ADMIN LISTING DETAIL OVERLAY -->
+<div class="ov" id="adminDetailOv" onclick="if(event.target===this)closeAdminDetail()" style="z-index:400">
+  <div class="modal" style="max-width:480px;padding:0;overflow:hidden">
+    <div style="background:var(--red);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div style="color:#fff">
+        <div style="font-size:14px;font-weight:700" id="adm-d-title">거래 상세</div>
+        <div style="font-size:11px;opacity:.8;margin-top:1px" id="adm-d-sub"></div>
+      </div>
+      <button onclick="closeAdminDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:16px 18px;max-height:70vh;overflow-y:auto" id="adm-d-body">
+      <div style="text-align:center;color:var(--muted);padding:20px">불러오는 중...</div>
     </div>
   </div>
 </div>
@@ -2002,10 +2060,11 @@ async function loadBoxListings(series) {
 function openBoxSell() {
   if (!curUser) { openAuth('login'); return; }
   boxPhoto = null;
-  document.getElementById('box-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">박스 사진</div>';
+  document.getElementById('box-preview').innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;gap:4px"><div style="font-size:24px">📸</div><div style="font-size:12px;font-weight:600;color:var(--muted)">박스 사진 추가</div><div style="font-size:10px;color:var(--dim)">미개봉 실물 사진을 올려주세요</div></div>';
   document.getElementById('box_price').value = '';
   document.getElementById('box_qty').value = '1';
   document.getElementById('box_desc').value = '';
+  selectBoxUnit('1BOX');
   if (curBoxSet) document.getElementById('box_set').value = curBoxSet;
   document.getElementById('boxSellOv').classList.add('on');
 }
@@ -2121,6 +2180,19 @@ function filterSellCards() {
   if (prev && filtered.find(c=>c.id===prev)) sel.value = prev;
   const cnt = document.getElementById('s_card_cnt');
   if (cnt) cnt.textContent = filtered.length + '종';
+}
+
+function selectBoxUnit(val) {
+  document.getElementById('box_unit').value = val;
+  const is1box = val === '1BOX';
+  const b1 = document.getElementById('box_unit_1box');
+  const bc = document.getElementById('box_unit_carton');
+  b1.style.background = is1box ? 'var(--red)' : '#fff';
+  b1.style.borderColor = is1box ? 'var(--red)' : 'var(--border)';
+  b1.style.color = is1box ? '#fff' : 'var(--muted)';
+  bc.style.background = !is1box ? 'var(--red)' : '#fff';
+  bc.style.borderColor = !is1box ? 'var(--red)' : 'var(--border)';
+  bc.style.color = !is1box ? '#fff' : 'var(--muted)';
 }
 
 // ─── SELL PICKER ───
@@ -3242,15 +3314,112 @@ async function aDelCard(id) {
   toast('삭제됐어요'); aLoadCards(); aLoadOverview(); init();
 }
 async function aLoadOrders() {
-  const { data } = await sb.from('listings').select('*,cards(name,rarity)').order('created_at',{ascending:false}).limit(50);
+  const { data } = await sb.from('listings').select('*,cards(name,rarity)').order('created_at',{ascending:false}).limit(100);
   document.getElementById('a-orders').innerHTML = data?.length
-    ? data.map(l=>`<tr><td>${l.cards?.name||'-'}</td><td style="color:var(--muted)">${l.seller_name}</td><td style="font-size:11px">${l.version||'-'}</td><td style="font-size:11px">${l.grade_type||'-'}</td><td style="font-size:11px;font-weight:700;color:${GBG(l.auto_grade)||'var(--muted)'}">${l.auto_grade||'-'}</td><td style="color:var(--red);font-weight:600">${l.price.toLocaleString()}원</td><td style="color:var(--muted);font-size:11px">${l.created_at?.slice(0,10)||''}</td><td><button class="aact del" onclick="aDelListing('${l.id}')">삭제</button></td></tr>`).join('')
+    ? data.map(l=>`<tr style="cursor:pointer" onclick="aOpenListingDetail('${l.id}')">
+        <td><b>${l.listing_type==='box'?'📦 '+l.series:(l.cards?.name||'-')}</b></td>
+        <td style="color:var(--muted)">${l.seller_name}</td>
+        <td style="font-size:11px">${l.version||'-'}</td>
+        <td style="font-size:11px">${l.grade_type||l.unit_type||'-'}</td>
+        <td style="font-size:11px;font-weight:700;color:${GBG(l.auto_grade)||'var(--muted)'}">${l.auto_grade||'-'}</td>
+        <td style="color:var(--red);font-weight:600">${l.price.toLocaleString()}원</td>
+        <td style="color:var(--muted);font-size:11px">${l.created_at?.slice(0,10)||''}</td>
+        <td><button class="aact del" onclick="event.stopPropagation();aDelListing('${l.id}')">삭제</button></td>
+      </tr>`).join('')
     : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:14px">판매 내역 없음</td></tr>';
 }
 async function aDelListing(id) {
   if (!confirm('삭제할까요?')) return;
   await sb.from('listings').delete().eq('id',id);
   toast('삭제됐어요'); aLoadOrders(); aLoadOverview();
+}
+
+function closeAdminDetail() { document.getElementById('adminDetailOv').classList.remove('on'); }
+
+async function aOpenListingDetail(lid) {
+  document.getElementById('adminDetailOv').classList.add('on');
+  document.getElementById('adm-d-body').innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px"><div class="spinner"></div></div>';
+
+  // 판매 정보 로드
+  const { data: l } = await sb.from('listings').select('*,cards(name,rarity,image_url)').eq('id', lid).single();
+  if (!l) { document.getElementById('adm-d-body').innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px">데이터 없음</div>'; return; }
+
+  const isBox = l.listing_type === 'box';
+  const title = isBox ? `📦 ${l.series} ${l.unit_type}` : (l.cards?.name || l.card_id);
+  document.getElementById('adm-d-title').textContent = title;
+  document.getElementById('adm-d-sub').textContent = `${l.price?.toLocaleString()}원 · ${l.status}`;
+
+  // 판매자 계정 정보
+  const { data: seller } = await sb.from('accounts').select('username,nickname,phone,address').eq('username', l.seller_username).single();
+
+  // 연관 거래 로드
+  const { data: tradeList } = await sb.from('trades')
+    .select('*')
+    .eq('listing_id', lid)
+    .order('created_at', { ascending: false });
+
+  // 구매자 계정 정보
+  let buyerMap = {};
+  if (tradeList?.length) {
+    const buyerNames = [...new Set(tradeList.map(t => t.buyer_username).filter(Boolean))];
+    const { data: buyers } = await sb.from('accounts').select('username,nickname,phone,address').in('username', buyerNames);
+    (buyers||[]).forEach(b => { buyerMap[b.username] = b; });
+  }
+
+  const statusLabel = {pending:'⏳ 대기중', approved:'✅ 승인됨', shipping:'🚚 배송중', completed:'🎉 완료', rejected:'❌ 거절', cancelled:'취소'};
+  const statusColor = {pending:'var(--gold)', approved:'var(--blue)', shipping:'var(--green)', completed:'var(--muted)', rejected:'var(--red)', cancelled:'var(--dim)'};
+
+  document.getElementById('adm-d-body').innerHTML = `
+    <!-- 판매 정보 -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">판매 정보</div>
+      <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);padding:12px;display:flex;align-items:center;gap:10px">
+        ${l.cards?.image_url ? `<img src="${l.cards.image_url}" style="width:36px;height:52px;object-fit:cover;border-radius:4px;border:1px solid var(--border)">` : `<div style="width:36px;height:52px;background:var(--bg3);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:18px">${isBox?'📦':'🃏'}</div>`}
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:700">${title}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.grade_type||l.unit_type||''} · ${l.version||''} · ${l.series||''}</div>
+          <div style="font-size:12px;font-weight:700;color:var(--red);margin-top:3px">${l.price?.toLocaleString()}원</div>
+        </div>
+        <span style="font-size:10px;padding:2px 8px;border-radius:9px;background:${l.status==='active'?'var(--green-light)':'var(--bg3)'};color:${l.status==='active'?'var(--green)':'var(--muted)'}">
+          ${l.status==='active'?'판매중':l.status}
+        </span>
+      </div>
+    </div>
+
+    <!-- 판매자 정보 -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">판매자</div>
+      <div style="background:var(--red-light);border:1px solid rgba(216,90,48,.2);border-radius:var(--r2);padding:12px">
+        <div style="font-size:14px;font-weight:700;margin-bottom:6px">${seller?.nickname || l.seller_username}</div>
+        <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px">
+          <span style="color:var(--muted)">아이디</span><span><code style="font-size:11px">${seller?.username||'-'}</code></span>
+          <span style="color:var(--muted)">전화번호</span><span style="font-weight:600;color:var(--red)">${seller?.phone||'미등록'}</span>
+          <span style="color:var(--muted)">주소</span><span style="color:var(--text)">${seller?.address||'미등록'}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- 거래 내역 -->
+    <div>
+      <div style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">거래 내역 (${tradeList?.length||0}건)</div>
+      ${tradeList?.length ? tradeList.map(t => {
+        const buyer = buyerMap[t.buyer_username] || {};
+        return `<div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--r2);padding:12px;margin-bottom:8px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+            <div style="font-size:12px;font-weight:700">구매자: ${buyer.nickname||t.buyer_username}</div>
+            <span style="font-size:11px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusLabel[t.status]||t.status}</span>
+          </div>
+          <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px">
+            <span style="color:var(--muted)">아이디</span><span><code style="font-size:11px">${buyer.username||t.buyer_username}</code></span>
+            <span style="color:var(--muted)">전화번호</span><span style="font-weight:600;color:var(--blue)">${buyer.phone||t.buyer_contact||'미등록'}</span>
+            <span style="color:var(--muted)">주소</span><span>${buyer.address||'미등록'}</span>
+            ${t.message?`<span style="color:var(--muted)">메시지</span><span style="font-style:italic">"${t.message}"</span>`:''}
+            ${t.tracking_number?`<span style="color:var(--muted)">운송장</span><span>${t.carrier||''} ${t.tracking_number}</span>`:''}
+            <span style="color:var(--muted)">요청일</span><span>${t.created_at?.slice(0,10)||''}</span>
+          </div>
+        </div>`;
+      }).join('') : '<div style="text-align:center;color:var(--muted);font-size:13px;padding:12px;background:var(--bg2);border-radius:var(--r2)">거래 내역 없음</div>'}
+    </div>`;
 }
 async function aLoadMembers() {
   const { data } = await sb.from('accounts').select('*').order('created_at',{ascending:false});
