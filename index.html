@@ -2406,7 +2406,6 @@ function getTrackingUrl(carrier, trackingNum) {
     '한진택배':   `https://www.hanjin.com/kor/CMS/DeliveryMgr/WaybillResult.do?mCode=MN038&schLang=KR&wblnumText2=${trackingNum}`,
     '우체국택배': `https://service.epost.go.kr/trace.RetrieveEmsRigiTraceList.comm?sid1=${trackingNum}`,
     '로젠택배':   `https://www.ilogen.com/web/personal/trace/${trackingNum}`,
-    '편의점택배': `https://www.cvsnet.co.kr/waybill/tracking.do?waybillno=${trackingNum}`,
   };
   return urls[carrier] || `https://search.naver.com/search.naver?query=${encodeURIComponent(carrier+' '+trackingNum+' 배송조회')}`;
 }
