@@ -919,12 +919,18 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 <!-- SHIPPING OVERLAY -->
 <div class="ov" id="shippingOv" onclick="if(event.target===this)closeShipping()" style="z-index:700">
-  <div class="modal" style="max-width:400px">
-    <div class="head"><h3>📦 운송장 등록</h3><p>택배 발송 후 운송장 번호를 입력해주세요</p></div>
-    <div style="padding:20px 24px 8px">
-      <div class="fg" style="margin-bottom:16px">
-        <label>택배사</label>
-        <select id="ship-carrier" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff">
+  <div class="modal" style="max-width:380px;border-radius:20px;overflow:hidden">
+    <!-- 헤더 -->
+    <div style="background:linear-gradient(135deg,var(--blue),#1d4ed8);padding:22px 24px;color:#fff">
+      <div style="font-size:22px;margin-bottom:6px">📦</div>
+      <div style="font-size:17px;font-weight:700">운송장 등록</div>
+      <div style="font-size:12px;opacity:.8;margin-top:3px">발송 후 운송장 번호를 입력해주세요</div>
+    </div>
+    <!-- 바디 -->
+    <div style="padding:22px 24px;display:flex;flex-direction:column;gap:16px">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px">택배사</div>
+        <select id="ship-carrier" style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none;background:#fff;color:var(--text)">
           <option>CJ대한통운</option>
           <option>롯데택배</option>
           <option>한진택배</option>
@@ -934,14 +940,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <option>기타</option>
         </select>
       </div>
-      <div class="fg" style="margin-bottom:8px">
-        <label>운송장 번호</label>
-        <input type="text" id="ship-tracking" placeholder="운송장 번호를 입력해주세요" style="width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none">
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px">운송장 번호</div>
+        <input type="text" id="ship-tracking" placeholder="ex) 123456789012"
+          style="width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;font-family:inherit;outline:none;letter-spacing:1px"
+          oninput="this.style.borderColor=this.value?'var(--blue)':'var(--border)'">
       </div>
     </div>
-    <div class="mbtns" style="padding:16px 24px 24px">
-      <button class="mbtn-cancel" onclick="closeShipping()">취소</button>
-      <button class="mbtn-ok" id="ship-submit-btn" onclick="submitShipping()">발송 완료</button>
+    <!-- 버튼 -->
+    <div style="padding:0 24px 24px;display:flex;gap:10px">
+      <button onclick="closeShipping()" style="flex:1;padding:12px;background:var(--bg2);border:none;border-radius:10px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;color:var(--muted)">취소</button>
+      <button id="ship-submit-btn" onclick="submitShipping()" style="flex:2;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">🚚 발송 완료</button>
     </div>
   </div>
 </div>
