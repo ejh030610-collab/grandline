@@ -498,7 +498,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="h-right" id="hRight">
       <button class="hbtn" onclick="openAuth('login')">로그인</button>
-      <button class="hbtn primary" onclick="openSell()">+ 판매 등록</button>
+      <button class="hbtn primary" onclick="openSellPicker()">+ 판매 등록</button>
     </div>
     <!-- 알림 드롭다운 -->
     <div class="noti-drop" id="notiDrop">
@@ -710,6 +710,38 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   </div>
 </div>
 
+<!-- SELL PICKER OVERLAY -->
+<div class="ov" id="sellPickerOv" onclick="if(event.target===this)closeSellPicker()">
+  <div class="modal" style="max-width:340px;padding:26px 24px">
+    <div style="font-size:17px;font-weight:700;margin-bottom:3px">판매 등록</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:20px">어떤 상품을 판매할까요?</div>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:14px">
+      <button onclick="closeSellPicker();openSell()"
+        style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--red-light);border:1.5px solid rgba(216,90,48,.25);border-radius:var(--r);cursor:pointer;text-align:left;font-family:inherit;transition:all .15s"
+        onmouseover="this.style.borderColor='var(--red)'" onmouseout="this.style.borderColor='rgba(216,90,48,.25)'">
+        <div style="font-size:28px;flex-shrink:0">🃏</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text)">카드 판매</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">싱글 카드 사진 업로드 · AI PSA 등급 분석</div>
+        </div>
+      </button>
+      <button onclick="closeSellPicker();openBoxSell()"
+        style="display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--gold-light);border:1.5px solid rgba(184,134,11,.2);border-radius:var(--r);cursor:pointer;text-align:left;font-family:inherit;transition:all .15s"
+        onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='rgba(184,134,11,.2)'">
+        <div style="font-size:28px;flex-shrink:0">📦</div>
+        <div>
+          <div style="font-size:14px;font-weight:700;color:var(--text)">박스 판매</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">미개봉 1BOX · 1CARTON (12BOX)</div>
+        </div>
+      </button>
+    </div>
+    <button onclick="closeSellPicker()"
+      style="width:100%;padding:9px;background:#fff;border:1px solid var(--border);border-radius:var(--r2);font-size:13px;color:var(--muted);font-family:inherit;cursor:pointer">
+      취소
+    </button>
+  </div>
+</div>
+
 <!-- BOX SELL OVERLAY -->
 <div class="ov" id="boxSellOv" onclick="if(event.target===this)closeBoxSell()">
   <div class="modal sell-modal">
@@ -748,9 +780,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <div id="box-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">박스 사진</div></div>
           </div>
         </div>
-      </div>
-      <div class="fg"><label>판매자 연락처 <span style="color:var(--red)">*</span></label>
-        <input type="text" id="box_contact" placeholder="오픈카카오 링크, 카카오ID, 전화번호 등">
       </div>
       <div class="fg"><label>추가 설명 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
         <textarea id="box_desc" placeholder="박스 상태, 구매처, 특이사항 등..."></textarea>
@@ -1362,12 +1391,12 @@ async function onLogin(user) {
     </div>
     ${adminBtn}
     <button class="hbtn mob-hide" onclick="doLogout()">로그아웃</button>
-    <button class="hbtn primary" onclick="openSell()">+ 판매</button>`;
+    <button class="hbtn primary" onclick="openSellPicker()">+ 판매</button>`;
 }
 async function doLogout() {
   localStorage.removeItem('gl_session');
   curUser = null; curProfile = null; wishSet = new Set();
-  document.getElementById('hRight').innerHTML = `<button class="hbtn" onclick="openAuth('login')">로그인</button><button class="hbtn primary" onclick="openSell()">+ 판매 등록</button>`;
+  document.getElementById('hRight').innerHTML = `<button class="hbtn" onclick="openAuth('login')">로그인</button><button class="hbtn primary" onclick="openSellPicker()">+ 판매 등록</button>`;
   toast('로그아웃 했어요');
   renderCards();
 }
@@ -1976,7 +2005,6 @@ function openBoxSell() {
   document.getElementById('box-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">박스 사진</div>';
   document.getElementById('box_price').value = '';
   document.getElementById('box_qty').value = '1';
-  document.getElementById('box_contact').value = '';
   document.getElementById('box_desc').value = '';
   if (curBoxSet) document.getElementById('box_set').value = curBoxSet;
   document.getElementById('boxSellOv').classList.add('on');
@@ -2003,9 +2031,7 @@ async function submitBoxSell() {
   const unit_type = document.getElementById('box_unit').value;
   const quantity = parseInt(document.getElementById('box_qty').value) || 1;
   const price = parseInt(document.getElementById('box_price').value);
-  const contact_info = document.getElementById('box_contact').value.trim();
   if (!price||price<=0) { toast('가격을 입력해주세요'); return; }
-  if (!contact_info) { toast('연락처를 입력해주세요'); return; }
 
   const btn = document.querySelector('#boxSellOv .mbtn-ok');
   if (btn) { btn.disabled=true; btn.textContent='등록 중...'; }
@@ -2029,7 +2055,6 @@ async function submitBoxSell() {
       price, series, unit_type, quantity,
       listing_type: 'box',
       condition: '미개봉',
-      contact_info,
       description: document.getElementById('box_desc').value || null,
       image_front: imageUrl,
       status: 'active',
@@ -2049,23 +2074,17 @@ async function openBoxContact(lid) {
   if (!curUser) { openAuth('login'); return; }
   const { data: l } = await sb.from('listings').select('*').eq('id', lid).single();
   if (!l) return;
-  // 기존 연락하기 모달 재활용
-  contactData = { l, c: { name: `${l.series} ${l.unit_type}` } };
+  if (l.seller_username === curUser.username) { toast('내 판매 글이에요'); return; }
+  // 카드와 동일한 구매요청 플로우 사용
+  contactData = { l, c: { name: `${l.series} ${l.unit_type}`, id: l.card_id } };
   document.getElementById('contact-info').innerHTML = `
     <div class="c-avatar" style="background:${AVA[(l.seller_name||'?').charCodeAt(0)%5]}">${(l.seller_name||'?')[0]}</div>
     <div>
       <div style="font-size:14px;font-weight:600">${l.seller_name}</div>
-      <div style="font-size:12px;color:var(--muted)">${l.series} · ${l.unit_type} · ${l.quantity}개 보유
+      <div style="font-size:12px;color:var(--muted);margin-top:1px">📦 ${l.series} · ${l.unit_type}
         <span style="font-weight:700;color:var(--red);margin-left:7px">${l.price?.toLocaleString()}원/${l.unit_type}</span>
       </div>
     </div>`;
-  const contactBox = document.getElementById('seller-contact-box');
-  if (l.contact_info) {
-    contactBox.style.display = 'block';
-    document.getElementById('seller-contact-text').textContent = l.contact_info;
-  } else {
-    contactBox.style.display = 'none';
-  }
   document.getElementById('contact-sent').classList.remove('on');
   document.getElementById('contact-btns').style.display = 'flex';
   document.getElementById('c_msg').value = '';
@@ -2102,6 +2121,15 @@ function filterSellCards() {
   if (prev && filtered.find(c=>c.id===prev)) sel.value = prev;
   const cnt = document.getElementById('s_card_cnt');
   if (cnt) cnt.textContent = filtered.length + '종';
+}
+
+// ─── SELL PICKER ───
+function openSellPicker() {
+  if (!curUser) { openAuth('login'); return; }
+  document.getElementById('sellPickerOv').classList.add('on');
+}
+function closeSellPicker() {
+  document.getElementById('sellPickerOv').classList.remove('on');
 }
 
 function openSell(prefill) {
@@ -2555,7 +2583,7 @@ async function loadMyRequests() {
   const el = document.getElementById('my-requests-list');
   if (!el || !curUser) return;
   const { data } = await sb.from('trades')
-    .select('*, listings(card_id, price, grade_type, image_front, status, contact_info)')
+    .select('*, listings(card_id, price, grade_type, unit_type, image_front, status, contact_info)')
     .eq('seller_username', curUser.username)
     .in('status', ['pending', 'approved', 'shipping'])
     .order('created_at', { ascending: false });
@@ -2591,8 +2619,8 @@ async function loadMyRequests() {
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
         <div>
-          <div style="font-size:13px;font-weight:700">${t.card_id}</div>
-          <div style="font-size:12px;color:var(--muted)">${t.price?.toLocaleString()}원 · ${t.listings?.grade_type||'미등급'}</div>
+          <div style="font-size:13px;font-weight:700">${t.card_id?.startsWith('BOX-') ? `📦 ${t.card_id.replace('BOX-','')} ${t.listings?.unit_type||''}` : t.card_id}</div>
+          <div style="font-size:12px;color:var(--muted)">${t.price?.toLocaleString()}원 · ${t.listings?.grade_type||t.listings?.unit_type||'미등급'}</div>
         </div>
         <span style="font-size:11px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
       </div>
@@ -2704,7 +2732,7 @@ async function loadMyReq() {
     const isCompleted = t.status === 'completed';
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-        <div style="font-size:13px;font-weight:700">${t.card_id}</div>
+        <div style="font-size:13px;font-weight:700">${t.card_id?.startsWith('BOX-') ? `📦 ${t.card_id.replace('BOX-','')} 박스` : t.card_id}</div>
         <span style="font-size:12px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-bottom:4px">
