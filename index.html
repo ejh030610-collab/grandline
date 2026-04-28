@@ -864,7 +864,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </div>
         <div style="font-size:11px;color:var(--muted);margin-top:6px">해당 없으면 모두 체크 해제 → 양호 상태로 등록돼요</div>
       </div>
-      <div class="fg" style="margin-top:10px"><label>판매자 연락처 <span style="color:var(--red)">*</span></label><input type="text" id="s_contact" placeholder="거래 승인 후 구매자에게 공개 (오픈카카오, 전화번호 등)"></div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
         <button class="mbtn-ok" onclick="submitSell()">등록하기</button>
@@ -2107,7 +2106,6 @@ function openSell(prefill) {
   document.getElementById('ai-result').classList.remove('on');
   document.getElementById('ai-btn').disabled = true;
   document.getElementById('s_search').value = '';
-  document.getElementById('s_contact').value = '';
   document.getElementById('s_price').value = '';
   ['cond_scratch','cond_whitening','cond_bend','cond_stain','cond_centering'].forEach(id => {
     const el = document.getElementById(id); if (el) el.checked = false;
@@ -2299,10 +2297,9 @@ async function submitSell() {
   if (!curUser) { openAuth('login'); return; }
   const card_id = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
-  const contact_info = document.getElementById('s_contact').value.trim();
+  const contact_info = curUser.phone || curUser.username;
   if (!card_id) { toast('카드를 선택해주세요'); return; }
   if (!price||price<=0) { toast('올바른 가격을 입력해주세요'); return; }
-  if (!contact_info) { toast('판매자 연락처를 입력해주세요'); return; }
 
   const btn = document.querySelector('#sellOv .mbtn-ok');
   if (btn) { btn.disabled = true; btn.textContent = '확인 중...'; }
