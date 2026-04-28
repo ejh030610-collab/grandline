@@ -1015,8 +1015,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <div class="my-hd">
       <div class="my-avatar" id="my-avatar">?</div>
       <div><div class="my-name" id="my-name">-</div><div class="my-sub" id="my-sub">-</div></div>
-      <button onclick="doLogout();closeMyPage();" style="margin-left:auto;margin-right:8px;background:rgba(255,255,255,.2);border:none;border-radius:var(--r3);padding:5px 10px;color:#fff;font-size:11px;font-weight:600;cursor:pointer">로그아웃</button>
-      <button class="my-close" onclick="closeMyPage()">✕</button>
+      <button onclick="closeMyPage()" style="margin-left:auto" class="my-close">✕</button>
     </div>
     <div class="my-tabs">
       <button class="my-tab active" onclick="switchMyTab('stats',this)">📊 현황</button>
@@ -2400,6 +2399,18 @@ function openContact(lid, cid) {
   document.getElementById('c_msg').value='';
   document.getElementById('contactOv').classList.add('on');
 }
+function getTrackingUrl(carrier, trackingNum) {
+  const urls = {
+    'CJ대한통운': `https://trace.cjlogistics.com/next/tracking.html?wblNo=${trackingNum}`,
+    '롯데택배':   `https://www.lotteglogis.com/home/reservation/tracking/index?InvNo=${trackingNum}`,
+    '한진택배':   `https://www.hanjin.com/kor/CMS/DeliveryMgr/WaybillResult.do?mCode=MN038&schLang=KR&wblnumText2=${trackingNum}`,
+    '우체국택배': `https://service.epost.go.kr/trace.RetrieveEmsRigiTraceList.comm?sid1=${trackingNum}`,
+    '로젠택배':   `https://www.ilogen.com/web/personal/trace/${trackingNum}`,
+    '편의점택배': `https://www.cvsnet.co.kr/waybill/tracking.do?waybillno=${trackingNum}`,
+  };
+  return urls[carrier] || `https://search.naver.com/search.naver?query=${encodeURIComponent(carrier+' '+trackingNum+' 배송조회')}`;
+}
+
 function closeContact() { document.getElementById('contactOv').classList.remove('on'); }
 async function sendContact() {
   const btn = document.querySelector('#contactOv .mbtn-ok');
@@ -2554,7 +2565,9 @@ async function loadMyRequests() {
       ${isShipping || t.status==='completed' ? `
       <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
         <div style="font-weight:700;color:var(--green);margin-bottom:4px">🚚 배송 정보</div>
-        <div>${t.carrier||''} · ${t.tracking_number||''}</div>
+        <div>${t.carrier||''} · ${t.tracking_number||''}
+          ${t.tracking_number ? `<a href="${getTrackingUrl(t.carrier, t.tracking_number)}" target="_blank" style="margin-left:8px;font-size:11px;color:var(--blue);font-weight:600">배송 조회 →</a>` : ''}
+        </div>
       </div>` : ''}
       <!-- 버튼 -->
       ${isPending ? `<div style="display:flex;gap:7px">
@@ -2660,6 +2673,7 @@ async function loadMyReq() {
         <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
           <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:6px">🚚 배송 정보</div>
           <div style="font-size:13px;margin-bottom:4px"><b>${t.carrier||''}</b> · ${t.tracking_number||''}</div>
+          ${t.tracking_number ? `<a href="${getTrackingUrl(t.carrier, t.tracking_number)}" target="_blank" style="display:inline-block;margin-top:6px;padding:7px 14px;background:var(--blue);color:#fff;border-radius:var(--r3);font-size:12px;font-weight:600;text-decoration:none">🔍 배송 조회하기</a>` : ''}
           <div style="font-size:11px;color:var(--muted)">배송 완료 후 수령 확인을 눌러주세요</div>
         </div>
         <button onclick="confirmReceipt('${t.id}','${t.listing_id}', this)" style="width:100%;padding:9px;background:var(--green);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
