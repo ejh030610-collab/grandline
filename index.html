@@ -918,7 +918,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- SHIPPING OVERLAY -->
-<div class="ov" id="shippingOv" onclick="if(event.target===this)closeShipping()">
+<div class="ov" id="shippingOv" onclick="if(event.target===this)closeShipping()" style="z-index:700">
   <div class="modal" style="max-width:400px">
     <div class="head"><h3>📦 운송장 등록</h3><p>택배 발송 후 운송장 번호를 입력해주세요</p></div>
     <div style="padding:16px 20px">
@@ -986,7 +986,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <h3 style="margin-bottom:3px">판매자에게 연락하기</h3>
       <p style="font-size:13px;color:var(--muted);margin-bottom:14px">📦 택배 거래 · 판매자와 직접 진행해요</p>
       <div class="contact-sel-box" id="contact-info"></div>
-      <div class="fg"><label>내 연락처 <span style="color:var(--red)">*</span></label><input type="text" id="c_contact" placeholder="오픈카카오 링크, 카카오ID, 전화번호 등"></div>
       <div class="fg"><label>메시지 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label><textarea id="c_msg" placeholder="문의사항이나 가격 제안을 남겨주세요..."></textarea></div>
       <div class="contact-sent" id="contact-sent">
         <div style="font-size:18px;margin-bottom:3px">✅</div>
@@ -2052,7 +2051,6 @@ async function openBoxContact(lid) {
   }
   document.getElementById('contact-sent').classList.remove('on');
   document.getElementById('contact-btns').style.display = 'flex';
-  document.getElementById('c_contact').value = '';
   document.getElementById('c_msg').value = '';
   document.getElementById('contactOv').classList.add('on');
 }
@@ -2390,18 +2388,17 @@ function openContact(lid, cid) {
     </div>`;
   document.getElementById('contact-sent').classList.remove('on');
   document.getElementById('contact-btns').style.display='flex';
-  document.getElementById('c_contact').value='';
   document.getElementById('c_msg').value='';
   document.getElementById('contactOv').classList.add('on');
 }
 function closeContact() { document.getElementById('contactOv').classList.remove('on'); }
 async function sendContact() {
-  const contact = document.getElementById('c_contact').value.trim();
-  if (!contact) { toast('연락처를 입력해주세요'); return; }
   const btn = document.querySelector('#contactOv .mbtn-ok');
   if (btn) { btn.disabled = true; btn.textContent = '전송 중...'; }
   try {
     const { l } = contactData;
+    // 연락처는 계정 전화번호 사용
+    const contact = curUser.phone || curUser.username;
     const { error } = await sb.from('trades').insert({
       listing_id: l.id,
       card_id: l.card_id,
@@ -2578,8 +2575,10 @@ async function approveTrade(tradeId, listingId, btn) {
 async function rejectTrade(tradeId, btn) {
   if (!confirm('구매 요청을 거절할까요?')) return;
   if (btn) { btn.disabled = true; btn.textContent = '처리 중...'; }
-  const { error } = await sb.from('trades').update({ status: 'rejected' }).eq('id', tradeId);
-  if (error) { toast('처리 실패'); if (btn) { btn.disabled=false; btn.textContent='❌ 거절'; } return; }
+  const { data, error } = await sb.from('trades').update({ status: 'rejected' }).eq('id', tradeId).select();
+  console.log('rejectTrade result:', data, error);
+  if (error) { toast('처리 실패: ' + error.message); if (btn) { btn.disabled=false; btn.textContent='❌ 거절'; } return; }
+  if (!data?.length) { toast('업데이트 실패 - 권한 확인 필요'); if (btn) { btn.disabled=false; btn.textContent='❌ 거절'; } return; }
   toast('거절했어요');
   await new Promise(r => setTimeout(r, 500));
   await loadMyRequests();
