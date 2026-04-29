@@ -109,6 +109,15 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .price-wrap input{width:90px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:5px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text);}
 .price-wrap input:focus{border-color:var(--red);}
 .sort-sel{font-size:12px;padding:5px 10px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);color:var(--muted);font-family:inherit;outline:none;}
+/* 희귀도 드롭다운 */
+.rarity-drop-wrap{position:relative;}
+.rarity-drop{display:none;position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:200;min-width:148px;padding:4px 0;animation:fadeUp .15s ease;}
+.rarity-drop.on{display:block;}
+.rdrop-item{padding:8px 14px;font-size:13px;color:var(--muted);cursor:pointer;transition:background .1s;}
+.rdrop-item:hover{background:var(--bg2);}
+.rdrop-item.active{color:var(--red);font-weight:600;background:var(--red-light);}
+#rarityChip.active{background:var(--red);border-color:var(--red);color:#fff;}
+#rarityChip.active #rarityArrow{color:#fff;}
 .list-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .list-title{font-size:16px;font-weight:700;}
 .list-cnt{font-size:12px;color:var(--muted);}
@@ -128,6 +137,13 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .rt-l{background:rgba(22,163,74,.92);color:#fff;}
 .rt-none{background:rgba(200,200,200,.5);color:#999;}
 .rt-p{background:linear-gradient(135deg,#f59e0b,#ec4899,#8b5cf6);color:#fff;}
+/* 패러렐 개별 뱃지 */
+.rt-sec-p{background:linear-gradient(135deg,#ff6b35,#f59e0b,#ff4757);color:#fff;box-shadow:0 0 6px rgba(255,107,53,.5);}
+.rt-sr-p{background:linear-gradient(135deg,#a855f7,#ec4899,#6366f1);color:#fff;box-shadow:0 0 6px rgba(168,85,247,.5);}
+.rt-r-p{background:linear-gradient(135deg,#3b82f6,#06b6d4,#8b5cf6);color:#fff;box-shadow:0 0 6px rgba(59,130,246,.5);}
+.rt-l-p{background:linear-gradient(135deg,#10b981,#84cc16,#06b6d4);color:#fff;box-shadow:0 0 6px rgba(16,185,129,.5);}
+.card-img-wrap{position:relative;overflow:hidden;background:var(--bg3);}
+.card-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
 .wish-btn{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.9);border:none;border-radius:50%;width:26px;height:26px;font-size:13px;display:flex;align-items:center;justify-content:center;color:#ccc;transition:all .15s;}
 .wish-btn.on,.wish-btn:hover{color:#e8507a;}
 .list-badge{position:absolute;bottom:6px;right:6px;font-size:10px;background:rgba(0,0,0,.6);border-radius:7px;padding:2px 7px;color:#fff;}
@@ -255,48 +271,133 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 /* ── MOBILE ── */
 @media(max-width:700px){
-  /* 전체 패딩 줄이기 */
-  .main{padding:12px 12px;}
+  /* 전체 패딩 */
+  .main{padding:10px 10px 80px;}
 
-  /* 모달 전체화면 */
+  /* 헤더 — 모바일에서 로그인/판매 버튼 숨김 (하단 네비바로 대체) */
+  .h-right .hbtn{display:none!important;}
+  .h-right .user-chip span{display:none;}
+  .h-right{gap:6px;}
+  /* 알림벨은 유지 */
+  .noti-btn{display:flex!important;}
+
+  /* 모달 시트 */
   .ov{align-items:flex-end;padding:0;}
-  .modal{border-radius:20px 20px 0 0;max-width:100%!important;max-height:90vh;overflow-y:auto;}
-  .sell-modal{max-width:100%!important;border-radius:20px 20px 0 0;}
-  .my-modal{border-radius:20px 20px 0 0;max-height:90vh;}
+  .modal{border-radius:22px 22px 0 0;max-width:100%!important;max-height:93vh;overflow-y:auto;}
+  .sell-modal{max-width:100%!important;border-radius:22px 22px 0 0;}
+  .my-modal{border-radius:22px 22px 0 0;max-height:93vh;}
 
   /* 마이페이지 탭 스크롤 */
   .my-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none;}
   .my-tabs::-webkit-scrollbar{display:none;}
-  .my-tab{white-space:nowrap;flex-shrink:0;font-size:12px;padding:8px 10px;}
+  .my-tab{white-space:nowrap;flex-shrink:0;font-size:12px;padding:9px 12px;}
 
-  /* 헤더 */
-  .h-search{max-width:140px;}
-  .h-search input{font-size:13px;}
+  /* 카드 그리드 — 2열, 이미지 비율 개선 */
+  .grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .card-thumb{font-size:40px;}
+  .card-info{padding:7px 9px 10px;}
+  .card-name{font-size:12px;margin:3px 0;}
+  .card-price{font-size:14px;}
+  .rtag{font-size:10px;padding:2px 6px;}
+  .wish-btn{width:30px;height:30px;font-size:15px;}
 
-  /* 카드 그리드 */
-  .grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;}
+  /* 필터바 — 컴팩트 */
+  .filter-bar{gap:5px;padding:8px 10px;flex-wrap:wrap;}
+  .ftag{font-size:11px;padding:5px 10px;border-radius:14px;}
+  .filter-bar .fdiv{display:none;}
+  .filter-bar>span{display:none;}
+  .sort-sel{margin-left:auto;font-size:11px;}
+  .price-wrap{display:none;}
 
-  /* 필터바 */
-  .filter-bar{gap:6px;padding:8px 10px;}
-  .ftag{font-size:11px;padding:4px 10px;}
+  /* 홈 최근 판매 — 1열 풀 */
+  .recent-list{grid-template-columns:1fr;gap:7px;}
+  .recent-item{padding:10px 12px;}
+  .ri-img{width:38px;height:54px;}
+  .ri-name{font-size:13px;}
+  .ri-price{font-size:14px;}
+  /* 인기 카드 그리드 */
+  .hot-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+
+  /* 카드 상세 */
+  .detail-modal{max-width:100%;border-radius:0;max-height:100dvh;padding-bottom:80px;}
+  .detail-top{grid-template-columns:1fr;}
+  .detail-img-col{border-radius:0;border-right:none;border-bottom:1px solid var(--border);padding:16px;background:var(--bg3);}
+  .detail-main-img{width:140px;height:200px;}
+  .detail-info{padding:14px 16px;}
+  .d-name{font-size:20px;}
+
+  /* 판매 목록 아이템 — 모바일 레이아웃 */
+  .l-item{padding:14px 0;gap:10px;flex-wrap:nowrap;}
+  .l-imgs{flex-shrink:0;}
+  .l-img{width:44px;height:62px;}
+  .l-avatar{width:32px;height:32px;font-size:13px;flex-shrink:0;}
+  .l-info{flex:1;min-width:0;}
+  .l-seller{font-size:13px;}
+  .l-price{font-size:15px;white-space:nowrap;}
+  .l-contact-btn{padding:9px 14px;font-size:13px;border-radius:8px;white-space:nowrap;flex-shrink:0;}
+
+  /* 구매하기 하단 고정 CTA */
+  .mob-cta-bar{display:flex!important;}
+  .d-btns{display:none;}
+  .mob-cta-bar .dbtn{padding:14px;font-size:15px;border-radius:12px;}
 
   /* 판매 모달 */
   .sell-body{padding:14px 16px;}
   .fg-2{grid-template-columns:1fr;}
-
-  /* 카드 상세 */
-  .detail-modal{max-width:100%;border-radius:0;max-height:100vh;}
+  .fg input,.fg select,.fg textarea{font-size:16px;padding:10px 13px;}/* iOS zoom 방지 */
 
   /* 박스 뷰 */
   #boxWrap{padding:0;}
 
-  /* 현황 stat */
+  /* 마이페이지 stat */
   .stat-row{grid-template-columns:repeat(2,1fr);}
+
+  /* 내 판매 목록 아이템 */
+  .my-l-item{gap:10px;padding:10px 0;}
+  .my-l-img{width:38px;height:54px;}
 }
-@media(max-width:380px){
+@media(max-width:700px){
+  input,select,textarea{font-size:16px!important;}/* iOS zoom 방지 */
+}
   .grid{grid-template-columns:repeat(2,1fr);}
   .my-tab{font-size:11px;padding:7px 8px;}
 }
+
+/* ── 거래 진행 스텝바 ── */
+.trade-steps{margin:10px 0 14px;background:linear-gradient(135deg,#1a3a5c,#1e4d8c);border-radius:var(--r2);overflow:hidden;}
+.ts-status-bar{padding:12px 16px 8px;display:flex;align-items:center;gap:8px;border-bottom:1px solid rgba(255,255,255,.1);}
+.ts-status-icon{font-size:20px;}
+.ts-status-msg{font-size:14px;font-weight:700;color:#fff;}
+.ts-status-sub{font-size:11px;color:rgba(255,255,255,.65);margin-top:1px;}
+.ts-track-row{padding:12px 16px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:4px;}
+.ts-item{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;position:relative;z-index:1;}
+.ts-circle{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:14px;color:rgba(255,255,255,.35);transition:all .3s;position:relative;}
+.ts-circle.done{background:#22c55e;border-color:#22c55e;color:#fff;font-size:16px;}
+.ts-circle.active{background:#fff;border-color:#fff;color:#1a3a5c;font-size:12px;font-weight:700;box-shadow:0 0 0 5px rgba(255,255,255,.2);animation:tsPulse 2s infinite;}
+@keyframes tsPulse{0%,100%{box-shadow:0 0 0 5px rgba(255,255,255,.2)}50%{box-shadow:0 0 0 8px rgba(255,255,255,.08)}}
+.ts-label{font-size:9px;color:rgba(255,255,255,.45);font-weight:500;white-space:nowrap;text-align:center;}
+.ts-label.done{color:rgba(255,255,255,.85);}
+.ts-label.active{color:#fff;font-weight:700;font-size:10px;}
+.ts-date{font-size:8.5px;color:rgba(255,255,255,.45);text-align:center;margin-top:1px;line-height:1.3;}
+.ts-date.done,.ts-date.active{color:rgba(255,255,255,.7);}
+.ts-line{flex:1;height:2px;background:rgba(255,255,255,.15);margin:0 -1px;margin-bottom:22px;position:relative;}
+.ts-line.done{background:#22c55e;}
+.ts-line.partial{background:linear-gradient(90deg,#22c55e 50%,rgba(255,255,255,.15) 50%);background-size:8px 2px;animation:dashMove 1s linear infinite;}
+@keyframes dashMove{to{background-position:8px 0}}
+@keyframes dashMove{to{background-position:8px 0;}}
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:62px;background:#fff;border-top:1px solid var(--border);z-index:150;box-shadow:0 -2px 12px rgba(0,0,0,.08);}
+.mob-nav-inner{display:flex;height:100%;padding-bottom:env(safe-area-inset-bottom,0px);}
+.mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;font-family:inherit;cursor:pointer;color:var(--muted);transition:color .15s;padding:0;-webkit-tap-highlight-color:transparent;}
+.mob-nav-btn.active{color:var(--red);}
+.mob-nav-icon{font-size:22px;line-height:1;}
+.mob-nav-label{font-size:10px;font-weight:500;}
+.mob-nav-btn.sell-btn{color:#fff;}
+.mob-nav-btn.sell-btn .mob-nav-sell-inner{width:48px;height:48px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 14px rgba(216,90,48,.5);margin-bottom:-8px;}
+@media(max-width:700px){.mob-nav{display:block;}}
+
+/* ── 카드 상세 하단 고정 CTA ── */
+.mob-cta-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px 16px calc(10px + env(safe-area-inset-bottom));gap:8px;z-index:50;box-shadow:0 -2px 12px rgba(0,0,0,.07);}
+.mob-cta-bar .dbtn{padding:13px;font-size:14px;border-radius:10px;}
 .sell-modal{max-width:540px;}
 .sell-modal .head{padding:20px 22px 14px;border-bottom:1px solid var(--border);}
 .sell-modal .head h3{font-size:16px;font-weight:700;}
@@ -365,6 +466,13 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .c-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0;}
 .contact-sent{background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:14px;text-align:center;display:none;}
 .contact-sent.on{display:block;}
+.cship-opt{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s;}
+.cship-opt:hover{border-color:var(--red);}
+.cship-opt.active{border-color:var(--red);background:var(--red-light);}
+.cship-opt.active .cship-name{color:var(--red);font-weight:700;}
+.cship-name{font-size:13px;font-weight:500;color:var(--text);}
+.cship-price{font-size:13px;font-weight:700;color:var(--red);}
+.cship-price.free{color:var(--green);}
 
 /* ADMIN */
 .admin-panel{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:300;overflow-y:auto;}
@@ -600,16 +708,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="s-divider"></div>
 
-    <!-- 희귀도 -->
-    <div class="s-sec-label">희귀도</div>
-    <div class="s-sub active" data-rarity="all" onclick="setRarity(this)">전체</div>
-    <div class="s-sub" data-rarity="P" onclick="setRarity(this)">✨ P (패러렐)</div>
-    <div class="s-sub" data-rarity="SEC" onclick="setRarity(this)">⭐ SEC</div>
-    <div class="s-sub" data-rarity="SR" onclick="setRarity(this)">💜 SR</div>
-    <div class="s-sub" data-rarity="R" onclick="setRarity(this)">💙 R</div>
-    <div class="s-sub" data-rarity="UC" onclick="setRarity(this)">⬜ UC</div>
-    <div class="s-sub" data-rarity="C" onclick="setRarity(this)">⬜ C</div>
-    <div class="s-sub" data-rarity="L" onclick="setRarity(this)">💚 L</div>
   </aside>
 
   <!-- MAIN -->
@@ -645,7 +743,27 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="ftag" data-color="황색" onclick="setColor(this)">황색</button>
       <button class="ftag" data-color="다색" onclick="setColor(this)">다색</button>
       <div class="fdiv"></div>
-      <button class="ftag" id="saleFilter" onclick="toggleSaleFilter(this)" style="background:var(--bg2);border-color:var(--border2)">🏷️ 판매 가능만</button>
+      <!-- 희귀도 드롭다운 -->
+      <div class="rarity-drop-wrap" id="rarityWrap">
+        <button class="ftag" id="rarityChip" onclick="toggleRarityDrop()" style="display:flex;align-items:center;gap:5px;padding-right:9px">
+          <span id="rarityLabel">희귀도</span>
+          <span id="rarityArrow" style="font-size:9px;color:var(--muted);transition:transform .18s">▼</span>
+        </button>
+        <div class="rarity-drop" id="rarityDrop">
+          <div class="rdrop-item active" data-rarity="all" onclick="setRarity(this)">전체</div>
+          <div class="rdrop-item" data-rarity="SEC" onclick="setRarity(this)">⭐ SEC</div>
+          <div class="rdrop-item" data-rarity="SR" onclick="setRarity(this)">💜 SR</div>
+          <div class="rdrop-item" data-rarity="R" onclick="setRarity(this)">💙 R</div>
+          <div class="rdrop-item" data-rarity="UC" onclick="setRarity(this)">⬜ UC</div>
+          <div class="rdrop-item" data-rarity="C" onclick="setRarity(this)">⬜ C</div>
+          <div class="rdrop-item" data-rarity="L" onclick="setRarity(this)">💚 L</div>
+          <div style="height:1px;background:var(--border);margin:3px 0"></div>
+          <div class="rdrop-item" data-rarity="SEC★" onclick="setRarity(this)">✨ SEC★</div>
+          <div class="rdrop-item" data-rarity="SR★" onclick="setRarity(this)">✨ SR★</div>
+          <div class="rdrop-item" data-rarity="R★" onclick="setRarity(this)">✨ R★</div>
+          <div class="rdrop-item" data-rarity="L★" onclick="setRarity(this)">✨ L★</div>
+        </div>
+      </div>
       <div class="price-wrap">
         <input type="number" id="priceMin" placeholder="최저가" oninput="renderCards()">
         <span style="font-size:11px;color:var(--muted)">~</span>
@@ -702,6 +820,24 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="fg" id="nickField" style="display:none"><label>닉네임</label><input type="text" id="authNick" placeholder="예: 밀짚모자루피" maxlength="12"></div>
       <div class="fg" id="phoneField" style="display:none"><label>전화번호 <span style="color:var(--red)">*</span></label><input type="tel" id="authPhone" placeholder="010-0000-0000"></div>
       <div class="fg" id="addrField" style="display:none"><label>주소 <span style="color:var(--red)">*</span></label><input type="text" id="authAddr" placeholder="배송을 위한 기본 주소 (예: 서울시 강남구...)"></div>
+      <div id="bankField" style="display:none;margin-bottom:11px">
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;font-weight:500">계좌번호 <span style="font-size:11px;color:var(--dim);font-weight:400">(선택 · 구매 승인 후 자동 공개)</span></label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div style="position:relative;flex-shrink:0">
+            <button id="bankToggleBtn" onclick="toggleBankDrop()" type="button"
+              style="display:flex;align-items:center;gap:5px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r3);background:#fff;font-size:12px;font-family:inherit;color:var(--text);cursor:pointer;white-space:nowrap;min-width:80px">
+              <span id="bankLabel">은행 선택</span><span style="font-size:9px;color:var(--muted)">▼</span>
+            </button>
+            <div id="bankDrop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:300;min-width:120px;padding:4px 0;animation:fadeUp .15s ease">
+              ${['카카오뱅크','토스뱅크','국민은행','신한은행','우리은행','하나은행','농협은행','기업은행','SC제일은행','케이뱅크'].map(b=>`<div onclick="selectBank('${b}')" style="padding:8px 13px;font-size:12px;cursor:pointer;color:var(--text)" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=''">${b}</div>`).join('')}
+            </div>
+          </div>
+          <input type="hidden" id="authBank" value="">
+          <input type="text" id="authAcct" placeholder="계좌번호 (- 없이)"
+            style="flex:1;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:8px 11px;font-size:13px;font-family:inherit;outline:none;color:var(--text)"
+            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+      </div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeAuth()">취소</button>
         <button class="mbtn-ok" id="authBtn" onclick="submitAuth()">로그인</button>
@@ -873,13 +1009,13 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <div style="font-size:11px;color:var(--muted);margin-bottom:8px">📐 카드를 가이드 테두리 안에 맞춰서 촬영해주세요</div>
           <div class="photo-row">
             <div class="photo-slot" onclick="document.getElementById('photo-front').click()" style="position:relative">
-              <input type="file" id="photo-front" accept="image/*" onchange="previewPhoto('front',event)" style="display:none">
+              <input type="file" id="photo-front" accept="image/*" capture="environment" onchange="previewPhoto('front',event)" style="display:none">
               <div id="front-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div></div>
               <!-- 가이드 테두리 -->
               <div id="front-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none"></div>
             </div>
             <div class="photo-slot" onclick="document.getElementById('photo-back').click()" style="position:relative">
-              <input type="file" id="photo-back" accept="image/*" onchange="previewPhoto('back',event)" style="display:none">
+              <input type="file" id="photo-back" accept="image/*" capture="environment" onchange="previewPhoto('back',event)" style="display:none">
               <div id="back-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div></div>
               <!-- 가이드 테두리 -->
               <div id="back-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none"></div>
@@ -908,42 +1044,110 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="fg-2">
         <div class="fg" style="margin-bottom:0"><label>판매가 (원)</label><input type="number" id="s_price" placeholder="0"></div>
       </div>
-      <!-- 카드 상태 체크박스 -->
+      <!-- 카드 상태 선택 -->
       <div class="fg" style="margin-top:10px">
-        <label>카드 상태 <span style="font-size:11px;color:var(--muted);font-weight:400">(해당 항목 체크)</span></label>
-        <div style="display:flex;flex-direction:column;gap:7px;margin-top:6px">
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
-            <input type="checkbox" id="cond_scratch" style="width:15px;height:15px;accent-color:var(--red)">
-            스크래치 — 카드 표면에 긁힘이 있어요
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
-            <input type="checkbox" id="cond_whitening" style="width:15px;height:15px;accent-color:var(--red)">
-            화이트닝 — 카드 모서리/면에 흰 점이 있어요
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
-            <input type="checkbox" id="cond_bend" style="width:15px;height:15px;accent-color:var(--red)">
-            휨/구김 — 카드가 휘거나 눌린 자국이 있어요
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
-            <input type="checkbox" id="cond_stain" style="width:15px;height:15px;accent-color:var(--red)">
-            오염/지문 — 이물질이나 지문이 있어요
-          </label>
-          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:400">
-            <input type="checkbox" id="cond_centering" style="width:15px;height:15px;accent-color:var(--red)">
-            센터링 불량 — 카드 인쇄 중심이 한쪽으로 치우쳐 있어요
-          </label>
+        <label>카드 상태 <span style="color:var(--red)">*</span></label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px" id="cond-grid">
+          <div class="cond-opt active" data-cond="양호" onclick="selectCond(this)"
+            style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--green);background:var(--green-light);border-radius:var(--r3);cursor:pointer;transition:all .15s;grid-column:1/-1">
+            <span style="font-size:15px">✅</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--green)">양호</div>
+              <div style="font-size:10px;color:var(--muted)">특이사항 없음</div>
+            </div>
+          </div>
+          <div class="cond-opt" data-cond="스크래치" onclick="selectCond(this)"
+            style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
+            <span style="font-size:15px">🔅</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">스크래치</div>
+              <div style="font-size:10px;color:var(--muted)">표면 긁힘</div>
+            </div>
+          </div>
+          <div class="cond-opt" data-cond="화이트닝" onclick="selectCond(this)"
+            style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
+            <span style="font-size:15px">⬜</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">화이트닝</div>
+              <div style="font-size:10px;color:var(--muted)">모서리 흰 점</div>
+            </div>
+          </div>
+          <div class="cond-opt" data-cond="휨/구김" onclick="selectCond(this)"
+            style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
+            <span style="font-size:15px">📐</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">휨/구김</div>
+              <div style="font-size:10px;color:var(--muted)">눌린 자국</div>
+            </div>
+          </div>
+          <div class="cond-opt" data-cond="오염/지문" onclick="selectCond(this)"
+            style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
+            <span style="font-size:15px">👆</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">오염/지문</div>
+              <div style="font-size:10px;color:var(--muted)">이물질·지문</div>
+            </div>
+          </div>
+          <div class="cond-opt" data-cond="센터링불량" onclick="selectCond(this)"
+            style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
+            <span style="font-size:15px">↔️</span>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:var(--text)">센터링 불량</div>
+              <div style="font-size:10px;color:var(--muted)">인쇄 치우침</div>
+            </div>
+          </div>
         </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px">해당 없으면 모두 체크 해제 → 양호 상태로 등록돼요</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:6px">복수 선택 가능 · 양호 선택 시 나머지 해제</div>
       </div>
-      <!-- 배송 방법 -->
+      <!-- 배송 방법 + 가격 -->
       <div class="fg" style="margin-top:10px">
         <label>배송 방법 <span style="color:var(--red)">*</span></label>
-        <select id="ship_method_sel" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff;color:var(--text);margin-top:6px">
-          <option value="">배송 방법 선택</option>
-          <option value="등기">📮 등기 — 우체국 등기 발송 (분실 시 보상)</option>
-          <option value="일반택배">📦 일반택배 — CJ/한진/롯데 등 (익일~2일)</option>
-          <option value="반값택배">💸 반값택배 — 편의점 접수 (저렴한 요금)</option>
-        </select>
+        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px" id="ship-grid">
+          <div class="ship-opt" data-ship="등기" onclick="selectShip(this)"
+            style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
+            <span style="font-size:18px;flex-shrink:0">📮</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:var(--text)">등기 — 우체국 등기 발송</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+              <input type="number" class="ship-price-input" placeholder="요금" min="0"
+                onclick="event.stopPropagation()"
+                style="width:70px;padding:4px 7px;border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;outline:none;text-align:right">
+              <span style="font-size:11px;color:var(--muted)">원</span>
+            </div>
+          </div>
+          <div class="ship-opt" data-ship="일반택배" onclick="selectShip(this)"
+            style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
+            <span style="font-size:18px;flex-shrink:0">📦</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:var(--text)">일반택배 — CJ/한진/롯데</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+              <input type="number" class="ship-price-input" placeholder="요금" min="0"
+                onclick="event.stopPropagation()"
+                style="width:70px;padding:4px 7px;border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;outline:none;text-align:right">
+              <span style="font-size:11px;color:var(--muted)">원</span>
+            </div>
+          </div>
+          <div class="ship-opt" data-ship="반값택배" onclick="selectShip(this)"
+            style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
+            <span style="font-size:18px;flex-shrink:0">💸</span>
+            <div style="flex:1">
+              <div style="font-size:13px;font-weight:600;color:var(--text)">반값택배 — 편의점 접수</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:4px;flex-shrink:0">
+              <input type="number" class="ship-price-input" placeholder="요금" min="0"
+                onclick="event.stopPropagation()"
+                style="width:70px;padding:4px 7px;border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;outline:none;text-align:right">
+              <span style="font-size:11px;color:var(--muted)">원</span>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px">복수 선택 가능 · 요금을 입력하면 구매자에게 표시돼요</div>
+      </div>
+      <div class="fg" style="margin-top:10px">
+        <label>추가 설명 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
+        <textarea id="s_desc" placeholder="슬리브 포함 여부, 구매 경로, 특이사항 등..." style="resize:none;height:64px"></textarea>
       </div>
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
@@ -986,6 +1190,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="profile-stat"><div class="profile-stat-v" id="profile-sold">0</div><div class="profile-stat-l">거래 완료</div></div>
       <div class="profile-stat"><div class="profile-stat-v" id="profile-review-cnt">0</div><div class="profile-stat-l">리뷰 수</div></div>
     </div>
+    <div id="profile-bank" style="display:none;margin:0 16px 8px;padding:8px 12px;background:var(--red-light);border:1px solid rgba(216,90,48,.2);border-radius:var(--r3);font-size:13px;font-weight:600;color:var(--red)"></div>
     <div style="padding:0 16px 8px;border-bottom:1px solid var(--border)">
       <div style="font-size:13px;font-weight:700;margin-bottom:10px">판매 중인 카드</div>
       <div id="profile-listings" style="display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto"></div>
@@ -1075,6 +1280,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <h3 style="margin-bottom:3px">판매자에게 연락하기</h3>
       <p style="font-size:13px;color:var(--muted);margin-bottom:14px">📦 택배 거래 · 판매자와 직접 진행해요</p>
       <div class="contact-sel-box" id="contact-info"></div>
+      <!-- 배송 방법 선택 (판매자가 등록한 방법) -->
+      <div id="contact-ship-section" style="display:none;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px">배송 방법 선택 <span style="color:var(--red)">*</span></div>
+        <div id="contact-ship-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
       <div class="fg"><label>메시지 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label><textarea id="c_msg" placeholder="문의사항이나 가격 제안을 남겨주세요..."></textarea></div>
       <div class="contact-sent" id="contact-sent">
         <div style="font-size:18px;margin-bottom:3px">✅</div>
@@ -1105,6 +1315,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="my-tab" onclick="switchMyTab('purchased',this)">📦 구매내역</button>
       <button class="my-tab" onclick="switchMyTab('reviews',this)">⭐ 받은 리뷰</button>
       <button class="my-tab" onclick="switchMyTab('wish',this)">♥ 찜</button>
+      <button class="my-tab" onclick="switchMyTab('profile',this)">⚙️ 정보 수정</button>
     </div>
     <div class="my-body">
       <div class="my-page active" id="mp-stats">
@@ -1134,6 +1345,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="my-page" id="mp-wish">
         <div id="my-wish-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px"></div>
       </div>
+      <div class="my-page" id="mp-profile">
+        <div id="mp-profile-body"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -1151,7 +1365,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="atab" onclick="switchAdminTab('cardlist',this)">🃏 카드 관리</button>
       <button class="atab" onclick="switchAdminTab('orders',this)">🛒 판매 관리</button>
       <button class="atab" onclick="switchAdminTab('members',this)">👥 회원 관리</button>
-      <button class="atab" onclick="switchAdminTab('migrate',this)">🔧 DB 설정</button>
     </div>
     <div class="admin-body">
       <!-- 현황 -->
@@ -1184,12 +1397,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <div class="afg"><label>카드명 *</label><input type="text" id="af-name" placeholder="몽키 D. 루피"></div>
             <div class="afg"><label>버전</label><select id="af-ver"><option>한글판</option><option>일판</option></select></div>
             <div class="afg"><label>시리즈</label><select id="af-series"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
-            <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option></select></div>
+            <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option></select></div>
             <div class="afg"><label>타입</label><select id="af-type"><option>캐릭터</option><option>리더</option><option>이벤트</option><option>스테이지</option></select></div>
             <div class="afg"><label>색깔</label><select id="af-color"><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
-            <div class="afg"><label>코스트</label><input type="number" id="af-cost" value="0"></div>
-            <div class="afg"><label>파워</label><input type="number" id="af-power" value="0"></div>
-            <div class="afg"><label>특징</label><input type="text" id="af-feature" placeholder="밀짚모자 일당"></div>
             <div class="afg"><label>이모지</label><input type="text" id="af-emoji" placeholder="👒"></div>
           </div>
           <div class="afg" style="margin-bottom:8px"><label>이미지 URL</label><input type="text" id="af-imgurl" placeholder="https://..."></div>
@@ -1232,16 +1442,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </table></div>
       </div>
 
-      <!-- DB 설정 -->
-      <div class="ap" id="ap-migrate">
-        <div style="margin-bottom:16px">
-          <div style="font-size:13px;font-weight:700;margin-bottom:4px">⚠️ DB 마이그레이션</div>
-          <div style="font-size:12px;color:var(--muted)">아직 실행 안 된 SQL을 버튼 한 번으로 적용해요</div>
-        </div>
-        <div style="display:flex;flex-direction:column;gap:10px" id="migrate-list">
-          <!-- JS로 렌더링 -->
-        </div>
-      </div>
     </div>
   </div>
 </div>
@@ -1272,12 +1472,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>한글판</option><option>일판</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P (패러렐)</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">코스트</label><input type="number" id="edit-cost" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">파워</label><input type="number" id="edit-power" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
     </div>
-    <div style="margin-bottom:10px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">특징</label><input type="text" id="edit-feature" placeholder="밀짚모자 일당" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
     <div style="margin-bottom:14px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">이미지 URL</label><input type="text" id="edit-imgurl" placeholder="https://onepiece-cardgame.kr/fileDownload?downname=..." style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
     <div style="display:flex;gap:8px">
       <button class="mbtn-cancel" onclick="closeEditCard()" style="flex:1;padding:9px;font-size:13px;font-weight:600;border-radius:var(--r2);background:#fff;border:1px solid var(--border);color:var(--muted)">취소</button>
@@ -1308,7 +1505,7 @@ let aiData = {};
 let adminCards = [];
 
 // ─── HELPERS ───
-const RC = r => ({SEC:'rt-sec',SR:'rt-sr',R:'rt-r',UC:'rt-uc',C:'rt-c',L:'rt-l',P:'rt-p'}[r]||'rt-none');
+const RC = r => ({'SEC':'rt-sec','SR':'rt-sr','R':'rt-r','UC':'rt-uc','C':'rt-c','L':'rt-l','P':'rt-p','SEC★':'rt-sec-p','SR★':'rt-sr-p','R★':'rt-r-p','L★':'rt-l-p'}[r]||'rt-none');
 const GC = g => ({S:'gd-s',A:'gd-a',B:'gd-b',C:'gd-c',D:'gd-d'}[g]||'');
 const GBG = g => ({S:'#16a34a',A:'#2563eb',B:'#ca8a04',C:'#dc2626',D:'#6B7280'}[g]||'#999');
 const AVA = ['#D85A30','#2563eb','#16a34a','#7c3aed','#B8860B'];
@@ -1388,7 +1585,12 @@ async function init() {
 }
 
 // ─── AUTH ───
-function openAuth(mode) { switchAuth(mode); document.getElementById('authOv').classList.add('on'); }
+let pendingAction = null;
+function openAuth(mode, action) {
+  if (action) pendingAction = action;
+  switchAuth(mode);
+  document.getElementById('authOv').classList.add('on');
+}
 function closeAuth() { document.getElementById('authOv').classList.remove('on'); }
 function switchAuth(mode) {
   const isLogin = mode==='login';
@@ -1397,15 +1599,32 @@ function switchAuth(mode) {
   document.getElementById('nickField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('phoneField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('addrField').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('bankField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('authBtn').textContent = isLogin ? '로그인' : '가입하기';
   document.getElementById('authErr').style.display = 'none';
 }
+function toggleBankDrop() {
+  const d = document.getElementById('bankDrop');
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
+}
+function selectBank(name) {
+  document.getElementById('authBank').value = name;
+  document.getElementById('bankLabel').textContent = name;
+  document.getElementById('bankDrop').style.display = 'none';
+}
+document.addEventListener('click', e => {
+  const btn = document.getElementById('bankToggleBtn');
+  const drop = document.getElementById('bankDrop');
+  if (btn && drop && !btn.contains(e.target) && !drop.contains(e.target)) drop.style.display = 'none';
+});
 async function submitAuth() {
   const id = document.getElementById('authId').value.trim().toLowerCase();
   const pw = document.getElementById('authPw').value;
   const nick = document.getElementById('authNick').value.trim();
   const phone = document.getElementById('authPhone').value.trim();
   const addr = document.getElementById('authAddr').value.trim();
+  const bank = document.getElementById('authBank')?.value.trim() || '';
+  const acct = document.getElementById('authAcct')?.value.trim() || '';
   const errEl = document.getElementById('authErr');
   const btn = document.getElementById('authBtn');
   errEl.style.display = 'none';
@@ -1417,7 +1636,11 @@ async function submitAuth() {
   if (isLogin) {
     const { data, error } = await sb.rpc('sign_in', {p_username:id, p_password:pw});
     if (error || data?.error) { errEl.textContent = data?.error||'로그인 실패'; errEl.style.display='block'; }
-    else { localStorage.setItem('gl_session', JSON.stringify(data)); await onLogin(data); closeAuth(); toast('로그인 했어요!'); }
+    else {
+      localStorage.setItem('gl_session', JSON.stringify(data));
+      await onLogin(data); closeAuth(); toast('로그인 했어요!');
+      if (pendingAction) { pendingAction(); pendingAction = null; }
+    }
   } else {
     if (!nick) { errEl.textContent='닉네임을 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
     if (!phone) { errEl.textContent='전화번호를 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
@@ -1425,8 +1648,10 @@ async function submitAuth() {
     const { data, error } = await sb.rpc('sign_up', {p_username:id, p_password:pw, p_nickname:nick});
     if (error || data?.error) { errEl.textContent = data?.error||'가입 실패'; errEl.style.display='block'; }
     else {
-      // 전화번호/주소 accounts 테이블에 추가 저장
-      await sb.from('accounts').update({phone, address: addr}).eq('username', id).catch(()=>{});
+      // 전화번호/주소/계좌 accounts 테이블에 추가 저장
+      const updateData = { phone, address: addr };
+      if (bank && acct) { updateData.bank_name = bank; updateData.bank_account = acct; }
+      await sb.from('accounts').update(updateData).eq('username', id).catch(()=>{});
       localStorage.setItem('gl_session', JSON.stringify(data));
       await onLogin(data); closeAuth(); toast(`환영해요 ${nick}님! 🏴‍☠️`);
     }
@@ -1486,10 +1711,31 @@ function selectCat(el) {
   renderCards();
   if (window.innerWidth <= 700) toggleMob();
 }
+function toggleRarityDrop() {
+  const drop = document.getElementById('rarityDrop');
+  const arrow = document.getElementById('rarityArrow');
+  const isOn = drop.classList.toggle('on');
+  arrow.style.transform = isOn ? 'rotate(180deg)' : '';
+}
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('rarityWrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('rarityDrop')?.classList.remove('on');
+    const arr = document.getElementById('rarityArrow');
+    if (arr) arr.style.transform = '';
+  }
+});
 function setRarity(el) {
-  document.querySelectorAll('.s-sub').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.rdrop-item').forEach(e => e.classList.remove('active'));
   el.classList.add('active');
   curFilter.rarity = el.dataset.rarity;
+  const chip = document.getElementById('rarityChip');
+  const label = document.getElementById('rarityLabel');
+  const isAll = curFilter.rarity === 'all';
+  label.textContent = isAll ? '희귀도' : el.textContent.trim();
+  chip.classList.toggle('active', !isAll);
+  document.getElementById('rarityDrop').classList.remove('on');
+  document.getElementById('rarityArrow').style.transform = '';
   renderCards();
 }
 function toggleSaleFilter(el) {
@@ -1879,14 +2125,15 @@ async function openDetail(cid) {
       : '';
     return `<div class="l-item">
       <div class="l-imgs">${fi}${bi}</div>
-      <div class="l-avatar" style="background:${AVA[i%5]}">${(l.seller_name||'?')[0]}</div>
+      <div class="l-avatar" style="background:${AVA[i%5]};cursor:pointer" onclick="event.stopPropagation();openProfile('${l.seller_username}')">${(l.seller_name||'?')[0]}</div>
       <div class="l-info">
-        <div class="l-seller">${l.seller_name}${ag}${eg}</div>
+        <div class="l-seller" style="cursor:pointer" onclick="event.stopPropagation();openProfile('${l.seller_username}')">${l.seller_name}${ag}${eg}</div>
         <div class="l-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">
           <span style="font-size:10px;color:var(--blue);cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();openProfile('${l.seller_username}')">@${l.seller_username}</span>
           ${tradeTag}${ratingTag}
         </div>
         <div class="l-meta">${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red);font-size:11px">'+l.card_condition+'</span>' : ' · 양호'}${l.shipping_method ? ' · <span style="color:var(--blue);font-size:11px">'+l.shipping_method+'</span>' : ''}</div>
+        ${l.description ? `<div class="l-meta" style="color:var(--muted);font-style:italic">"${l.description}"</div>` : ''}
       </div>
       <span class="l-price">${l.price.toLocaleString()}원</span>
       <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
@@ -1894,6 +2141,9 @@ async function openDetail(cid) {
   }).join('') : '<div class="no-listings">현재 판매 중인 카드가 없어요<br><small style="color:var(--dim)">첫 번째 판매자가 되어보세요!</small></div>';
 
   document.getElementById('detailWrap').innerHTML = `
+    <button onclick="closeDetail()" style="position:sticky;top:0;left:0;z-index:10;display:flex;align-items:center;gap:5px;padding:10px 14px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:none;border-bottom:1px solid var(--border);width:100%;font-size:13px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer;text-align:left">
+      ← 닫기
+    </button>
     <div class="detail-top">
       <div class="detail-img-col">
         ${img ? `<img class="detail-main-img" src="${img}" onclick="openLB('${img}')">` : `<div style="font-size:64px">${c.emoji||'🃏'}</div>`}
@@ -1920,6 +2170,11 @@ async function openDetail(cid) {
           ${lp ? `<button class="dbtn dbtn-main" onclick="openContact('${ls[0].id}','${cid}')">최저가 연락</button>` : `<button class="dbtn dbtn-out" disabled>판매 없음</button>`}
           <button class="dbtn dbtn-out" onclick="closeDetail();openSell('${cid}')">판매 등록</button>
           <button class="dbtn dbtn-out" style="flex:0;padding:9px 12px" onclick="toggleWish('${cid}',this)">${wishSet.has(cid)?'♥':'♡'}</button>
+        </div>
+        <!-- 모바일 하단 고정 CTA -->
+        <div class="mob-cta-bar">
+          ${lp ? `<button class="dbtn dbtn-main" onclick="openContact('${ls[0].id}','${cid}')">🛒 최저가 구매 ${lp.toLocaleString()}원</button>` : `<button class="dbtn dbtn-out" disabled style="flex:2">판매 없음</button>`}
+          <button class="dbtn dbtn-out" style="flex:0;padding:13px 14px;font-size:16px" onclick="toggleWish('${cid}',this)">${wishSet.has(cid)?'♥':'♡'}</button>
         </div>
       </div>
     </div>
@@ -2204,9 +2459,44 @@ function closeSellPicker() {
   document.getElementById('sellPickerOv').classList.remove('on');
 }
 
+function selectCond(el) {
+  const cond = el.dataset.cond;
+  if (cond === '양호') {
+    // 양호 선택 시 다른 항목 모두 해제
+    document.querySelectorAll('#cond-grid .cond-opt').forEach(o => {
+      const isGood = o.dataset.cond === '양호';
+      o.classList.toggle('active', isGood);
+      o.style.border = isGood ? '1.5px solid var(--green)' : '1.5px solid var(--border)';
+      o.style.background = isGood ? 'var(--green-light)' : '#fff';
+    });
+  } else {
+    // 불량 항목 토글
+    const isOn = el.classList.toggle('active');
+    el.style.border = isOn ? '1.5px solid var(--red)' : '1.5px solid var(--border)';
+    el.style.background = isOn ? '#fef2f2' : '#fff';
+    // 불량 항목이 하나라도 있으면 양호 해제
+    const goodEl = document.querySelector('#cond-grid .cond-opt[data-cond="양호"]');
+    const anyBad = [...document.querySelectorAll('#cond-grid .cond-opt:not([data-cond="양호"])')].some(o => o.classList.contains('active'));
+    if (goodEl) {
+      goodEl.classList.toggle('active', !anyBad);
+      goodEl.style.border = anyBad ? '1.5px solid var(--border)' : '1.5px solid var(--green)';
+      goodEl.style.background = anyBad ? '#fff' : 'var(--green-light)';
+    }
+  }
+}
+function selectShip(el) {
+  el.classList.toggle('active');
+  const isOn = el.classList.contains('active');
+  el.style.border = isOn ? '1.5px solid var(--red)' : '1.5px solid var(--border)';
+  el.style.background = isOn ? 'var(--red-light)' : '#fff';
+  const inp = el.querySelector('.ship-price-input');
+  if (inp) inp.style.borderColor = isOn ? 'var(--red)' : 'var(--border)';
+}
+
 function openSell(prefill) {
   if (!curUser) { openAuth('login'); return; }
   sellFront = null; sellBack = null; aiData = {};
+  if (document.getElementById('s_desc')) document.getElementById('s_desc').value = '';
   sellGrade = '미등급';
   // 등급 버튼 초기화
   document.querySelectorAll('.gtype').forEach(b=>b.classList.remove('active'));
@@ -2217,9 +2507,6 @@ function openSell(prefill) {
   document.getElementById('ai-btn').disabled = true;
   document.getElementById('s_search').value = '';
   document.getElementById('s_price').value = '';
-  ['cond_scratch','cond_whitening','cond_bend','cond_stain','cond_centering'].forEach(id => {
-    const el = document.getElementById(id); if (el) el.checked = false;
-  });
   if (prefill) {
     const pc = allCards.find(c=>c.id===prefill);
     if (pc) document.getElementById('s_set').value = pc.series;
@@ -2230,9 +2517,21 @@ function openSell(prefill) {
 }
 function closeSell() {
   document.getElementById('sellOv').classList.remove('on');
-  resetChecklist();
-  const sel = document.getElementById('ship_method_sel');
-  if (sel) sel.value = '';
+  // 카드 상태 초기화 (양호로 리셋)
+  document.querySelectorAll('#cond-grid .cond-opt').forEach(o => {
+    const isGood = o.dataset.cond === '양호';
+    o.classList.toggle('active', isGood);
+    o.style.border = isGood ? '1.5px solid var(--green)' : '1.5px solid var(--border)';
+    o.style.background = isGood ? 'var(--green-light)' : '#fff';
+  });
+  // 배송방법 초기화
+  document.querySelectorAll('#ship-grid .ship-opt').forEach(o => {
+    o.classList.remove('active');
+    o.style.border = '1.5px solid var(--border)';
+    o.style.background = '#fff';
+    const inp = o.querySelector('.ship-price-input');
+    if (inp) { inp.value = ''; inp.style.borderColor = 'var(--border)'; }
+  });
 }
 
 function switchGrade(type, btn) {
@@ -2421,10 +2720,9 @@ async function submitSell() {
   const card_id = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
   const contact_info = curUser.phone || curUser.username;
-  const shipMethod = document.getElementById('ship_method_sel')?.value;
-  if (!card_id) { toast('카드를 선택해주세요'); return; }
-  if (!price||price<=0) { toast('올바른 가격을 입력해주세요'); return; }
-  if (!shipMethod) { toast('배송 방법을 선택해주세요'); return; }
+  // 배송방법 수집 (선택된 항목)
+  const selectedShips = [...document.querySelectorAll('#ship-grid .ship-opt.active')];
+  if (!selectedShips.length) { toast('배송 방법을 선택해주세요'); return; }
 
   const btn = document.querySelector('#sellOv .mbtn-ok');
   if (btn) { btn.disabled = true; btn.textContent = '확인 중...'; }
@@ -2483,14 +2781,23 @@ async function submitSell() {
       if (rBack)  backUrl  = await upload(rBack,  'back');
     }
 
-    // 카드 상태 체크박스 수집
-    const condItems = [];
-    if (document.getElementById('cond_scratch')?.checked) condItems.push('스크래치');
-    if (document.getElementById('cond_whitening')?.checked) condItems.push('화이트닝');
-    if (document.getElementById('cond_bend')?.checked) condItems.push('휨/구김');
-    if (document.getElementById('cond_stain')?.checked) condItems.push('오염/지문');
-    if (document.getElementById('cond_centering')?.checked) condItems.push('센터링불량');
-    const conditionDesc = condItems.length ? condItems.join(', ') : '양호';
+    // 카드 상태 수집 (클릭 선택 방식)
+    const badItems = [...document.querySelectorAll('#cond-grid .cond-opt.active')]
+      .map(o => o.dataset.cond).filter(c => c !== '양호');
+    const conditionDesc = badItems.length ? badItems.join(', ') : '양호';
+
+    // 배송방법 + 가격 수집
+    const shipMethods = selectedShips.map(el => {
+      const method = el.dataset.ship;
+      const price = el.querySelector('.ship-price-input')?.value;
+      return price ? `${method}(${parseInt(price).toLocaleString()}원)` : method;
+    });
+    const shipMethod = shipMethods.join('/');
+    const shipPrices = {};
+    selectedShips.forEach(el => {
+      const p = el.querySelector('.ship-price-input')?.value;
+      if (p) shipPrices[el.dataset.ship] = parseInt(p);
+    });
 
     const { data, error } = await sb.from('listings').insert({
       card_id,
@@ -2504,8 +2811,11 @@ async function submitSell() {
       card_condition: conditionDesc,
       contact_info: contact_info,
       shipping_method: shipMethod,
+      shipping_prices: Object.keys(shipPrices).length ? shipPrices : null,
       image_front: frontUrl,
       image_back: backUrl,
+      auto_grade: aiData?.psa_grade || null,
+      description: document.getElementById('s_desc')?.value.trim() || null,
       status: 'active'
     }).select().single();
 
@@ -2532,7 +2842,7 @@ async function submitSell() {
 // ─── CONTACT ───
 let contactData = null;
 function openContact(lid, cid) {
-  if (!curUser) { openAuth('login'); return; }
+  if (!curUser) { openAuth('login', ()=>openContact(lid, cid)); return; }
   const c = allCards.find(x=>x.id===cid);
   const l = listings[cid]?.find(x=>x.id===lid);
   if (!l) return;
@@ -2546,6 +2856,36 @@ function openContact(lid, cid) {
         <span style="font-weight:700;color:var(--red);margin-left:7px">${l.price.toLocaleString()}원</span>
       </div>
     </div>`;
+
+  // 배송 방법 선택 UI 렌더링
+  const shipSection = document.getElementById('contact-ship-section');
+  const shipList = document.getElementById('contact-ship-list');
+  const shipIcon = {'등기':'📮','일반택배':'📦','반값택배':'💸'};
+  // shipping_prices: {등기:3000, 일반택배:5000} 형태
+  const prices = l.shipping_prices || {};
+  // shipping_method: "등기(3,000원)/일반택배" 형태에서 방법명 파싱
+  const methods = (l.shipping_method||'').split('/').map(m => m.replace(/\(.*?\)/g,'').trim()).filter(Boolean);
+
+  if (methods.length) {
+    shipSection.style.display = 'block';
+    shipList.innerHTML = methods.map(m => {
+      const p = prices[m];
+      const priceStr = p > 0 ? `${p.toLocaleString()}원` : (p === 0 ? '무료' : '가격 미정');
+      const isFree = p === 0;
+      return `<div class="cship-opt" data-ship="${m}" onclick="selectContactShip(this)">
+        <div style="display:flex;align-items:center;gap:8px">
+          <span style="font-size:16px">${shipIcon[m]||'🚚'}</span>
+          <span class="cship-name">${m}</span>
+        </div>
+        <span class="cship-price${isFree?' free':''}">${priceStr}</span>
+      </div>`;
+    }).join('');
+    // 첫 번째 자동 선택
+    shipList.querySelector('.cship-opt')?.classList.add('active');
+  } else {
+    shipSection.style.display = 'none';
+  }
+
   document.getElementById('contact-sent').classList.remove('on');
   document.getElementById('contact-btns').style.display='flex';
   document.getElementById('c_msg').value='';
@@ -2562,12 +2902,29 @@ function getTrackingUrl(carrier, trackingNum) {
   return urls[carrier] || `https://search.naver.com/search.naver?query=${encodeURIComponent(carrier+' '+trackingNum+' 배송조회')}`;
 }
 
+function selectContactShip(el) {
+  document.querySelectorAll('#contact-ship-list .cship-opt').forEach(o => o.classList.remove('active'));
+  el.classList.add('active');
+}
+
 function closeContact() { document.getElementById('contactOv').classList.remove('on'); }
 async function sendContact() {
   const btn = document.querySelector('#contactOv .mbtn-ok');
   if (btn) { btn.disabled = true; btn.textContent = '전송 중...'; }
   try {
     const { l } = contactData;
+
+    // 배송 방법 선택 확인
+    const shipSection = document.getElementById('contact-ship-section');
+    const selectedShip = document.querySelector('#contact-ship-list .cship-opt.active');
+    if (shipSection.style.display !== 'none' && !selectedShip) {
+      toast('배송 방법을 선택해주세요');
+      if (btn) { btn.disabled = false; btn.textContent = '연락하기'; }
+      return;
+    }
+    const chosenShip = selectedShip?.dataset.ship || null;
+    const chosenShipPrice = selectedShip?.querySelector('.cship-price')?.textContent || null;
+
     // 연락처는 계정 전화번호 사용
     const contact = curUser.phone || curUser.username;
     const { error } = await sb.from('trades').insert({
@@ -2579,6 +2936,8 @@ async function sendContact() {
       message: document.getElementById('c_msg').value.trim() || null,
       price: l.price,
       status: 'pending',
+      buyer_shipping_method: chosenShip,
+      buyer_shipping_price: chosenShipPrice,
     });
     if (error) throw new Error(error.message);
     document.getElementById('contact-sent').classList.add('on');
@@ -2599,7 +2958,7 @@ async function openMyPage() {
   document.getElementById('my-name').textContent = curUser.nickname||curUser.username;
   document.getElementById('my-sub').textContent = '아이디: '+curUser.username;
   document.getElementById('myOv').classList.add('on');
-  loadMyStats(); loadMyListings(); loadMyWish(); loadMyRequests(); loadMyReq(); loadPurchaseHistory(); loadMyReviews();
+  loadMyStats(); loadMyListings(); loadMyWish(); loadMyRequests(); loadMyReq(); loadPurchaseHistory(); loadMyReviews(); loadMyProfile();
 }
 function closeMyPage() { document.getElementById('myOv').classList.remove('on'); }
 function switchMyTab(id, btn) {
@@ -2625,7 +2984,6 @@ async function loadMyStats() {
 async function loadMyListings() {
   const { data } = await sb.from('listings').select('*,cards(name,image_url,emoji,rarity)')
     .eq('seller_username',curUser.username)
-    .neq('listing_type','box')
     .order('created_at',{ascending:false});
   if (!data?.length) { document.getElementById('my-listings-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">판매 중인 카드가 없어요</div>'; return; }
   document.getElementById('my-listings-list').innerHTML = data.map(l => {
@@ -2634,28 +2992,180 @@ async function loadMyListings() {
       ? `<span style="font-size:10px;font-weight:700;color:#fff;background:${psaColor};border-radius:4px;padding:1px 5px;margin-left:4px">PSA ${l.auto_grade}</span>`
       : '';
     return `<div class="my-l-item">
-      ${l.cards?.image_url ? `<img src="${l.cards.image_url}" class="my-l-img" onerror="this.style.display='none'">` : `<div class="my-l-img-x">${l.cards?.emoji||'🃏'}</div>`}
+      ${l.cards?.image_url ? `<img src="${l.cards.image_url}" class="my-l-img" onerror="this.style.display='none'">` : `<div class="my-l-img-x">${l.listing_type==='box'?'📦':l.cards?.emoji||'🃏'}</div>`}
       <div style="flex:1">
-        <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:3px">${l.cards?.name||l.card_id}${aiTag}</div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.grade_type||'미등급'} · ${l.card_id}</div>
+        <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:3px">
+          ${l.listing_type==='box' ? `📦 ${l.series} ${l.unit_type}` : `${l.cards?.name||l.card_id}${aiTag}`}
+        </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.listing_type==='box' ? '박스' : l.grade_type||'미등급'} · ${l.card_id}</div>
       </div>
       <span class="sbadge ${l.status==='active'?'sb-active':'sb-sold'}">${l.status==='active'?'판매중':'완료'}</span>
-      <span style="font-size:14px;font-weight:700;color:var(--red);margin-left:8px">${l.price.toLocaleString()}원</span>
-      ${l.status==='active'?`<button class="cancel-btn" onclick="cancelListing('${l.id}')">취소</button>`:''}
+      <span style="font-size:14px;font-weight:700;color:var(--red);margin-left:8px" id="lp-${l.id}">${l.price.toLocaleString()}원</span>
+      ${l.status==='active' ? `
+        <button class="cancel-btn" style="background:var(--blue);border-color:var(--blue);color:#fff;margin-left:4px" onclick="openPriceEdit('${l.id}',${l.price})">가격 수정</button>
+        <button class="cancel-btn" onclick="cancelListing('${l.id}')">취소</button>` : ''}
     </div>`;
   }).join('');
+}
+async function loadMyProfile() {
+  const el = document.getElementById('mp-profile-body');
+  if (!el || !curUser) return;
+  // 최신 계정 정보 로드
+  const { data: acc } = await sb.from('accounts').select('*').eq('username', curUser.username).single();
+  if (!acc) return;
+  el.innerHTML = `
+    <div style="padding:4px 0 12px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:14px">가입 정보를 수정할 수 있어요</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px">닉네임</div>
+          <input type="text" id="ep-nick" value="${acc.nickname||''}" maxlength="12"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;color:var(--text)"
+            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px">전화번호</div>
+          <input type="tel" id="ep-phone" value="${acc.phone||''}" placeholder="010-0000-0000"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;color:var(--text)"
+            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px">주소</div>
+          <input type="text" id="ep-addr" value="${acc.address||''}" placeholder="배송지 주소"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;color:var(--text)"
+            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px">계좌번호</div>
+          <div style="display:flex;gap:6px">
+            <div style="position:relative;flex-shrink:0">
+              <button id="ep-bank-btn" onclick="toggleEpBankDrop()" type="button"
+                style="display:flex;align-items:center;gap:5px;padding:9px 10px;border:1.5px solid var(--border);border-radius:var(--r3);background:#fff;font-size:12px;font-family:inherit;color:var(--text);cursor:pointer;min-width:90px;white-space:nowrap">
+                <span id="ep-bank-label">${acc.bank_name||'은행 선택'}</span><span style="font-size:9px;color:var(--muted)">▼</span>
+              </button>
+              <div id="ep-bank-drop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:300;min-width:130px;padding:4px 0">
+                ${['카카오뱅크','토스뱅크','국민은행','신한은행','우리은행','하나은행','농협은행','기업은행','SC제일은행','케이뱅크'].map(b=>`<div onclick="selectEpBank('${b}')" style="padding:8px 13px;font-size:12px;cursor:pointer;color:var(--text)" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=''">${b}</div>`).join('')}
+              </div>
+              <input type="hidden" id="ep-bank" value="${acc.bank_name||''}">
+            </div>
+            <input type="text" id="ep-acct" value="${acc.bank_account||''}" placeholder="계좌번호 (- 없이)"
+              style="flex:1;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;color:var(--text)"
+              onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
+        </div>
+        <div style="margin-top:2px">
+          <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:5px">비밀번호 변경 <span style="font-weight:400;color:var(--dim)">(선택)</span></div>
+          <input type="password" id="ep-pw" placeholder="새 비밀번호 (6자 이상)"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;color:var(--text);margin-bottom:7px"
+            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+          <input type="password" id="ep-pw2" placeholder="새 비밀번호 확인"
+            style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;color:var(--text)"
+            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+      </div>
+
+      <div id="ep-err" style="display:none;font-size:12px;color:var(--red);margin-top:10px;background:var(--red-light);padding:8px 11px;border-radius:var(--r3)"></div>
+      <button onclick="saveMyProfile()"
+        style="width:100%;margin-top:14px;padding:12px;background:var(--red);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">
+        저장하기
+      </button>
+    </div>`;
+}
+function toggleEpBankDrop() {
+  const d = document.getElementById('ep-bank-drop');
+  d.style.display = d.style.display==='none' ? 'block' : 'none';
+}
+function selectEpBank(name) {
+  document.getElementById('ep-bank').value = name;
+  document.getElementById('ep-bank-label').textContent = name;
+  document.getElementById('ep-bank-drop').style.display = 'none';
+}
+document.addEventListener('click', e => {
+  const btn = document.getElementById('ep-bank-btn');
+  const drop = document.getElementById('ep-bank-drop');
+  if (btn && drop && !btn.contains(e.target) && !drop.contains(e.target)) drop.style.display = 'none';
+});
+async function saveMyProfile() {
+  const nick = document.getElementById('ep-nick').value.trim();
+  const phone = document.getElementById('ep-phone').value.trim();
+  const addr = document.getElementById('ep-addr').value.trim();
+  const bank = document.getElementById('ep-bank').value.trim();
+  const acct = document.getElementById('ep-acct').value.trim();
+  const pw = document.getElementById('ep-pw').value;
+  const pw2 = document.getElementById('ep-pw2').value;
+  const errEl = document.getElementById('ep-err');
+  errEl.style.display = 'none';
+
+  if (!nick) { errEl.textContent = '닉네임을 입력해주세요'; errEl.style.display='block'; return; }
+  if (!phone) { errEl.textContent = '전화번호를 입력해주세요'; errEl.style.display='block'; return; }
+  if (pw && pw.length < 6) { errEl.textContent = '비밀번호는 6자 이상이에요'; errEl.style.display='block'; return; }
+  if (pw && pw !== pw2) { errEl.textContent = '비밀번호가 일치하지 않아요'; errEl.style.display='block'; return; }
+
+  const updateData = { nickname: nick, phone, address: addr };
+  if (bank && acct) { updateData.bank_name = bank; updateData.bank_account = acct; }
+  else if (!acct) { updateData.bank_name = null; updateData.bank_account = null; }
+
+  const { error } = await sb.from('accounts').update(updateData).eq('username', curUser.username);
+  if (error) { errEl.textContent = '저장 실패: ' + error.message; errEl.style.display='block'; return; }
+
+  // 비밀번호 변경
+  if (pw) {
+    await sb.rpc('change_password', { p_username: curUser.username, p_new_password: pw }).catch(()=>{});
+  }
+
+  // 세션 닉네임 업데이트
+  curUser.nickname = nick;
+  localStorage.setItem('gl_session', JSON.stringify(curUser));
+  document.getElementById('my-name').textContent = nick;
+  document.getElementById('my-avatar').textContent = nick[0];
+  onLogin(curUser);
+
+  toast('정보가 저장됐어요 ✅');
+  document.getElementById('ep-pw').value = '';
+  document.getElementById('ep-pw2').value = '';
 }
 async function cancelListing(id) {
   if (!confirm('판매를 취소할까요?')) return;
   await sb.from('listings').update({status:'cancelled'}).eq('id',id);
   toast('판매가 취소됐어요'); loadMyListings(); loadMyStats(); renderCards();
 }
+function openPriceEdit(id, currentPrice) {
+  // 이미 열려있는 편집창 닫기
+  document.querySelectorAll('.price-edit-box').forEach(e => e.remove());
+  const priceEl = document.getElementById(`lp-${id}`);
+  if (!priceEl) return;
+  const box = document.createElement('div');
+  box.className = 'price-edit-box';
+  box.style.cssText = 'display:flex;align-items:center;gap:6px;margin-top:6px;padding:8px 10px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3)';
+  box.innerHTML = `
+    <input type="number" value="${currentPrice}" id="pe-input-${id}"
+      style="flex:1;padding:6px 9px;border:1.5px solid var(--red);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;color:var(--text)">
+    <span style="font-size:11px;color:var(--muted)">원</span>
+    <button onclick="savePriceEdit('${id}')"
+      style="padding:6px 12px;background:var(--red);color:#fff;border:none;border-radius:var(--r3);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">저장</button>
+    <button onclick="this.closest('.price-edit-box').remove()"
+      style="padding:6px 10px;background:#fff;color:var(--muted);border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;cursor:pointer">취소</button>`;
+  priceEl.closest('.my-l-item').appendChild(box);
+  box.querySelector('input').focus();
+}
+async function savePriceEdit(id) {
+  const input = document.getElementById(`pe-input-${id}`);
+  const newPrice = parseInt(input?.value);
+  if (!newPrice || newPrice <= 0) { toast('올바른 가격을 입력해주세요'); return; }
+  const { error } = await sb.from('listings').update({ price: newPrice }).eq('id', id).eq('seller_username', curUser.username);
+  if (error) { toast('수정 실패: ' + error.message); return; }
+  document.getElementById(`lp-${id}`).textContent = newPrice.toLocaleString() + '원';
+  input.closest('.price-edit-box').remove();
+  toast('가격이 수정됐어요 ✅');
+  renderCards();
+}
 // ─── 구매요청 탭 (판매자용) ───
 async function loadMyRequests() {
   const el = document.getElementById('my-requests-list');
   if (!el || !curUser) return;
   const { data } = await sb.from('trades')
-    .select('*, listings(card_id, price, grade_type, unit_type, image_front, status, contact_info)')
+    .select('*, listings(card_id, price, grade_type, unit_type, image_front, status, contact_info), created_at, shipped_at, confirmed_at')
     .eq('seller_username', curUser.username)
     .in('status', ['pending', 'approved', 'shipping'])
     .order('created_at', { ascending: false });
@@ -2689,13 +3199,14 @@ async function loadMyRequests() {
     const isShipping = t.status === 'shipping';
     const buyer = buyerAccountMap[t.buyer_username] || {};
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
         <div>
           <div style="font-size:13px;font-weight:700">${t.card_id?.startsWith('BOX-') ? `📦 ${t.card_id.replace('BOX-','')} ${t.listings?.unit_type||''}` : t.card_id}</div>
           <div style="font-size:12px;color:var(--muted)">${t.price?.toLocaleString()}원 · ${t.listings?.grade_type||t.listings?.unit_type||'미등급'}</div>
         </div>
-        <span style="font-size:11px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
+        <div style="font-size:10px;color:var(--dim)">${t.created_at?.slice(0,10)}</div>
       </div>
+      ${renderTradeSteps(t)}
       <!-- 구매자 정보 (승인 후 공개) -->
       ${(isApproved || isShipping || t.status==='completed') ? `
       <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
@@ -2704,11 +3215,13 @@ async function loadMyRequests() {
         <div style="color:var(--blue);margin-bottom:2px">📱 ${buyer.phone || t.buyer_contact || '전화번호 없음'}</div>
         <div style="color:var(--muted);margin-bottom:2px">💬 ${t.buyer_contact || '-'}</div>
         <div style="color:var(--muted)">📍 ${buyer.address || '주소 없음'}</div>
+        ${t.buyer_shipping_method ? `<div style="color:var(--green);font-weight:600;margin-top:4px">🚚 ${t.buyer_shipping_method}${t.buyer_shipping_price ? ' · '+t.buyer_shipping_price : ''}</div>` : ''}
         ${t.message ? `<div style="color:var(--muted);margin-top:4px">"${t.message}"</div>` : ''}
       </div>` : `
       <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
         <div style="font-weight:600;margin-bottom:2px">구매자: ${buyer.nickname || t.buyer_username}</div>
         <div style="color:var(--muted);font-size:11px">승인 후 연락처가 공개돼요</div>
+        ${t.buyer_shipping_method ? `<div style="color:var(--muted);font-size:11px;margin-top:3px">🚚 ${t.buyer_shipping_method}${t.buyer_shipping_price ? ' · '+t.buyer_shipping_price : ''} 요청</div>` : ''}
         ${t.message ? `<div style="color:var(--muted);margin-top:4px">"${t.message}"</div>` : ''}
         <div style="font-size:10px;color:var(--dim);margin-top:4px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
       </div>`}
@@ -2737,7 +3250,7 @@ async function loadMyRequests() {
 async function approveTrade(tradeId, listingId, btn) {
   if (!confirm('구매 요청을 승인할까요?')) return;
   if (btn) { btn.disabled = true; btn.textContent = '처리 중...'; }
-  const { error } = await sb.from('trades').update({ status: 'approved' }).eq('id', tradeId);
+  const { error } = await sb.from('trades').update({ status: 'approved', approved_at: new Date().toISOString() }).eq('id', tradeId);
   if (error) { toast('처리 실패: ' + error.message); if (btn) { btn.disabled=false; btn.textContent='✅ 승인'; } return; }
   toast('✅ 승인 완료! 운송장을 등록해주세요');
   await notifyTrade(tradeId, 'approved');
@@ -2790,7 +3303,7 @@ async function loadMyReq() {
     const sellerNames = (ls||[]).map(l=>l.seller_username).filter(Boolean);
     let accountMap = {};
     if (sellerNames.length) {
-      const { data: accs } = await sb.from('accounts').select('username,nickname,phone').in('username', sellerNames);
+      const { data: accs } = await sb.from('accounts').select('username,nickname,phone,bank_name,bank_account').in('username', sellerNames);
       (accs||[]).forEach(a => { accountMap[a.username] = a; });
     }
     (ls||[]).forEach(l => { listingMap[l.id] = { ...l, account: accountMap[l.seller_username] }; });
@@ -2803,20 +3316,19 @@ async function loadMyReq() {
     const isShipping = t.status === 'shipping';
     const isCompleted = t.status === 'completed';
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
         <div style="font-size:13px;font-weight:700">${t.card_id?.startsWith('BOX-') ? `📦 ${t.card_id.replace('BOX-','')} 박스` : t.card_id}</div>
-        <span style="font-size:12px;font-weight:700;color:${statusColor[t.status]||'var(--muted)'}">${statusMap[t.status]||t.status}</span>
+        <div style="font-size:10px;color:var(--dim)">${t.created_at?.slice(0,10)}</div>
       </div>
-      <div style="font-size:12px;color:var(--muted);margin-bottom:4px">
-        판매자: <b>${t.seller_username}</b> · ${t.price?.toLocaleString()}원
-      </div>
-      <div style="font-size:10px;color:var(--dim);margin-bottom:8px">${t.created_at?.slice(0,16).replace('T',' ')}</div>
+      <div style="font-size:12px;color:var(--muted);margin-bottom:2px">판매자: <b>${t.seller_username}</b> · ${t.price?.toLocaleString()}원</div>
+      ${renderTradeSteps(t)}
 
       ${(isApproved || isShipping || isCompleted) ? `
         <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
           <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">📋 판매자 연락처</div>
           <div style="font-size:13px;margin-bottom:4px"><b>${sellerAcc?.nickname || listing?.seller_name || t.seller_username}</b></div>
           <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px">📱 ${sellerAcc?.phone || listing?.contact_info || '연락처 없음'}</div>
+          ${sellerAcc?.bank_name && sellerAcc?.bank_account ? `<div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:4px">🏦 ${sellerAcc.bank_name} ${sellerAcc.bank_account}</div>` : ''}
           <div style="font-size:11px;color:var(--muted)">위 연락처로 연락해서 입금 후 주소를 알려드리세요</div>
         </div>` : ''}
 
@@ -2848,6 +3360,70 @@ async function loadMyReq() {
         </button>` : ''}
     </div>`;
   }).join('');
+}
+
+// ─── 거래 진행 스텝바 ───
+function renderTradeSteps(t) {
+  const status = t.status;
+  const isRejected = status === 'rejected' || status === 'cancelled';
+
+  if (isRejected) return `
+    <div style="display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 16px;background:#fef2f2;border-radius:var(--r2);margin:10px 0 14px">
+      <span style="font-size:18px">❌</span>
+      <span style="font-size:13px;font-weight:600;color:var(--red)">${status==='rejected'?'판매자가 거절했어요':'거래가 취소됐어요'}</span>
+    </div>`;
+
+  const fmt = d => {
+    if (!d) return '';
+    const dt = new Date(d);
+    return `${dt.getMonth()+1}/${dt.getDate()} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}`;
+  };
+
+  const STEPS = [
+    { key:'pending',   icon:'🙋', label:'구매요청', date: fmt(t.created_at) },
+    { key:'approved',  icon:'✅', label:'승인완료', date: fmt(t.approved_at||null) },
+    { key:'shipping',  icon:'🚀', label:'배송중',   date: fmt(t.shipped_at||null) },
+    { key:'completed', icon:'🎉', label:'수령완료', date: fmt(t.confirmed_at||null) },
+  ];
+  const ORDER = ['pending','approved','shipping','completed'];
+  const cur = ORDER.indexOf(status);
+
+  const STATUS_MSG = {
+    pending:   { icon:'⏳', msg:'판매자 승인 대기중', sub:'판매자가 요청을 확인하고 있어요' },
+    approved:  { icon:'✅', msg:'승인 완료 — 입금 후 주소 전달', sub:'판매자 연락처를 확인해서 입금해주세요' },
+    shipping:  { icon:'🚀', msg:`배송중${t.carrier ? ' · '+t.carrier : ''}`, sub: t.tracking_number ? `운송장 ${t.tracking_number}` : '판매자가 발송했어요' },
+    completed: { icon:'🎉', msg:'거래 완료!', sub:'성공적으로 거래가 완료됐어요' },
+  };
+  const sm = STATUS_MSG[status] || { icon:'⏳', msg:status, sub:'' };
+
+  let stepsHtml = '';
+  STEPS.forEach((s, i) => {
+    const idx = ORDER.indexOf(s.key);
+    const isDone = idx < cur;
+    const isActive = idx === cur;
+    stepsHtml += `<div class="ts-item">
+      <div class="ts-circle ${isDone?'done':''} ${isActive?'active':''}">${isDone ? '✓' : s.icon}</div>
+      <div class="ts-label ${isDone?'done':''} ${isActive?'active':''}">${s.label}</div>
+      <div class="ts-date ${isDone?'done':''} ${isActive?'active':''}">${(isDone||isActive) && s.date ? s.date : ''}</div>
+    </div>`;
+    if (i < STEPS.length - 1) {
+      const lineDone = idx < cur - 1;
+      const linePartial = idx === cur - 1;
+      stepsHtml += `<div class="ts-line ${lineDone?'done':''} ${linePartial?'partial':''}"></div>`;
+    }
+  });
+
+  return `<div class="trade-steps">
+    <div class="ts-status-bar">
+      <span class="ts-status-icon">${sm.icon}</span>
+      <div>
+        <div class="ts-status-msg">${sm.msg}</div>
+        <div class="ts-status-sub">${sm.sub}</div>
+      </div>
+      ${status==='shipping' && t.tracking_number ? `<a href="${getTrackingUrl(t.carrier,t.tracking_number)}" target="_blank" style="margin-left:auto;font-size:11px;font-weight:700;color:#93c5fd;white-space:nowrap">조회 →</a>` : ''}
+    </div>
+    <div class="ts-track-row">${stepsHtml}</div>
+  </div>`;
 }
 
 // ─── 운송장 등록 ───
@@ -3058,7 +3634,9 @@ async function loadNotifications() {
   
   const unread = (data||[]).filter(n=>!n.is_read).length;
   const badge = document.getElementById('notiBadge');
+  const mobBadge = document.getElementById('mobNotiBadge');
   if (badge) { badge.textContent = unread > 9 ? '9+' : unread; badge.classList.toggle('on', unread > 0); }
+  if (mobBadge) { mobBadge.textContent = unread > 9 ? '9+' : unread; mobBadge.classList.toggle('on', unread > 0); }
   
   const list = document.getElementById('notiList');
   if (!list) return;
@@ -3142,10 +3720,16 @@ async function openProfile(username) {
   document.getElementById('profile-reviews').innerHTML = '';
 
   // 계정 정보
-  const { data: acc } = await sb.from('accounts').select('nickname,username').eq('username', username).single();
+  const { data: acc } = await sb.from('accounts').select('nickname,username,bank_name,bank_account').eq('username', username).single();
   const nick = acc?.nickname || username;
   document.getElementById('profile-name').textContent = nick;
   document.getElementById('profile-avatar').textContent = nick[0];
+  // 계좌번호 표시
+  const bankEl = document.getElementById('profile-bank');
+  if (bankEl) {
+    bankEl.style.display = (acc?.bank_name && acc?.bank_account) ? 'block' : 'none';
+    bankEl.textContent = acc?.bank_name && acc?.bank_account ? `🏦 ${acc.bank_name} ${acc.bank_account}` : '';
+  }
 
   // 판매 통계
   const { data: ls } = await sb.from('listings').select('id,status').eq('seller_username', username).neq('listing_type','box');
@@ -3350,7 +3934,7 @@ async function aOpenListingDetail(lid) {
   document.getElementById('adm-d-sub').textContent = `${l.price?.toLocaleString()}원 · ${l.status}`;
 
   // 판매자 계정 정보
-  const { data: seller } = await sb.from('accounts').select('username,nickname,phone,address').eq('username', l.seller_username).single();
+  const { data: seller } = await sb.from('accounts').select('username,nickname,phone,address,bank_name,bank_account').eq('username', l.seller_username).single();
 
   // 연관 거래 로드
   const { data: tradeList } = await sb.from('trades')
@@ -3394,6 +3978,7 @@ async function aOpenListingDetail(lid) {
         <div style="display:grid;grid-template-columns:auto 1fr;gap:4px 10px;font-size:12px">
           <span style="color:var(--muted)">아이디</span><span><code style="font-size:11px">${seller?.username||'-'}</code></span>
           <span style="color:var(--muted)">전화번호</span><span style="font-weight:600;color:var(--red)">${seller?.phone||'미등록'}</span>
+          <span style="color:var(--muted)">계좌</span><span style="font-weight:600">${seller?.bank_name&&seller?.bank_account ? seller.bank_name+' '+seller.bank_account : '미등록'}</span>
           <span style="color:var(--muted)">주소</span><span style="color:var(--text)">${seller?.address||'미등록'}</span>
         </div>
       </div>
@@ -3432,21 +4017,18 @@ async function aToggleAdmin(username, isAdmin) {
   toast(isAdmin?'권한 해제됨':'관리자 지정됨 ⭐'); aLoadMembers();
 }
 function aClearForm() {
-  ['af-id','af-name','af-feature','af-imgurl'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';});
-  document.getElementById('af-cost').value=0; document.getElementById('af-power').value=0;
+  ['af-id','af-name','af-imgurl'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';}); 
 }
 async function aAddCard() {
   const id=document.getElementById('af-id').value.trim();
   const name=document.getElementById('af-name').value.trim();
   if(!id||!name){toast('번호와 이름은 필수예요');return;}
   const rawRarity = document.getElementById('af-rarity').value;
-  const rarity = rawRarity.startsWith('P') ? 'P' : rawRarity;
+  const rarity = rawRarity;
   const {error}=await sb.from('cards').upsert({
     id,name,version:document.getElementById('af-ver').value,series:document.getElementById('af-series').value,
-    rarity,card_type:rarity==='L'?'리더':'캐릭터',
-    color:document.getElementById('af-color').value,cost:parseInt(document.getElementById('af-cost').value)||0,
-    power:parseInt(document.getElementById('af-power').value)||0,
-    feature:document.getElementById('af-feature').value||null,
+    rarity,card_type:['L','L★'].includes(rarity)?'리더':'캐릭터',
+    color:document.getElementById('af-color').value,
     emoji:rarity==='SEC'?'⭐':rarity==='SR'?'💜':rarity==='P'?'✨':'🃏',
     image_url:document.getElementById('af-imgurl').value||null,
   });
@@ -3719,9 +4301,6 @@ function openEditCard(cid) {
   document.getElementById('edit-series').value = c.series || 'OP-01';
   document.getElementById('edit-rarity').value = c.rarity || '';
   document.getElementById('edit-color').value = c.color || '';
-  document.getElementById('edit-cost').value = c.cost || 0;
-  document.getElementById('edit-power').value = c.power || 0;
-  document.getElementById('edit-feature').value = c.feature || '';
   document.getElementById('edit-imgurl').value = c.image_url || '';
   document.getElementById('editCardOv').classList.add('on');
 }
@@ -3742,11 +4321,8 @@ async function submitEditCard() {
     version: document.getElementById('edit-ver').value,
     series: document.getElementById('edit-series').value,
     rarity,
-    card_type: rarity==='L' ? '리더' : '캐릭터',
+    card_type: ['L','L★'].includes(rarity) ? '리더' : '캐릭터',
     color: document.getElementById('edit-color').value,
-    cost: parseInt(document.getElementById('edit-cost').value)||0,
-    power: parseInt(document.getElementById('edit-power').value)||0,
-    feature: document.getElementById('edit-feature').value||null,
     image_url: document.getElementById('edit-imgurl').value||null,
   };
   if (newId !== oldId) updateData.id = newId;
@@ -3768,6 +4344,48 @@ window.addEventListener('scroll', () => {
   const btn = document.getElementById('scrollTopBtn');
   if (btn) btn.classList.toggle('on', window.scrollY > 400);
 });
+</script>
+
+<!-- 모바일 하단 네비바 -->
+<nav class="mob-nav" id="mobNav">
+  <div class="mob-nav-inner">
+    <button class="mob-nav-btn active" id="mob-home-btn" onclick="mobNavHome()">
+      <span class="mob-nav-icon">🏠</span>
+      <span class="mob-nav-label">홈</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-search-btn" onclick="openSearchOv()">
+      <span class="mob-nav-icon">🔍</span>
+      <span class="mob-nav-label">검색</span>
+    </button>
+    <button class="mob-nav-btn sell-btn" onclick="openSellPicker()">
+      <div class="mob-nav-sell-inner">＋</div>
+      <span class="mob-nav-label" style="color:var(--muted);margin-top:2px">판매</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-noti-btn" onclick="toggleNoti()">
+      <span class="mob-nav-icon" style="position:relative;display:inline-block">🔔<span class="noti-badge" id="mobNotiBadge"></span></span>
+      <span class="mob-nav-label">알림</span>
+    </button>
+    <button class="mob-nav-btn" id="mob-my-btn" onclick="mobNavMy()">
+      <span class="mob-nav-icon">👤</span>
+      <span class="mob-nav-label">내정보</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+function mobNavHome() {
+  showHome(); showCardView();
+  document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mob-home-btn')?.classList.add('active');
+}
+function mobNavMy() {
+  if (!curUser) { openAuth('login'); return; }
+  openMyPage();
+  document.querySelectorAll('.mob-nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('mob-my-btn')?.classList.add('active');
+}
+// 알림 뱃지 모바일 동기화
+const _origLoadNoti = typeof loadNotifications === 'function' ? loadNotifications : null;
 </script>
 </body>
 </html>
