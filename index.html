@@ -340,6 +340,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
   /* stat */
   .stat-row{grid-template-columns:repeat(2,1fr);}
+  .my-modal{max-width:100%!important;}
   .my-l-item{gap:10px;padding:10px 0;}
 }
 
@@ -426,30 +427,34 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .grade-score-sec.on{display:block;}
 
 /* MYPAGE */
-.my-modal{max-width:600px;padding:0;overflow:hidden;}
-.my-hd{background:var(--red);padding:18px 20px;display:flex;align-items:center;gap:12px;}
-.my-avatar{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.25);border:2px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;}
-.my-name{font-size:18px;font-weight:700;color:#fff;}
-.my-sub{font-size:11px;color:rgba(255,255,255,.7);margin-top:2px;}
-.my-close{margin-left:auto;background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;}
-.my-tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;}
-.my-tab{flex-shrink:0;padding:11px 14px;font-size:12px;font-weight:500;border:none;background:#fff;color:var(--muted);border-bottom:2px solid transparent;font-family:inherit;cursor:pointer;white-space:nowrap;}
-.my-tab.active{color:var(--red);border-bottom-color:var(--red);}
-.my-body{padding:16px;min-height:220px;}
+.my-modal{max-width:860px;width:100%;padding:0;overflow:hidden;}
+.my-hd{background:linear-gradient(135deg,var(--red),#c0392b);padding:20px 24px;display:flex;align-items:center;gap:14px;}
+.my-avatar{width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.22);border:2.5px solid rgba(255,255,255,.55);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;}
+.my-name{font-size:18px;font-weight:700;color:#fff;line-height:1.2;}
+.my-sub{font-size:12px;color:rgba(255,255,255,.65);margin-top:3px;}
+.my-close{margin-left:auto;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:16px;width:32px;height:32px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.my-close:hover{background:rgba(255,255,255,.28);}
+.my-tabs{display:flex;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none;background:#fff;}
+.my-tabs::-webkit-scrollbar{display:none;}
+.my-tab{flex-shrink:0;padding:12px 16px;font-size:12px;font-weight:500;border:none;background:none;color:var(--muted);border-bottom:2.5px solid transparent;font-family:inherit;cursor:pointer;white-space:nowrap;transition:color .15s;}
+.my-tab.active{color:var(--red);border-bottom-color:var(--red);font-weight:600;}
+.my-tab:hover:not(.active){color:var(--text);}
+.my-body{padding:20px 22px;min-height:260px;max-height:65vh;overflow-y:auto;}
 .my-page{display:none;}
 .my-page.active{display:block;}
-.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-bottom:14px;}
-.stat-box{background:var(--bg2);border-radius:var(--r2);padding:12px;text-align:center;border:1px solid var(--border);}
-.stat-n{font-size:21px;font-weight:700;}
-.stat-l{font-size:11px;color:var(--muted);margin-top:1px;}
-.my-l-item{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--border);}
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
+.stat-box{background:var(--bg2);border-radius:var(--r2);padding:14px 10px;text-align:center;border:1px solid var(--border);transition:box-shadow .15s;}
+.stat-box:hover{box-shadow:0 2px 10px rgba(0,0,0,.07);}
+.stat-n{font-size:22px;font-weight:700;line-height:1;}
+.stat-l{font-size:11px;color:var(--muted);margin-top:5px;}
+.my-l-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
 .my-l-item:last-child{border-bottom:none;}
-.my-l-img{width:36px;height:52px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
-.my-l-img-x{width:36px;height:52px;background:var(--bg3);border-radius:4px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.my-l-img{width:38px;height:54px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
+.my-l-img-x{width:38px;height:54px;background:var(--bg3);border-radius:4px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;}
 .sbadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;}
 .sb-active{background:var(--green-light);color:var(--green);}
 .sb-sold{background:var(--bg3);color:var(--muted);}
-.cancel-btn{font-size:11px;padding:3px 8px;background:#fff;border:1px solid var(--border);border-radius:5px;color:var(--muted);margin-left:6px;font-family:inherit;}
+.cancel-btn{font-size:11px;padding:4px 9px;background:#fff;border:1px solid var(--border);border-radius:5px;color:var(--muted);margin-left:6px;font-family:inherit;cursor:pointer;}
 
 /* CONTACT */
 .contact-modal{max-width:400px;}
@@ -1367,14 +1372,14 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button onclick="closeMyPage()" style="margin-left:auto" class="my-close">✕</button>
     </div>
     <div class="my-tabs">
-      <button class="my-tab active" onclick="switchMyTab('stats',this)">📊 현황</button>
-      <button class="my-tab" onclick="switchMyTab('listings',this)">🛒 내 판매</button>
-      <button class="my-tab" onclick="switchMyTab('requests',this)">📨 구매요청</button>
-      <button class="my-tab" onclick="switchMyTab('myreq',this)">🙋 내 요청</button>
-      <button class="my-tab" onclick="switchMyTab('purchased',this)">📦 구매내역</button>
-      <button class="my-tab" onclick="switchMyTab('reviews',this)">⭐ 받은 리뷰</button>
-      <button class="my-tab" onclick="switchMyTab('wish',this)">♥ 찜</button>
-      <button class="my-tab" onclick="switchMyTab('profile',this)">⚙️ 정보 수정</button>
+      <button class="my-tab active" onclick="switchMyTab('stats',this)">현황</button>
+      <button class="my-tab" onclick="switchMyTab('listings',this)">내 판매</button>
+      <button class="my-tab" onclick="switchMyTab('requests',this)">구매요청</button>
+      <button class="my-tab" onclick="switchMyTab('myreq',this)">내 요청</button>
+      <button class="my-tab" onclick="switchMyTab('purchased',this)">구매내역</button>
+      <button class="my-tab" onclick="switchMyTab('reviews',this)">받은 리뷰</button>
+      <button class="my-tab" onclick="switchMyTab('wish',this)">찜</button>
+      <button class="my-tab" onclick="switchMyTab('profile',this)">정보 수정</button>
     </div>
     <div class="my-body">
       <div class="my-page active" id="mp-stats">
