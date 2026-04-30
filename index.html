@@ -566,7 +566,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .search-result-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);cursor:pointer;}
 .search-result-item:hover{background:var(--bg2);}
 
-/* 알림 벨 */
+.bank-opt{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--text);transition:background .1s;}
+.bank-opt:hover{background:var(--bg2);}
+
 .noti-btn{position:relative;background:none;border:none;font-size:20px;cursor:pointer;padding:4px;color:var(--muted);}
 .noti-badge{position:absolute;top:-2px;right:-2px;background:var(--red);color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 5px;min-width:16px;text-align:center;display:none;}
 .noti-badge.on{display:block;}
@@ -828,8 +830,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
               style="display:flex;align-items:center;gap:5px;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r3);background:#fff;font-size:12px;font-family:inherit;color:var(--text);cursor:pointer;white-space:nowrap;min-width:80px">
               <span id="bankLabel">은행 선택</span><span style="font-size:9px;color:var(--muted)">▼</span>
             </button>
-            <div id="bankDrop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:300;min-width:120px;padding:4px 0;animation:fadeUp .15s ease">
-              ${['카카오뱅크','토스뱅크','국민은행','신한은행','우리은행','하나은행','농협은행','기업은행','SC제일은행','케이뱅크'].map(b=>`<div onclick="selectBank('${b}')" style="padding:8px 13px;font-size:12px;cursor:pointer;color:var(--text)" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=''">${b}</div>`).join('')}
+            <div id="bankDrop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:300;min-width:130px;padding:4px 0">
+              <div onclick="selectBank('카카오뱅크')" class="bank-opt">카카오뱅크</div>
+              <div onclick="selectBank('토스뱅크')" class="bank-opt">토스뱅크</div>
+              <div onclick="selectBank('국민은행')" class="bank-opt">국민은행</div>
+              <div onclick="selectBank('신한은행')" class="bank-opt">신한은행</div>
+              <div onclick="selectBank('우리은행')" class="bank-opt">우리은행</div>
+              <div onclick="selectBank('하나은행')" class="bank-opt">하나은행</div>
+              <div onclick="selectBank('농협은행')" class="bank-opt">농협은행</div>
+              <div onclick="selectBank('기업은행')" class="bank-opt">기업은행</div>
+              <div onclick="selectBank('SC제일은행')" class="bank-opt">SC제일은행</div>
+              <div onclick="selectBank('케이뱅크')" class="bank-opt">케이뱅크</div>
             </div>
           </div>
           <input type="hidden" id="authBank" value="">
@@ -3045,7 +3056,16 @@ async function loadMyProfile() {
                 <span id="ep-bank-label">${acc.bank_name||'은행 선택'}</span><span style="font-size:9px;color:var(--muted)">▼</span>
               </button>
               <div id="ep-bank-drop" style="display:none;position:absolute;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--border);border-radius:var(--r2);box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:300;min-width:130px;padding:4px 0">
-                ${['카카오뱅크','토스뱅크','국민은행','신한은행','우리은행','하나은행','농협은행','기업은행','SC제일은행','케이뱅크'].map(b=>`<div onclick="selectEpBank('${b}')" style="padding:8px 13px;font-size:12px;cursor:pointer;color:var(--text)" onmouseover="this.style.background='var(--bg2)'" onmouseout="this.style.background=''">${b}</div>`).join('')}
+                <div onclick="selectEpBank('카카오뱅크')" class="bank-opt">카카오뱅크</div>
+                <div onclick="selectEpBank('토스뱅크')" class="bank-opt">토스뱅크</div>
+                <div onclick="selectEpBank('국민은행')" class="bank-opt">국민은행</div>
+                <div onclick="selectEpBank('신한은행')" class="bank-opt">신한은행</div>
+                <div onclick="selectEpBank('우리은행')" class="bank-opt">우리은행</div>
+                <div onclick="selectEpBank('하나은행')" class="bank-opt">하나은행</div>
+                <div onclick="selectEpBank('농협은행')" class="bank-opt">농협은행</div>
+                <div onclick="selectEpBank('기업은행')" class="bank-opt">기업은행</div>
+                <div onclick="selectEpBank('SC제일은행')" class="bank-opt">SC제일은행</div>
+                <div onclick="selectEpBank('케이뱅크')" class="bank-opt">케이뱅크</div>
               </div>
               <input type="hidden" id="ep-bank" value="${acc.bank_name||''}">
             </div>
