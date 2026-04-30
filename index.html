@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>그랜드라인 — 원피스 카드 C2C 마켓</title>
+<title>NEXO — 원피스 카드 C2C 마켓</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.49.1/dist/umd/supabase.min.js"></script>
@@ -269,30 +269,26 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   .chart-stats{grid-template-columns:repeat(2,1fr);}
 }
 
-/* ── MOBILE ── */
+/* ── MOBILE ONLY (≤700px) ── */
 @media(max-width:700px){
   /* 전체 패딩 */
   .main{padding:10px 10px 80px;}
 
-  /* 헤더 — 모바일에서 로그인/판매 버튼 숨김 (하단 네비바로 대체) */
-  .h-right .hbtn{display:none!important;}
-  .h-right .user-chip span{display:none;}
-  .h-right{gap:6px;}
-  /* 알림벨은 유지 */
-  .noti-btn{display:flex!important;}
+  /* 헤더 — 모바일에서 텍스트 버튼 숨김 (하단 네비바로 대체) */
+  .h-right .hbtn:not(.noti-btn):not(.user-chip){display:none!important;}
 
-  /* 모달 시트 */
-  .ov{align-items:flex-end;padding:0;}
-  .modal{border-radius:22px 22px 0 0;max-width:100%!important;max-height:93vh;overflow-y:auto;}
-  .sell-modal{max-width:100%!important;border-radius:22px 22px 0 0;}
-  .my-modal{border-radius:22px 22px 0 0;max-height:93vh;}
+  /* 모달을 바텀시트로 */
+  .ov{align-items:flex-end!important;padding:0!important;}
+  .modal{border-radius:22px 22px 0 0!important;max-width:100%!important;max-height:93vh;overflow-y:auto;}
+  .sell-modal{max-width:100%!important;border-radius:22px 22px 0 0!important;}
+  .my-modal{border-radius:22px 22px 0 0!important;max-height:93vh;}
 
-  /* 마이페이지 탭 스크롤 */
+  /* 마이페이지 탭 가로 스크롤 */
   .my-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none;}
   .my-tabs::-webkit-scrollbar{display:none;}
   .my-tab{white-space:nowrap;flex-shrink:0;font-size:12px;padding:9px 12px;}
 
-  /* 카드 그리드 — 2열, 이미지 비율 개선 */
+  /* 카드 그리드 — 2열 */
   .grid{grid-template-columns:repeat(2,1fr);gap:8px;}
   .card-thumb{font-size:40px;}
   .card-info{padding:7px 9px 10px;}
@@ -301,7 +297,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   .rtag{font-size:10px;padding:2px 6px;}
   .wish-btn{width:30px;height:30px;font-size:15px;}
 
-  /* 필터바 — 컴팩트 */
+  /* 필터바 */
   .filter-bar{gap:5px;padding:8px 10px;flex-wrap:wrap;}
   .ftag{font-size:11px;padding:5px 10px;border-radius:14px;}
   .filter-bar .fdiv{display:none;}
@@ -309,52 +305,51 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   .sort-sel{margin-left:auto;font-size:11px;}
   .price-wrap{display:none;}
 
-  /* 홈 최근 판매 — 1열 풀 */
+  /* 홈 */
   .recent-list{grid-template-columns:1fr;gap:7px;}
   .recent-item{padding:10px 12px;}
-  .ri-img{width:38px;height:54px;}
-  .ri-name{font-size:13px;}
-  .ri-price{font-size:14px;}
-  /* 인기 카드 그리드 */
   .hot-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
 
   /* 카드 상세 */
   .detail-modal{max-width:100%;border-radius:0;max-height:100dvh;padding-bottom:80px;}
   .detail-top{grid-template-columns:1fr;}
-  .detail-img-col{border-radius:0;border-right:none;border-bottom:1px solid var(--border);padding:16px;background:var(--bg3);}
+  .detail-img-col{border-radius:0;border-right:none;border-bottom:1px solid var(--border);padding:16px;}
   .detail-main-img{width:140px;height:200px;}
   .detail-info{padding:14px 16px;}
   .d-name{font-size:20px;}
 
-  /* 판매 목록 아이템 — 모바일 레이아웃 */
-  .l-item{padding:14px 0;gap:10px;flex-wrap:nowrap;}
-  .l-imgs{flex-shrink:0;}
+  /* 판매 목록 */
+  .l-item{padding:14px 0;gap:10px;}
   .l-img{width:44px;height:62px;}
-  .l-avatar{width:32px;height:32px;font-size:13px;flex-shrink:0;}
-  .l-info{flex:1;min-width:0;}
-  .l-seller{font-size:13px;}
-  .l-price{font-size:15px;white-space:nowrap;}
-  .l-contact-btn{padding:9px 14px;font-size:13px;border-radius:8px;white-space:nowrap;flex-shrink:0;}
+  .l-avatar{width:32px;height:32px;font-size:13px;}
+  .l-contact-btn{padding:9px 14px;font-size:13px;white-space:nowrap;}
 
-  /* 구매하기 하단 고정 CTA */
+  /* 모바일 하단 CTA */
   .mob-cta-bar{display:flex!important;}
   .d-btns{display:none;}
-  .mob-cta-bar .dbtn{padding:14px;font-size:15px;border-radius:12px;}
 
   /* 판매 모달 */
   .sell-body{padding:14px 16px;}
   .fg-2{grid-template-columns:1fr;}
-  .fg input,.fg select,.fg textarea{font-size:16px;padding:10px 13px;}/* iOS zoom 방지 */
+
+  /* iOS input zoom 방지 */
+  input,select,textarea{font-size:16px!important;}
 
   /* 박스 뷰 */
   #boxWrap{padding:0;}
 
-  /* 마이페이지 stat */
+  /* stat */
   .stat-row{grid-template-columns:repeat(2,1fr);}
-
-  /* 내 판매 목록 아이템 */
   .my-l-item{gap:10px;padding:10px 0;}
-  .my-l-img{width:38px;height:54px;}
+}
+
+/* ── DESKTOP ONLY (>700px) ── */
+@media(min-width:701px){
+  /* 모달은 중앙 정렬 유지 */
+  .ov{align-items:center;padding:20px;}
+  /* 하단 네비바 숨김 */
+  .mob-nav{display:none!important;}
+  .mob-cta-bar{display:none!important;}
 }
 @media(max-width:700px){
   input,select,textarea{font-size:16px!important;}/* iOS zoom 방지 */
@@ -599,8 +594,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   <div class="header-inner">
     <button class="menu-btn" onclick="toggleMob()" aria-label="메뉴">☰</button>
     <a class="logo" href="#" onclick="showHome()">
-      <div class="logo-mark">☠</div>
-      <div><div class="logo-text">그랜드라인</div><span class="logo-sub">원피스 카드 C2C 마켓</span></div>
+      <img src="/logo.png" style="height:36px;width:auto;object-fit:contain" alt="NEXO">
     </a>
     <div class="h-search" onclick="openSearchOv()" style="cursor:pointer">
       <span class="h-search-icon">🔍</span>
@@ -608,6 +602,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="h-right" id="hRight">
       <button class="hbtn" onclick="openAuth('login')">로그인</button>
+      <button class="hbtn" onclick="openNotice()" style="font-size:12px">📢 공지</button>
+      <button class="hbtn" onclick="openInquiry()" style="font-size:12px">💬 문의</button>
       <button class="hbtn primary" onclick="openSellPicker()">+ 판매 등록</button>
     </div>
     <!-- 알림 드롭다운 -->
@@ -729,25 +725,37 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
     <!-- FILTER BAR -->
     <div class="filter-bar">
-      <span style="font-size:11px;font-weight:600;color:var(--muted)">타입</span>
-      <button class="ftag active" data-type="all" onclick="setType(this)">전체</button>
-      <button class="ftag" data-type="캐릭터" onclick="setType(this)">캐릭터</button>
-      <button class="ftag" data-type="리더" onclick="setType(this)">리더</button>
-      <button class="ftag" data-type="이벤트" onclick="setType(this)">이벤트</button>
-      <div class="fdiv"></div>
-      <span style="font-size:11px;font-weight:600;color:var(--muted)">컬러</span>
-      <button class="ftag active" data-color="all" onclick="setColor(this)">전체</button>
-      <button class="ftag" data-color="적색" onclick="setColor(this)">적색</button>
-      <button class="ftag" data-color="녹색" onclick="setColor(this)">녹색</button>
-      <button class="ftag" data-color="청색" onclick="setColor(this)">청색</button>
-      <button class="ftag" data-color="자색" onclick="setColor(this)">자색</button>
-      <button class="ftag" data-color="흑색" onclick="setColor(this)">흑색</button>
-      <button class="ftag" data-color="황색" onclick="setColor(this)">황색</button>
-      <button class="ftag" data-color="다색" onclick="setColor(this)">다색</button>
-      <div class="fdiv"></div>
+      <!-- 타입 드롭다운 -->
+      <div class="rarity-drop-wrap" id="typeWrap">
+        <button class="ftag" id="typeChip" onclick="toggleFilterDrop('typeWrap')" style="display:flex;align-items:center;gap:5px;padding-right:9px">
+          <span id="typeLabel">타입</span><span id="typeArrow" style="font-size:9px;color:var(--muted);transition:transform .18s">▼</span>
+        </button>
+        <div class="rarity-drop" id="typeDrop">
+          <div class="rdrop-item active" data-type="all" onclick="setType(this)">전체</div>
+          <div class="rdrop-item" data-type="캐릭터" onclick="setType(this)">캐릭터</div>
+          <div class="rdrop-item" data-type="리더" onclick="setType(this)">리더</div>
+          <div class="rdrop-item" data-type="이벤트" onclick="setType(this)">이벤트</div>
+        </div>
+      </div>
+      <!-- 컬러 드롭다운 -->
+      <div class="rarity-drop-wrap" id="colorWrap">
+        <button class="ftag" id="colorChip" onclick="toggleFilterDrop('colorWrap')" style="display:flex;align-items:center;gap:5px;padding-right:9px">
+          <span id="colorLabel">컬러</span><span id="colorArrow" style="font-size:9px;color:var(--muted);transition:transform .18s">▼</span>
+        </button>
+        <div class="rarity-drop" id="colorDrop">
+          <div class="rdrop-item active" data-color="all" onclick="setColor(this)">전체</div>
+          <div class="rdrop-item" data-color="적색" onclick="setColor(this)">🔴 적색</div>
+          <div class="rdrop-item" data-color="녹색" onclick="setColor(this)">🟢 녹색</div>
+          <div class="rdrop-item" data-color="청색" onclick="setColor(this)">🔵 청색</div>
+          <div class="rdrop-item" data-color="자색" onclick="setColor(this)">🟣 자색</div>
+          <div class="rdrop-item" data-color="흑색" onclick="setColor(this)">⚫ 흑색</div>
+          <div class="rdrop-item" data-color="황색" onclick="setColor(this)">🟡 황색</div>
+          <div class="rdrop-item" data-color="다색" onclick="setColor(this)">🌈 다색</div>
+        </div>
+      </div>
       <!-- 희귀도 드롭다운 -->
       <div class="rarity-drop-wrap" id="rarityWrap">
-        <button class="ftag" id="rarityChip" onclick="toggleRarityDrop()" style="display:flex;align-items:center;gap:5px;padding-right:9px">
+        <button class="ftag" id="rarityChip" onclick="toggleFilterDrop('rarityWrap')" style="display:flex;align-items:center;gap:5px;padding-right:9px">
           <span id="rarityLabel">희귀도</span>
           <span id="rarityArrow" style="font-size:9px;color:var(--muted);transition:transform .18s">▼</span>
         </button>
@@ -777,6 +785,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <option value="priceUp">낮은가격</option>
         <option value="priceDown">높은가격</option>
         <option value="new">최신순</option>
+        <option value="numAsc">번호순</option>
+        <option value="nameAsc">이름순</option>
       </select>
     </div>
 
@@ -810,7 +820,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 <div class="ov" id="authOv" onclick="if(event.target===this)closeAuth()">
   <div class="modal">
     <div class="auth-wrap">
-      <h3>그랜드라인</h3>
+      <h3>NEXO</h3>
       <p>원피스 카드 C2C 마켓에 오신 걸 환영해요</p>
       <div class="auth-tabs">
         <button class="auth-tab active" id="tab-login" onclick="switchAuth('login')">로그인</button>
@@ -853,6 +863,49 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <button class="mbtn-cancel" onclick="closeAuth()">취소</button>
         <button class="mbtn-ok" id="authBtn" onclick="submitAuth()">로그인</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- 공지사항 오버레이 -->
+<div class="ov" id="noticeOv" onclick="if(event.target===this)closeNotice()">
+  <div class="modal" style="max-width:500px;padding:0;overflow:hidden">
+    <div style="background:var(--red);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div style="color:#fff;font-size:16px;font-weight:700">📢 공지사항</div>
+      <button onclick="closeNotice()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:16px 20px;max-height:65vh;overflow-y:auto" id="notice-body">
+      <div style="text-align:center;padding:20px"><div class="spinner"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 1:1 문의 오버레이 -->
+<div class="ov" id="inquiryOv" onclick="if(event.target===this)closeInquiry()">
+  <div class="modal" style="max-width:500px;padding:0;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#1a3a5c,#2563eb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div style="color:#fff;font-size:16px;font-weight:700">💬 1:1 문의</div>
+      <button onclick="closeInquiry()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:16px 20px;max-height:65vh;overflow-y:auto">
+      <!-- 문의 작성 버튼 -->
+      <button onclick="document.getElementById('inquiry-write').style.display=document.getElementById('inquiry-write').style.display==='none'?'block':'none'"
+        style="width:100%;padding:10px;background:var(--red);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:12px">
+        + 새 문의 작성
+      </button>
+      <div id="inquiry-write" style="display:none;background:var(--bg2);border-radius:var(--r2);padding:14px;margin-bottom:14px">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">제목</div>
+        <input type="text" id="inq-title" placeholder="문의 제목을 입력하세요"
+          style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;margin-bottom:10px">
+        <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">내용</div>
+        <textarea id="inq-content" placeholder="문의 내용을 자세히 작성해주세요..."
+          style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;resize:none;height:100px;margin-bottom:10px"></textarea>
+        <button onclick="submitInquiry()"
+          style="width:100%;padding:10px;background:var(--red);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">
+          문의 등록
+        </button>
+      </div>
+      <div id="inquiry-list"></div>
     </div>
   </div>
 </div>
@@ -1722,20 +1775,34 @@ function selectCat(el) {
   renderCards();
   if (window.innerWidth <= 700) toggleMob();
 }
-function toggleRarityDrop() {
-  const drop = document.getElementById('rarityDrop');
-  const arrow = document.getElementById('rarityArrow');
+function toggleFilterDrop(wrapId) {
+  const dropId = {typeWrap:'typeDrop', colorWrap:'colorDrop', rarityWrap:'rarityDrop'}[wrapId];
+  const arrowId = {typeWrap:'typeArrow', colorWrap:'colorArrow', rarityWrap:'rarityArrow'}[wrapId];
+  // 다른 드롭다운 닫기
+  ['typeDrop','colorDrop','rarityDrop'].forEach(id => {
+    if (id !== dropId) document.getElementById(id)?.classList.remove('on');
+  });
+  ['typeArrow','colorArrow','rarityArrow'].forEach(id => {
+    if (id !== arrowId && document.getElementById(id)) document.getElementById(id).style.transform = '';
+  });
+  const drop = document.getElementById(dropId);
+  const arrow = document.getElementById(arrowId);
   const isOn = drop.classList.toggle('on');
-  arrow.style.transform = isOn ? 'rotate(180deg)' : '';
+  if (arrow) arrow.style.transform = isOn ? 'rotate(180deg)' : '';
 }
 document.addEventListener('click', e => {
-  const wrap = document.getElementById('rarityWrap');
-  if (wrap && !wrap.contains(e.target)) {
-    document.getElementById('rarityDrop')?.classList.remove('on');
-    const arr = document.getElementById('rarityArrow');
-    if (arr) arr.style.transform = '';
-  }
+  ['typeWrap','colorWrap','rarityWrap'].forEach(wid => {
+    const wrap = document.getElementById(wid);
+    const dropId = {typeWrap:'typeDrop', colorWrap:'colorDrop', rarityWrap:'rarityDrop'}[wid];
+    const arrowId = {typeWrap:'typeArrow', colorWrap:'colorArrow', rarityWrap:'rarityArrow'}[wid];
+    if (wrap && !wrap.contains(e.target)) {
+      document.getElementById(dropId)?.classList.remove('on');
+      const arr = document.getElementById(arrowId);
+      if (arr) arr.style.transform = '';
+    }
+  });
 });
+function toggleRarityDrop() { toggleFilterDrop('rarityWrap'); }
 function setRarity(el) {
   document.querySelectorAll('.rdrop-item').forEach(e => e.classList.remove('active'));
   el.classList.add('active');
@@ -1755,15 +1822,33 @@ function toggleSaleFilter(el) {
   renderCards();
 }
 function setType(el) {
-  document.querySelectorAll('[data-type]').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#typeDrop .rdrop-item').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   curFilter.type = el.dataset.type;
+  const chip = document.getElementById('typeChip');
+  const label = document.getElementById('typeLabel');
+  const isAll = curFilter.type === 'all';
+  if (label) label.textContent = isAll ? '타입' : el.textContent.trim();
+  if (chip) chip.classList.toggle('active', !isAll);
+  document.getElementById('typeDrop')?.classList.remove('on');
+  const arr = document.getElementById('typeArrow');
+  if (arr) arr.style.transform = '';
+  renderCards();
+}
   renderCards();
 }
 function setColor(el) {
-  document.querySelectorAll('[data-color]').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#colorDrop .rdrop-item').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   curFilter.color = el.dataset.color;
+  const chip = document.getElementById('colorChip');
+  const label = document.getElementById('colorLabel');
+  const isAll = curFilter.color === 'all';
+  if (label) label.textContent = isAll ? '컬러' : el.textContent.trim();
+  if (chip) chip.classList.toggle('active', !isAll);
+  document.getElementById('colorDrop')?.classList.remove('on');
+  const arr = document.getElementById('colorArrow');
+  if (arr) arr.style.transform = '';
   renderCards();
 }
 function toggleMob() {
@@ -1811,6 +1896,8 @@ function renderCards() {
 
   if (sort==='priceUp') cards.sort((a,b)=>(getLP(a.id)||9e9)-(getLP(b.id)||9e9));
   else if (sort==='priceDown') cards.sort((a,b)=>(getLP(b.id)||0)-(getLP(a.id)||0));
+  else if (sort==='numAsc') cards.sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
+  else if (sort==='nameAsc') cards.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
   else if (sort==='popular') { const ro={SEC:0,SR:1,R:2,L:3,UC:4,C:5}; cards.sort((a,b)=>(ro[a.rarity]||9)-(ro[b.rarity]||9)); }
 
   document.getElementById('listCnt').textContent = '총 '+cards.length+'종';
@@ -2178,13 +2265,13 @@ async function openDetail(cid) {
         </div>
         ${gDistHtml}
         <div class="d-btns">
-          ${lp ? `<button class="dbtn dbtn-main" onclick="openContact('${ls[0].id}','${cid}')">최저가 연락</button>` : `<button class="dbtn dbtn-out" disabled>판매 없음</button>`}
-          <button class="dbtn dbtn-out" onclick="closeDetail();openSell('${cid}')">판매 등록</button>
+          ${lp ? `<button class="dbtn dbtn-main" onclick="openContact('${ls[0].id}','${cid}')">최저가 연락</button>` : ''}
+          <button class="dbtn dbtn-out" onclick="closeDetail();openSell('${cid}')">+ 판매 등록</button>
           <button class="dbtn dbtn-out" style="flex:0;padding:9px 12px" onclick="toggleWish('${cid}',this)">${wishSet.has(cid)?'♥':'♡'}</button>
         </div>
         <!-- 모바일 하단 고정 CTA -->
         <div class="mob-cta-bar">
-          ${lp ? `<button class="dbtn dbtn-main" onclick="openContact('${ls[0].id}','${cid}')">🛒 최저가 구매 ${lp.toLocaleString()}원</button>` : `<button class="dbtn dbtn-out" disabled style="flex:2">판매 없음</button>`}
+          ${lp ? `<button class="dbtn dbtn-main" onclick="openContact('${ls[0].id}','${cid}')">🛒 최저가 구매 ${lp.toLocaleString()}원</button>` : `<button class="dbtn dbtn-out" onclick="closeDetail();openSell('${cid}')" style="flex:2">+ 판매 등록</button>`}
           <button class="dbtn dbtn-out" style="flex:0;padding:13px 14px;font-size:16px" onclick="toggleWish('${cid}',this)">${wishSet.has(cid)?'♥':'♡'}</button>
         </div>
       </div>
@@ -2461,7 +2548,81 @@ function selectBoxUnit(val) {
   bc.style.color = !is1box ? '#fff' : 'var(--muted)';
 }
 
-// ─── SELL PICKER ───
+// ─── 공지사항 ───
+async function openNotice() {
+  const ov = document.getElementById('noticeOv');
+  if (!ov) return;
+  ov.classList.add('on');
+  const { data } = await sb.from('notices').select('*').order('created_at',{ascending:false}).limit(30);
+  const body = document.getElementById('notice-body');
+  if (!data?.length) { body.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">등록된 공지사항이 없어요</div>'; return; }
+  body.innerHTML = data.map(n=>`
+    <div style="padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openNoticeDetail(${n.id})">
+      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
+        ${n.is_pinned?'<span style="font-size:10px;padding:1px 6px;background:var(--red);color:#fff;border-radius:4px;font-weight:700">공지</span>':''}
+        <span style="font-size:13px;font-weight:600">${n.title}</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted)">${n.created_at?.slice(0,10)}</div>
+    </div>`).join('');
+}
+async function openNoticeDetail(id) {
+  const { data:n } = await sb.from('notices').select('*').eq('id',id).single();
+  if (!n) return;
+  document.getElementById('notice-body').innerHTML = `
+    <button onclick="openNotice()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0;margin-bottom:14px">← 목록</button>
+    <div style="font-size:17px;font-weight:700;margin-bottom:6px">${n.title}</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:14px">${n.created_at?.slice(0,10)}</div>
+    <div style="font-size:14px;line-height:1.8;white-space:pre-wrap;color:var(--text)">${n.content}</div>`;
+}
+function closeNotice() { document.getElementById('noticeOv')?.classList.remove('on'); }
+
+// ─── 1:1 문의 ───
+async function openInquiry() {
+  if (!curUser) { openAuth('login'); return; }
+  const ov = document.getElementById('inquiryOv');
+  if (!ov) return;
+  ov.classList.add('on');
+  loadMyInquiries();
+}
+async function loadMyInquiries() {
+  const body = document.getElementById('inquiry-list');
+  const { data } = await sb.from('inquiries').select('*').eq('username', curUser.username).order('created_at',{ascending:false});
+  if (!data?.length) { body.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px">문의 내역이 없어요</div>'; return; }
+  body.innerHTML = data.map(q=>`
+    <div style="padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openInquiryDetail(${q.id})">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;font-weight:600">${q.title}</span>
+        <span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${q.answer?'var(--green-light)':'var(--bg2)'};color:${q.answer?'var(--green)':'var(--muted)'};font-weight:600">${q.answer?'답변완료':'대기중'}</span>
+      </div>
+      <div style="font-size:11px;color:var(--muted);margin-top:2px">${q.created_at?.slice(0,10)}</div>
+    </div>`).join('');
+}
+async function openInquiryDetail(id) {
+  const { data:q } = await sb.from('inquiries').select('*').eq('id',id).single();
+  if (!q) return;
+  document.getElementById('inquiry-list').innerHTML = `
+    <button onclick="loadMyInquiries()" style="background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;padding:0;margin-bottom:14px">← 목록</button>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">${q.title}</div>
+    <div style="font-size:11px;color:var(--muted);margin-bottom:12px">${q.created_at?.slice(0,10)}</div>
+    <div style="background:var(--bg2);border-radius:var(--r2);padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;margin-bottom:12px">${q.content}</div>
+    ${q.answer ? `<div style="background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:12px">
+      <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">✅ 관리자 답변</div>
+      <div style="font-size:13px;line-height:1.7;white-space:pre-wrap">${q.answer}</div>
+    </div>` : '<div style="text-align:center;color:var(--muted);font-size:12px;padding:10px">아직 답변이 등록되지 않았어요</div>'}`;
+}
+async function submitInquiry() {
+  const title = document.getElementById('inq-title').value.trim();
+  const content = document.getElementById('inq-content').value.trim();
+  if (!title || !content) { toast('제목과 내용을 모두 입력해주세요'); return; }
+  const { error } = await sb.from('inquiries').insert({ username: curUser.username, title, content });
+  if (error) { toast('등록 실패: ' + error.message); return; }
+  document.getElementById('inq-title').value = '';
+  document.getElementById('inq-content').value = '';
+  toast('문의가 등록됐어요! 📩');
+  loadMyInquiries();
+  document.getElementById('inquiry-write').style.display = 'none';
+}
+function closeInquiry() { document.getElementById('inquiryOv')?.classList.remove('on'); }
 function openSellPicker() {
   if (!curUser) { openAuth('login'); return; }
   document.getElementById('sellPickerOv').classList.add('on');
@@ -2549,8 +2710,12 @@ function switchGrade(type, btn) {
   sellGrade = type;
   document.querySelectorAll('.gtype').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  document.getElementById('ungr-sec').style.display = type==='미등급' ? 'block' : 'none';
+  // 사진 섹션은 항상 표시 (미등급 포함 모든 등급)
+  document.getElementById('ungr-sec').style.display = 'block';
   document.getElementById('grade-sec').classList.toggle('on', type!=='미등급');
+  // AI 버튼 라벨 조정
+  const aiBtn = document.getElementById('ai-btn');
+  if (aiBtn) aiBtn.style.display = type==='미등급' ? 'flex' : 'none';
 }
 
 function resetChecklist() {}
@@ -3841,9 +4006,12 @@ async function aLoadOverview() {
     ? recent.map(l=>`<tr><td><b>${l.cards?.name||'-'}</b></td><td style="color:var(--muted)">${l.seller_name}</td><td style="font-size:11px">${l.version||'-'}</td><td style="font-size:11px">${l.grade_type||'-'}</td><td style="color:var(--red);font-weight:600">${l.price.toLocaleString()}원</td><td style="color:var(--muted);font-size:11px">${l.created_at?.slice(0,10)||''}</td></tr>`).join('')
     : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">판매 내역 없음</td></tr>';
 }
-async function aLoadCards() {
+async function aLoadCards(keepScroll) {
+  const body = document.getElementById('admin-cards-scroll') || document.getElementById('adminPanel');
+  const scrollY = keepScroll ? (body?.scrollTop || 0) : 0;
   const { data } = await sb.from('cards').select('*').order('id').limit(2000);
   adminCards = data||[]; aRenderCards(adminCards);
+  if (keepScroll && scrollY) requestAnimationFrame(() => { if (body) body.scrollTop = scrollY; });
 }
 function aRenderCards(cards) {
   document.getElementById('a-card-list').innerHTML = cards.length
@@ -4232,7 +4400,7 @@ async function autoFetch() {
 
   setStatus(`🎉 완료! 총 <b>${total}종</b> 이름/정보 업데이트!`, 'done');
   btn.disabled=false; btn.textContent='🤖 전체 카드 자동 수집 (OP01~OP12)';
-  await aLoadCards(); await init();
+  await aLoadCards(true); await init();
   toast('🎉 '+total+'종 이름 업데이트 완료!');
 }
 
@@ -4306,7 +4474,7 @@ async function autoNameOnly() {
     else setStatus(`⚠️ [${set.id}] 수집 실패 — 스킵`);
   }
   setStatus(`✅ 총 ${total}종 이름 수집 완료!`, 'done');
-  await aLoadCards(); await init();
+  await aLoadCards(true); await init();
 }
 
 
