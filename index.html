@@ -4022,7 +4022,7 @@ async function aLoadOverview() {
     : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">판매 내역 없음</td></tr>';
 }
 async function aLoadCards(keepScroll) {
-  const body = document.getElementById('admin-cards-scroll') || document.getElementById('adminPanel');
+  const body = document.querySelector('#ap-cardlist .admin-body') || document.querySelector('.admin-body');
   const scrollY = keepScroll ? (body?.scrollTop || 0) : 0;
   const { data } = await sb.from('cards').select('*').order('id').limit(2000);
   adminCards = data||[]; aRenderCards(adminCards);
@@ -4092,7 +4092,7 @@ async function saveImg(cid) {
   const { error } = await sb.from('cards').update({image_url:url}).eq('id',cid);
   if (error) { toast('저장 실패: '+error.message); return; }
   toast('이미지 저장됐어요! ✅');
-  await aLoadCards(); await init();
+  await aLoadCards(true); aFilterCards();
 }
 async function aDelCard(id) {
   if (!confirm(id+' 카드를 삭제할까요?')) return;
@@ -4533,8 +4533,9 @@ async function submitEditCard() {
   if (error) { toast('저장 실패: '+error.message); return; }
   toast('✅ 카드 수정 완료!');
   closeEditCard();
-  await aLoadCards();
-  await init();
+  // 스크롤 위치 + 필터 유지하면서 카드 목록만 갱신
+  await aLoadCards(true);
+  aFilterCards();
 }
 
 init();
