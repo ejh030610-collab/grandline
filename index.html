@@ -443,8 +443,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .my-page{display:none;}
 .my-page.active{display:block;}
 .stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:18px;}
-.stat-box{background:var(--bg2);border-radius:var(--r2);padding:14px 10px;text-align:center;border:1px solid var(--border);transition:box-shadow .15s;}
-.stat-box:hover{box-shadow:0 2px 10px rgba(0,0,0,.07);}
+.stat-box{background:var(--bg2);border-radius:var(--r2);padding:14px 10px;text-align:center;border:1px solid var(--border);transition:all .15s;}
+.stat-box[onclick]{cursor:pointer;}
+.stat-box[onclick]:hover{border-color:var(--red);background:var(--red-light);transform:translateY(-1px);box-shadow:0 4px 12px rgba(216,90,48,.12);}
 .stat-n{font-size:22px;font-weight:700;line-height:1;}
 .stat-l{font-size:11px;color:var(--muted);margin-top:5px;}
 .my-l-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
@@ -1384,10 +1385,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <div class="my-body">
       <div class="my-page active" id="mp-stats">
         <div class="stat-row">
-          <div class="stat-box"><div class="stat-n" style="color:var(--red)" id="my-s-active">0</div><div class="stat-l">판매 중</div></div>
-          <div class="stat-box"><div class="stat-n" style="color:var(--green)" id="my-s-sold">0</div><div class="stat-l">판매 완료</div></div>
-          <div class="stat-box"><div class="stat-n" style="color:var(--blue)" id="my-s-wish">0</div><div class="stat-l">찜한 카드</div></div>
-          <div class="stat-box"><div class="stat-n" style="color:var(--gold)" id="my-s-rating">-</div><div class="stat-l">평균 별점</div></div>
+          <div class="stat-box" onclick="switchMyTab('listings',document.querySelector('.my-tab:nth-child(2)'));filterMyListings('active')" style="cursor:pointer" title="판매 중인 카드 보기"><div class="stat-n" style="color:var(--red)" id="my-s-active">0</div><div class="stat-l">판매 중</div></div>
+          <div class="stat-box" onclick="switchMyTab('listings',document.querySelector('.my-tab:nth-child(2)'));filterMyListings('sold')" style="cursor:pointer" title="판매 완료 카드 보기"><div class="stat-n" style="color:var(--green)" id="my-s-sold">0</div><div class="stat-l">판매 완료</div></div>
+          <div class="stat-box" onclick="switchMyTab('wish',document.querySelector('.my-tab:nth-child(7)'))" style="cursor:pointer" title="찜한 카드 보기"><div class="stat-n" style="color:var(--blue)" id="my-s-wish">0</div><div class="stat-l">찜한 카드</div></div>
+          <div class="stat-box" onclick="switchMyTab('reviews',document.querySelector('.my-tab:nth-child(6)'))" style="cursor:pointer" title="받은 리뷰 보기"><div class="stat-n" style="color:var(--gold)" id="my-s-rating">-</div><div class="stat-l">평균 별점</div></div>
         </div>
         <div id="my-recent" style="font-size:13px;color:var(--muted);text-align:center;padding:18px">불러오는 중...</div>
       </div>
@@ -3154,6 +3155,19 @@ async function loadMyStats() {
         <span style="font-size:14px;font-weight:700;color:var(--red);margin-left:8px">${l.price.toLocaleString()}원</span>
       </div>`).join('')
     : '<div style="text-align:center;color:var(--muted);padding:20px">아직 판매 내역이 없어요</div>';
+}
+let myListingsFilter = 'all';
+function filterMyListings(status) {
+  myListingsFilter = status;
+  const items = document.querySelectorAll('#my-listings-list .my-l-item');
+  items.forEach(item => {
+    const badge = item.querySelector('.sbadge');
+    if (!badge) return;
+    const isActive = badge.classList.contains('sb-active');
+    if (status === 'all') { item.style.display = ''; }
+    else if (status === 'active') { item.style.display = isActive ? '' : 'none'; }
+    else if (status === 'sold') { item.style.display = !isActive ? '' : 'none'; }
+  });
 }
 async function loadMyListings() {
   const { data } = await sb.from('listings').select('*,cards(name,image_url,emoji,rarity)')
