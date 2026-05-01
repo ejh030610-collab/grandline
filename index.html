@@ -2669,7 +2669,7 @@ async function submitInquiry() {
   const content = document.getElementById('inq-content').value.trim();
   if (!title || !content) { toast('제목과 내용을 모두 입력해주세요'); return; }
   const { error } = await sb.from('inquiries').insert({ username: curUser.username, title, content });
-  if (error) { toast('등록 실패: ' + error.message); return; }
+  if (error) { toast('등록 실패: ' + (error.message || error.details || JSON.stringify(error))); console.error('inquiry error:', error); return; }
   document.getElementById('inq-title').value = '';
   document.getElementById('inq-content').value = '';
   toast('문의가 등록됐어요! 📩');
