@@ -608,6 +608,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="h-right" id="hRight">
       <button class="hbtn" onclick="openNotice()" style="font-size:12px">📢 공지</button>
+      <button class="hbtn" onclick="openInquiry()" style="font-size:12px">💬 문의</button>
       <button class="hbtn" onclick="openAuth('login')">로그인</button>
       <button class="hbtn primary" onclick="openSellPicker()">+ 판매 등록</button>
     </div>
@@ -1435,6 +1436,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="atab" onclick="switchAdminTab('orders',this)">판매 관리</button>
       <button class="atab" onclick="switchAdminTab('members',this)">회원 관리</button>
       <button class="atab" onclick="switchAdminTab('notices',this)">공지사항</button>
+      <button class="atab" onclick="switchAdminTab('inquiries',this)">1:1 문의</button>
     </div>
     <div class="admin-body">
       <!-- 현황 -->
@@ -1552,11 +1554,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div style="padding:16px 20px;max-height:65vh;overflow-y:auto" id="notice-body">
       <div style="text-align:center;padding:30px"><div class="spinner"></div></div>
+      <!-- 1:1 문의 관리 -->
+      <div class="ap" id="ap-inquiries">
+        <div class="atbl"><table>
+          <thead><tr><th>작성자</th><th>제목</th><th>상태</th><th>작성일</th><th>관리</th></tr></thead>
+          <tbody id="a-inquiries-list"></tbody>
+        </table></div>
+      </div>
+
     </div>
   </div>
 </div>
-
-<!-- ADMIN LISTING DETAIL OVERLAY -->
 <div class="ov" id="adminDetailOv" onclick="if(event.target===this)closeAdminDetail()" style="z-index:400">
   <div class="modal" style="max-width:480px;padding:0;overflow:hidden">
     <div style="background:var(--red);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
@@ -1776,6 +1784,7 @@ async function onLogin(user) {
   const adminBtn = user.is_admin ? `<button class="hbtn admin mob-hide" onclick="openAdmin()">⚙️ 관리</button>` : '';
   document.getElementById('hRight').innerHTML = `
     <button class="hbtn mob-hide" onclick="openNotice()" style="font-size:12px">📢 공지</button>
+    <button class="hbtn mob-hide" onclick="openInquiry()" style="font-size:12px">💬 문의</button>
     <button class="noti-btn" onclick="toggleNoti()" title="알림">
       🔔<span class="noti-badge" id="notiBadge"></span>
     </button>
@@ -4110,6 +4119,65 @@ function switchAdminTab(id, btn) {
   document.querySelectorAll('.atab').forEach(b=>b.classList.remove('active'));
   document.getElementById('ap-'+id).classList.add('active'); btn.classList.add('active');
   if (id === 'notices') aLoadNotices();
+  if (id === 'inquiries') aLoadInquiries();
+}
+
+async function aLoadInquiries() {
+  const { data } = await sb.from('inquiries').select('*').order('created_at',{ascending:false});
+  const el = document.getElementById('a-inquiries-list');
+  if (!data?.length) { el.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px">문의 내역이 없어요</td></tr>'; return; }
+  el.innerHTML = data.map(q => `<tr style="cursor:pointer" onclick="aOpenInquiry(${q.id})">
+    <td style="font-size:12px">${q.username}</td>
+    <td style="font-weight:500">${q.title}</td>
+    <td><span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${q.answer?'var(--green-light)':'var(--bg2)'};color:${q.answer?'var(--green)':'var(--muted)'};font-weight:600">${q.answer?'답변완료':'대기중'}</span></td>
+    <td style="color:var(--muted);font-size:11px">${q.created_at?.slice(0,10)}</td>
+    <td><button class="aact del" onclick="event.stopPropagation();aDelInquiry(${q.id})">삭제</button></td>
+  </tr>`).join('');
+}
+
+let currentInquiryId = null;
+async function aOpenInquiry(id) {
+  const { data: q } = await sb.from('inquiries').select('*').eq('id', id).single();
+  if (!q) return;
+  currentInquiryId = id;
+  const answerArea = q.answer
+    ? `<div style="background:var(--green-light);border:1px solid #86efac;border-radius:var(--r2);padding:12px;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">✅ 등록된 답변</div>
+        <div style="font-size:13px;white-space:pre-wrap">${q.answer}</div>
+       </div>` : '';
+  document.getElementById('adm-d-body').innerHTML = `
+    <div style="margin-bottom:12px">
+      <div style="font-size:11px;color:var(--muted);margin-bottom:3px">작성자: ${q.username}</div>
+      <div style="font-size:16px;font-weight:700;margin-bottom:10px">${q.title}</div>
+      <div style="background:var(--bg2);border-radius:var(--r2);padding:12px;font-size:13px;line-height:1.7;white-space:pre-wrap;margin-bottom:14px">${q.content}</div>
+      ${answerArea}
+      <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">답변 작성</div>
+      <textarea id="adm-answer-input" placeholder="답변을 입력하세요..."
+        style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;resize:none;height:100px">${q.answer||''}</textarea>
+      <button onclick="aSubmitAnswer(${q.id})"
+        style="width:100%;margin-top:8px;padding:10px;background:var(--red);color:#fff;border:none;border-radius:var(--r2);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">
+        답변 저장
+      </button>
+    </div>`;
+  document.getElementById('adm-d-title').textContent = '1:1 문의';
+  document.getElementById('adm-d-sub').textContent = q.answer ? '답변완료' : '답변 대기중';
+  document.getElementById('adminDetailOv').classList.add('on');
+}
+
+async function aSubmitAnswer(id) {
+  const answer = document.getElementById('adm-answer-input').value.trim();
+  if (!answer) { toast('답변을 입력해주세요'); return; }
+  const { error } = await sb.from('inquiries').update({ answer }).eq('id', id);
+  if (error) { toast('저장 실패'); return; }
+  toast('답변이 저장됐어요 ✅');
+  closeAdminDetail();
+  aLoadInquiries();
+}
+
+async function aDelInquiry(id) {
+  if (!confirm('문의를 삭제할까요?')) return;
+  await sb.from('inquiries').delete().eq('id', id);
+  toast('삭제됐어요'); aLoadInquiries();
 }
 async function aLoadOverview() {
   const [c,l,u,t] = await Promise.all([
