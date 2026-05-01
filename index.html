@@ -484,7 +484,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .atab{font-size:13px;padding:11px 15px;border:none;border-bottom:2.5px solid transparent;background:none;color:var(--muted);font-family:inherit;font-weight:500;cursor:pointer;transition:color .15s;white-space:nowrap;}
 .atab.active{color:var(--red);border-bottom-color:var(--red);font-weight:600;}
 .atab:hover:not(.active){color:var(--text);}
-.admin-body{padding:20px;min-height:400px;max-height:calc(100vh - 160px);overflow-y:auto;}
+.admin-body{padding:20px;min-height:400px;max-height:calc(100vh - 120px);overflow-y:auto;}
 .ap{display:none;}
 .ap.active{display:block;}
 .a-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
@@ -1538,11 +1538,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </table></div>
       </div>
 
+      <!-- 1:1 문의 관리 -->
+      <div class="ap" id="ap-inquiries">
+        <div class="atbl"><table>
+          <thead><tr><th>작성자</th><th>제목</th><th>상태</th><th>작성일</th><th>관리</th></tr></thead>
+          <tbody id="a-inquiries-list"></tbody>
+        </table></div>
+      </div>
+
     </div>
   </div>
 </div>
-
-<!-- 공지사항 오버레이 -->
 <div class="ov" id="noticeOv" onclick="if(event.target===this)closeNotice()">
   <div class="modal" style="max-width:540px;padding:0;overflow:hidden">
     <div style="background:linear-gradient(135deg,var(--red),#c0392b);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
@@ -1554,14 +1560,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div style="padding:16px 20px;max-height:65vh;overflow-y:auto" id="notice-body">
       <div style="text-align:center;padding:30px"><div class="spinner"></div></div>
-      <!-- 1:1 문의 관리 -->
-      <div class="ap" id="ap-inquiries">
-        <div class="atbl"><table>
-          <thead><tr><th>작성자</th><th>제목</th><th>상태</th><th>작성일</th><th>관리</th></tr></thead>
-          <tbody id="a-inquiries-list"></tbody>
-        </table></div>
-      </div>
-
     </div>
   </div>
 </div>
