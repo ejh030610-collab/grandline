@@ -3146,14 +3146,9 @@ function openContact(lid, cid) {
   document.getElementById('contactOv').classList.add('on');
 }
 function getTrackingUrl(carrier, trackingNum) {
-  const urls = {
-    'CJ대한통운': `https://trace.cjlogistics.com/next/tracking.html?wblNo=${trackingNum}`,
-    '롯데택배':   `https://www.lotteglogis.com/home/reservation/tracking/index?InvNo=${trackingNum}`,
-    '한진택배':   `https://www.hanjin.com/kor/CMS/DeliveryMgr/WaybillResult.do?mCode=MN038&schLang=KR&wblnumText2=${trackingNum}`,
-    '우체국택배': `https://service.epost.go.kr/trace.RetrieveEmsRigiTraceList.comm?sid1=${trackingNum}`,
-    '로젠택배':   `https://www.ilogen.com/web/personal/trace/${trackingNum}`,
-  };
-  return urls[carrier] || `https://search.naver.com/search.naver?query=${encodeURIComponent(carrier+' '+trackingNum+' 배송조회')}`;
+  // 네이버 택배조회로 통일 (택배사 무관하게 바로 조회)
+  const query = carrier ? `${carrier} ${trackingNum} 배송조회` : `${trackingNum} 택배조회`;
+  return `https://search.naver.com/search.naver?query=${encodeURIComponent(query)}`;
 }
 
 function selectContactShip(el) {
