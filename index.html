@@ -1625,14 +1625,18 @@ async function init() {
   if (!allCards.length) { document.getElementById('cardGrid').innerHTML = '<div class="empty-grid">⚠️ 카드를 불러오지 못했어요</div>'; return; }
 
   // 판매 목록 (최근 2000개)
-  const { data: lData } = await sb.from('listings').select('*').eq('status','active').order('created_at',{ascending:false}).limit(2000);
-  listings = {};
-  (lData||[]).forEach(l => { if(!listings[l.card_id]) listings[l.card_id]=[]; listings[l.card_id].push(l); });
+  try {
+    const { data: lData } = await sb.from('listings').select('*').eq('status','active').order('created_at',{ascending:false}).limit(2000);
+    listings = {};
+    (lData||[]).forEach(l => { if(!listings[l.card_id]) listings[l.card_id]=[]; listings[l.card_id].push(l); });
+  } catch(e) { console.warn('listings 로드 실패', e); }
 
   // 거래 내역 (최근 200건만)
-  const { data: tData } = await sb.from('trades').select('card_id,price,created_at').eq('status','completed').order('created_at',{ascending:false}).limit(200);
-  trades = {};
-  (tData||[]).forEach(t => { if(!trades[t.card_id]) trades[t.card_id]=[]; trades[t.card_id].push(t); });
+  try {
+    const { data: tData } = await sb.from('trades').select('card_id,price,created_at').order('created_at',{ascending:false}).limit(200);
+    trades = {};
+    (tData||[]).forEach(t => { if(!trades[t.card_id]) trades[t.card_id]=[]; trades[t.card_id].push(t); });
+  } catch(e) { console.warn('trades 로드 실패', e); }
 
   // 찜
   if (curUser) {
