@@ -381,16 +381,16 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .modal-close-btn{position:absolute;top:12px;right:14px;background:rgba(0,0,0,.08);border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);transition:background .15s;z-index:10;}
 .modal-close-btn:hover{background:rgba(0,0,0,.15);}
 .modal-close-btn.white{background:rgba(255,255,255,.2);color:#fff;}
-.modal-close-btn.white:hover{background:rgba(255,255,255,.35);}position:fixed;bottom:0;left:0;right:0;height:62px;background:#fff;border-top:1px solid var(--border);z-index:150;box-shadow:0 -2px 12px rgba(0,0,0,.08);}
-.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:62px;background:#fff;border-top:1px solid var(--border);z-index:150;box-shadow:0 -2px 12px rgba(0,0,0,.08);display:none;flex-direction:row;align-items:stretch;padding-bottom:env(safe-area-inset-bottom,0px);}
-.mob-nav-inner{display:contents;}
+.modal-close-btn.white:hover{background:rgba(255,255,255,.35);}
+.mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:62px;background:#fff;border-top:1px solid var(--border);z-index:150;box-shadow:0 -2px 12px rgba(0,0,0,.08);}
+.mob-nav-inner{display:flex;height:100%;width:100%;padding-bottom:env(safe-area-inset-bottom,0px);}
 .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;font-family:inherit;cursor:pointer;color:var(--muted);transition:color .15s;padding:0;-webkit-tap-highlight-color:transparent;}
 .mob-nav-btn.active{color:var(--red);}
 .mob-nav-icon{font-size:22px;line-height:1;}
 .mob-nav-label{font-size:10px;font-weight:500;}
 .mob-nav-btn.sell-btn{color:#fff;}
 .mob-nav-btn.sell-btn .mob-nav-sell-inner{width:48px;height:48px;background:var(--red);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;box-shadow:0 4px 14px rgba(216,90,48,.5);margin-bottom:-8px;}
-@media(max-width:700px){.mob-nav{display:flex;}}
+@media(max-width:700px){.mob-nav{display:block;}}
 
 /* ── 카드 상세 하단 고정 CTA ── */
 .mob-cta-bar{display:none;position:sticky;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:10px 16px calc(10px + env(safe-area-inset-bottom));gap:8px;z-index:50;box-shadow:0 -2px 12px rgba(0,0,0,.07);}
@@ -1627,8 +1627,8 @@ async function init() {
   listings = {};
   (lData||[]).forEach(l => { if(!listings[l.card_id]) listings[l.card_id]=[]; listings[l.card_id].push(l); });
 
-  // 거래 내역
-  const { data: tData } = await sb.from('trades').select('*').order('traded_at',{ascending:false});
+  // 거래 내역 (시세 그래프용 - 최근 200건만)
+  const { data: tData } = await sb.from('trades').select('card_id,price,created_at').eq('status','completed').order('created_at',{ascending:false}).limit(200);
   trades = {};
   (tData||[]).forEach(t => { if(!trades[t.card_id]) trades[t.card_id]=[]; trades[t.card_id].push(t); });
 
