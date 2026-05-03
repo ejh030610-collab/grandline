@@ -1156,30 +1156,27 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 배송 방법 + 가격 -->
       <div class="fg" style="margin-top:10px">
         <label>배송 방법 <span style="color:var(--red)">*</span></label>
-        <div style="display:flex;flex-direction:column;gap:6px;margin-top:8px" id="ship-grid">
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px" id="ship-grid">
           <div class="ship-opt" data-ship="등기" onclick="selectShip(this)"
-            style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
-            <span style="font-size:16px;flex-shrink:0">📮</span>
-            <span style="font-size:13px;font-weight:500;flex:1">등기</span>
+            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:6px">
+            <span>📮</span><span>등기</span>
             <input type="number" class="ship-price-input" placeholder="요금" min="0" onclick="event.stopPropagation()"
-              style="width:70px;padding:4px 7px;border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;outline:none;text-align:right">
-            <span style="font-size:11px;color:var(--muted)">원</span>
+              style="width:55px;padding:2px 5px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;text-align:right;background:#f8f8f8">
+            <span style="font-size:10px;color:var(--muted)">원</span>
           </div>
           <div class="ship-opt" data-ship="일반택배" onclick="selectShip(this)"
-            style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
-            <span style="font-size:16px;flex-shrink:0">📦</span>
-            <span style="font-size:13px;font-weight:500;flex:1">일반택배</span>
+            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:6px">
+            <span>📦</span><span>일반택배</span>
             <input type="number" class="ship-price-input" placeholder="요금" min="0" onclick="event.stopPropagation()"
-              style="width:70px;padding:4px 7px;border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;outline:none;text-align:right">
-            <span style="font-size:11px;color:var(--muted)">원</span>
+              style="width:55px;padding:2px 5px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;text-align:right;background:#f8f8f8">
+            <span style="font-size:10px;color:var(--muted)">원</span>
           </div>
           <div class="ship-opt" data-ship="반값택배" onclick="selectShip(this)"
-            style="display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--border);background:#fff;border-radius:var(--r3);cursor:pointer;transition:all .15s">
-            <span style="font-size:16px;flex-shrink:0">💸</span>
-            <span style="font-size:13px;font-weight:500;flex:1">반값택배</span>
+            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:6px">
+            <span>💸</span><span>반값택배</span>
             <input type="number" class="ship-price-input" placeholder="요금" min="0" onclick="event.stopPropagation()"
-              style="width:70px;padding:4px 7px;border:1px solid var(--border);border-radius:var(--r3);font-size:12px;font-family:inherit;outline:none;text-align:right">
-            <span style="font-size:11px;color:var(--muted)">원</span>
+              style="width:55px;padding:2px 5px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;text-align:right;background:#f8f8f8">
+            <span style="font-size:10px;color:var(--muted)">원</span>
           </div>
         </div>
         <div style="font-size:11px;color:var(--muted);margin-top:5px">복수 선택 가능 · 요금을 입력하면 구매자에게 표시돼요</div>
@@ -2756,10 +2753,12 @@ function selectCond(el) {
 function selectShip(el) {
   el.classList.toggle('active');
   const isOn = el.classList.contains('active');
-  el.style.border = isOn ? '1.5px solid var(--red)' : '1.5px solid var(--border)';
-  el.style.background = isOn ? 'var(--red-light)' : '#fff';
+  el.style.border = isOn ? '1.5px solid var(--blue)' : '1.5px solid var(--border)';
+  el.style.background = isOn ? 'var(--blue-light)' : '#fff';
+  el.style.color = isOn ? 'var(--blue)' : 'var(--muted)';
+  el.style.fontWeight = isOn ? '600' : '500';
   const inp = el.querySelector('.ship-price-input');
-  if (inp) inp.style.borderColor = isOn ? 'var(--red)' : 'var(--border)';
+  if (inp) inp.style.borderColor = isOn ? 'var(--blue)' : 'var(--border)';
 }
 
 function openSell(prefill) {
