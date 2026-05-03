@@ -1610,33 +1610,37 @@ async function init() {
   const saved = localStorage.getItem('gl_session');
   if (saved) { try { await onLogin(JSON.parse(saved)); } catch(e) { localStorage.removeItem('gl_session'); } }
 
-  // 카드 전체 로드 (페이지네이션, 최대 5000개)
+  // 카드 전체 로드
   allCards = [];
-  let from = 0;
-  const PAGE = 1000;
-  const MAX_PAGES = 5;
-  for (let page = 0; page < MAX_PAGES; page++) {
-    const { data, error } = await sb.from('cards').select('*').order('id').range(from, from + PAGE - 1);
-    if (error || !data?.length) break;
-    allCards = allCards.concat(data);
-    if (data.length < PAGE) break;
-    from += PAGE;
-  }
-  if (!allCards.length) { document.getElementById('cardGrid').innerHTML = '<div class="empty-grid">⚠️ 카드를 불러오지 못했어요</div>'; return; }
-
-  // 판매 목록 (최근 2000개)
   try {
-    const { data: lData } = await sb.from('listings').select('*').eq('status','active').order('created_at',{ascending:false}).limit(2000);
+    let from = 0;
+    for (let page = 0; page < 5; page++) {
+      const { data, error } = await sb.from('cards').select('*').order('id').range(from, from + 999);
+      if (error || !data?.length) break;
+      allCards = allCards.concat(data);
+      if (data.length < 1000) break;
+      from += 1000;
+    }
+  } catch(e) { console.warn('카드 로드 오류', e); }
+
+  if (!allCards.length) {
+    document.getElementById('cardGrid').innerHTML = '<div class="empty-grid">⚠️ 카드를 불러오지 못했어요</div>';
+    return;
+  }
+
+  // 판매 목록
+  try {
+    const { data: lData } = await sb.from('listings').select('*').eq('status','active').limit(2000);
     listings = {};
     (lData||[]).forEach(l => { if(!listings[l.card_id]) listings[l.card_id]=[]; listings[l.card_id].push(l); });
-  } catch(e) { console.warn('listings 로드 실패', e); }
+  } catch(e) { console.warn('listings 로드 오류', e); listings = {}; }
 
-  // 거래 내역 (최근 200건만)
+  // 거래 내역
   try {
     const { data: tData } = await sb.from('trades').select('card_id,price,created_at').order('created_at',{ascending:false}).limit(200);
     trades = {};
     (tData||[]).forEach(t => { if(!trades[t.card_id]) trades[t.card_id]=[]; trades[t.card_id].push(t); });
-  } catch(e) { console.warn('trades 로드 실패', e); }
+  } catch(e) { console.warn('trades 로드 오류', e); trades = {}; }
 
   // 찜
   if (curUser) {
@@ -2601,20 +2605,6 @@ window.addEventListener('popstate', () => {
 function pushHistory() { history.pushState({ nexo: true }, ''); }
 
 // ─── 공지사항 ───
-  if (!ov) return;
-  ov.classList.add('on');
-  const { data } = await sb.from('notices').select('*').order('created_at',{ascending:false}).limit(30);
-  const body = document.getElementById('notice-body');
-  if (!data?.length) { body.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">등록된 공지사항이 없어요</div>'; return; }
-  body.innerHTML = data.map(n=>`
-    <div style="padding:14px 0;border-bottom:1px solid var(--border);cursor:pointer" onclick="openNoticeDetail(${n.id})">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px">
-        ${n.is_pinned?'<span style="font-size:10px;padding:1px 6px;background:var(--red);color:#fff;border-radius:4px;font-weight:700">공지</span>':''}
-        <span style="font-size:13px;font-weight:600">${n.title}</span>
-      </div>
-      <div style="font-size:11px;color:var(--muted)">${n.created_at?.slice(0,10)}</div>
-    </div>`).join('');
-}
 
 // ─── 1:1 문의 ───
 async function openInquiry() {
