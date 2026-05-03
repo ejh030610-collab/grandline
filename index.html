@@ -564,13 +564,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .no-chart-msg{text-align:center;padding:20px;color:var(--muted);font-size:13px;background:var(--bg2);border-radius:var(--r2);}
 
 /* 검색 오버레이 */
-/* 모바일: 전체 화면 검색 */
 .search-ov{display:none;position:fixed;inset:0;background:#fff;z-index:600;flex-direction:column;}
 .search-ov.on{display:flex;}
-/* 데스크탑: 헤더 아래 드롭다운 패널 */
 @media(min-width:701px){
-  .search-ov{position:fixed;top:59px;left:50%;transform:translateX(-50%);width:620px;max-height:500px;border-radius:0 0 14px 14px;box-shadow:0 8px 32px rgba(0,0,0,.16);inset:auto;border:1px solid var(--border);border-top:none;background:#fff;}
-  .search-ov::before{content:'';position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:-1;}
+  .search-ov{position:fixed;top:59px;left:50%;transform:translateX(-50%);inset:auto;width:620px;max-height:500px;border-radius:0 0 14px 14px;box-shadow:0 8px 32px rgba(0,0,0,.16);border:1px solid var(--border);border-top:none;background:#fff;}
   .search-ov-hd{padding:10px 16px;}
   .search-ov-body{flex:1;overflow-y:auto;max-height:380px;padding:12px 16px;}
   .search-ov-hd>button:first-child{display:none;}
@@ -622,11 +619,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <a class="logo" href="#" onclick="showHome()">
       <img src="/logo.png" style="height:36px;width:auto;object-fit:contain" alt="NEXO">
     </a>
-    <div class="h-search">
+    <div class="h-search" onclick="openSearchOv()" style="cursor:pointer">
       <span class="h-search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="카드명, 번호 검색..."
-        onfocus="openSearchOv()"
-        style="cursor:text">
+      <input type="text" id="searchInput" placeholder="카드명, 번호 검색..." readonly style="cursor:pointer;pointer-events:none">
     </div>
     <div class="h-right" id="hRight">
       <button class="hbtn" onclick="openNotice()" style="font-size:12px">📢 공지</button>
