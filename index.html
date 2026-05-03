@@ -278,34 +278,39 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 /* ── MOBILE ONLY (≤700px) ── */
 @media(max-width:700px){
-  /* 전체 패딩 */
-  .main{padding:10px 10px 80px;}
+  /* 전체 */
+  .main{padding:8px 10px 80px;}
 
-  /* 헤더 — 모바일에서 텍스트 버튼 숨김 (하단 네비바로 대체) */
+  /* 헤더 */
   .h-right .hbtn:not(.noti-btn):not(.user-chip){display:none!important;}
+  header{padding:0 12px;height:52px;}
+  .logo img{height:28px!important;}
+  .h-search input{font-size:14px;}
 
-  /* 모달을 바텀시트로 */
+  /* 모달 바텀시트 */
   .ov{align-items:flex-end!important;padding:0!important;}
   .modal{border-radius:22px 22px 0 0!important;max-width:100%!important;max-height:93vh;overflow-y:auto;}
   .sell-modal{max-width:100%!important;border-radius:22px 22px 0 0!important;}
   .my-modal{border-radius:22px 22px 0 0!important;max-height:93vh;}
 
-  /* 마이페이지 탭 가로 스크롤 */
+  /* 마이페이지 탭 */
   .my-tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;flex-wrap:nowrap;scrollbar-width:none;}
   .my-tabs::-webkit-scrollbar{display:none;}
   .my-tab{white-space:nowrap;flex-shrink:0;font-size:12px;padding:9px 12px;}
 
-  /* 카드 그리드 — 2열 */
+  /* 카드 그리드 */
   .grid{grid-template-columns:repeat(2,1fr);gap:8px;}
-  .card-thumb{font-size:40px;}
-  .card-info{padding:7px 9px 10px;}
-  .card-name{font-size:12px;margin:3px 0;}
-  .card-price{font-size:14px;}
-  .rtag{font-size:10px;padding:2px 6px;}
-  .wish-btn{width:30px;height:30px;font-size:15px;}
+  .card-thumb{font-size:36px;}
+  .card-info{padding:6px 8px 9px;}
+  .card-num{font-size:9px;}
+  .card-name{font-size:12px;margin:2px 0;}
+  .card-price{font-size:13px;}
+  .rtag{font-size:9px;padding:1px 5px;}
+  .wish-btn{width:28px;height:28px;font-size:14px;}
+  .list-badge{font-size:9px;padding:1px 5px;}
 
   /* 필터바 */
-  .filter-bar{gap:5px;padding:8px 10px;flex-wrap:wrap;}
+  .filter-bar{gap:5px;padding:7px 10px;flex-wrap:wrap;}
   .ftag{font-size:11px;padding:5px 10px;border-radius:14px;}
   .filter-bar .fdiv{display:none;}
   .filter-bar>span{display:none;}
@@ -313,30 +318,43 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   .price-wrap{display:none;}
 
   /* 홈 */
-  .recent-list{grid-template-columns:1fr;gap:7px;}
-  .recent-item{padding:10px 12px;}
-  .hot-grid{grid-template-columns:repeat(3,1fr);gap:8px;}
+  .home-sec{margin-bottom:18px;}
+  .home-hd{margin-bottom:10px;}
+  .home-hd h3{font-size:14px;}
+  .recent-list{grid-template-columns:1fr;gap:6px;}
+  .recent-item{padding:9px 12px;gap:9px;}
+  .ri-img{width:32px;height:46px;}
+  .ri-name{font-size:12px;}
+  .ri-meta{font-size:10px;}
+  .ri-price{font-size:13px;}
+  .hot-grid{grid-template-columns:repeat(3,1fr);gap:7px;}
 
   /* 카드 상세 */
   .detail-modal{max-width:100%;border-radius:0;max-height:100dvh;padding-bottom:80px;}
   .detail-top{grid-template-columns:1fr;}
-  .detail-img-col{border-radius:0;border-right:none;border-bottom:1px solid var(--border);padding:16px;}
-  .detail-main-img{width:140px;height:200px;}
-  .detail-info{padding:14px 16px;}
-  .d-name{font-size:20px;}
+  .detail-img-col{border-radius:0;border-right:none;border-bottom:1px solid var(--border);padding:14px;}
+  .detail-main-img{width:120px;height:170px;}
+  .detail-info{padding:12px 14px;}
+  .d-name{font-size:19px;}
 
-  /* 판매 목록 */
-  .l-item{padding:14px 0;gap:10px;}
-  .l-img{width:44px;height:62px;}
-  .l-avatar{width:32px;height:32px;font-size:13px;}
-  .l-contact-btn{padding:9px 14px;font-size:13px;white-space:nowrap;}
+  /* 판매 목록 아이템 */
+  .l-item{padding:12px 0;gap:8px;align-items:flex-start;}
+  .l-img{width:40px;height:58px;}
+  .l-avatar{width:28px;height:28px;font-size:11px;}
+  .l-seller{font-size:12px;}
+  .l-meta{font-size:10px;}
+  .l-price{font-size:13px;}
+  /* 구매/사진요청 버튼 가로로 */
+  .l-item .l-actions{display:flex;flex-direction:row!important;gap:5px;align-items:center;flex-shrink:0;}
+  .l-contact-btn{padding:7px 10px;font-size:11px;white-space:nowrap;}
 
-  /* 모바일 하단 CTA */
+  /* 하단 CTA */
   .mob-cta-bar{display:flex!important;}
   .d-btns{display:none;}
+  .mob-cta-bar .dbtn{padding:12px;font-size:13px;border-radius:10px;}
 
   /* 판매 모달 */
-  .sell-body{padding:14px 16px;}
+  .sell-body{padding:12px 14px;}
   .fg-2{grid-template-columns:1fr;}
 
   /* iOS input zoom 방지 */
@@ -348,7 +366,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   /* stat */
   .stat-row{grid-template-columns:repeat(2,1fr);}
   .my-modal{max-width:100%!important;}
-  .my-l-item{gap:10px;padding:10px 0;}
+  .my-l-item{gap:8px;padding:9px 0;}
+
+  /* 사이드바 숨김 */
+  .sidebar{display:none;}
+  .content{margin-left:0!important;}
 }
 
 /* ── DESKTOP ONLY (>700px) ── */
@@ -2491,7 +2513,7 @@ async function openDetail(cid) {
         </div>
       </div>
       <span class="l-price">${l.price.toLocaleString()}원</span>
-      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+      <div class="l-actions" style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
         <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
         <button onclick="event.stopPropagation();openPhotoReq('${l.id}','${l.seller_username}')"
           style="padding:4px 10px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);font-size:11px;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap">📷 사진 요청</button>
