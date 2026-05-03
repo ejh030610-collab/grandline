@@ -1153,33 +1153,21 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </div>
         <div style="font-size:11px;color:var(--muted);margin-top:6px">복수 선택 가능 · 양호 선택 시 나머지 해제</div>
       </div>
-      <!-- 배송 방법 + 가격 -->
+      <!-- 배송 방법 -->
       <div class="fg" style="margin-top:10px">
         <label>배송 방법 <span style="color:var(--red)">*</span></label>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px" id="ship-grid">
-          <div class="ship-opt" data-ship="등기" onclick="selectShip(this)"
-            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:6px">
-            <span>📮</span><span>등기</span>
-            <input type="number" class="ship-price-input" placeholder="요금" min="0" onclick="event.stopPropagation()"
-              style="width:55px;padding:2px 5px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;text-align:right;background:#f8f8f8">
-            <span style="font-size:10px;color:var(--muted)">원</span>
-          </div>
-          <div class="ship-opt" data-ship="일반택배" onclick="selectShip(this)"
-            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:6px">
-            <span>📦</span><span>일반택배</span>
-            <input type="number" class="ship-price-input" placeholder="요금" min="0" onclick="event.stopPropagation()"
-              style="width:55px;padding:2px 5px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;text-align:right;background:#f8f8f8">
-            <span style="font-size:10px;color:var(--muted)">원</span>
-          </div>
-          <div class="ship-opt" data-ship="반값택배" onclick="selectShip(this)"
-            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s;display:flex;align-items:center;gap:6px">
-            <span>💸</span><span>반값택배</span>
-            <input type="number" class="ship-price-input" placeholder="요금" min="0" onclick="event.stopPropagation()"
-              style="width:55px;padding:2px 5px;border:1px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;text-align:right;background:#f8f8f8">
-            <span style="font-size:10px;color:var(--muted)">원</span>
-          </div>
+        <select id="s_ship" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;margin-top:8px;background:#fff">
+          <option value="">배송 방법 선택</option>
+          <option value="등기">📮 등기 (우체국 등기)</option>
+          <option value="일반택배">📦 일반택배 (CJ/한진/롯데)</option>
+          <option value="반값택배">💸 반값택배 (편의점 접수)</option>
+        </select>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
+          <input type="number" id="s_ship_price" placeholder="배송비 (원)" min="0"
+            style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none">
+          <span style="font-size:13px;color:var(--muted);white-space:nowrap">원</span>
         </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:5px">복수 선택 가능 · 요금을 입력하면 구매자에게 표시돼요</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:5px">배송비를 입력하면 구매자에게 표시돼요</div>
       </div>
       <div class="fg" style="margin-top:10px">
         <label>추가 설명 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
@@ -2793,13 +2781,8 @@ function closeSell() {
     o.style.background = isGood ? 'var(--green-light)' : '#fff';
   });
   // 배송방법 초기화
-  document.querySelectorAll('#ship-grid .ship-opt').forEach(o => {
-    o.classList.remove('active');
-    o.style.border = '1.5px solid var(--border)';
-    o.style.background = '#fff';
-    const inp = o.querySelector('.ship-price-input');
-    if (inp) { inp.value = ''; inp.style.borderColor = 'var(--border)'; }
-  });
+  if (document.getElementById('s_ship')) document.getElementById('s_ship').value = '';
+  if (document.getElementById('s_ship_price')) document.getElementById('s_ship_price').value = '';
 }
 
 function switchGrade(type, btn) {
@@ -3113,9 +3096,11 @@ async function submitSell() {
   const card_id = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
   const contact_info = curUser.phone || curUser.username;
-  // 배송방법 수집 (선택된 항목)
-  const selectedShips = [...document.querySelectorAll('#ship-grid .ship-opt.active')];
-  if (!selectedShips.length) { toast('배송 방법을 선택해주세요'); return; }
+  // 배송방법 수집
+  const shipMethod = document.getElementById('s_ship')?.value;
+  const shipPrice = document.getElementById('s_ship_price')?.value;
+  if (!shipMethod) { toast('배송 방법을 선택해주세요'); return; }
+  const shipPrices = shipPrice ? { [shipMethod]: parseInt(shipPrice) } : null;
 
   const btn = document.querySelector('#sellOv .mbtn-ok');
   if (btn) { btn.disabled = true; btn.textContent = '확인 중...'; }
@@ -3178,19 +3163,6 @@ async function submitSell() {
     const badItems = [...document.querySelectorAll('#cond-grid .cond-opt.active')]
       .map(o => o.dataset.cond).filter(c => c !== '양호');
     const conditionDesc = badItems.length ? badItems.join(', ') : '양호';
-
-    // 배송방법 + 가격 수집
-    const shipMethods = selectedShips.map(el => {
-      const method = el.dataset.ship;
-      const price = el.querySelector('.ship-price-input')?.value;
-      return price ? `${method}(${parseInt(price).toLocaleString()}원)` : method;
-    });
-    const shipMethod = shipMethods.join('/');
-    const shipPrices = {};
-    selectedShips.forEach(el => {
-      const p = el.querySelector('.ship-price-input')?.value;
-      if (p) shipPrices[el.dataset.ship] = parseInt(p);
-    });
 
     const { data, error } = await sb.from('listings').insert({
       card_id,
