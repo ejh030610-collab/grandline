@@ -138,10 +138,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .rt-none{background:rgba(200,200,200,.5);color:#999;}
 .rt-p{background:linear-gradient(135deg,#f59e0b,#ec4899,#8b5cf6);color:#fff;}
 /* 패러렐 개별 뱃지 */
+.rt-p{background:linear-gradient(135deg,#e879f9,#a855f7,#6366f1);color:#fff;box-shadow:0 0 6px rgba(168,85,247,.4);}
 .rt-sec-p{background:linear-gradient(135deg,#ff6b35,#f59e0b,#ff4757);color:#fff;box-shadow:0 0 6px rgba(255,107,53,.5);}
 .rt-sr-p{background:linear-gradient(135deg,#a855f7,#ec4899,#6366f1);color:#fff;box-shadow:0 0 6px rgba(168,85,247,.5);}
 .rt-r-p{background:linear-gradient(135deg,#3b82f6,#06b6d4,#8b5cf6);color:#fff;box-shadow:0 0 6px rgba(59,130,246,.5);}
 .rt-l-p{background:linear-gradient(135deg,#10b981,#84cc16,#06b6d4);color:#fff;box-shadow:0 0 6px rgba(16,185,129,.5);}
+/* SP - 무지개 홀로그램 */
+.rt-sp{background:linear-gradient(135deg,#ff0080,#ff8c00,#40e0d0,#7b2ff7,#ff0080);background-size:300% 300%;animation:rainbow 3s linear infinite;color:#fff;box-shadow:0 0 8px rgba(255,0,128,.5);font-weight:800;}
+@keyframes rainbow{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+/* ★ - 스페셜 금빛 반짝이 */
+.rt-star{background:linear-gradient(135deg,#FFD700,#FFA500,#FFD700);background-size:200% 200%;animation:goldshine 1.5s ease infinite;color:#fff;box-shadow:0 0 10px rgba(255,215,0,.8);font-weight:800;letter-spacing:1px;}
+@keyframes goldshine{0%,100%{background-position:0% 50%;box-shadow:0 0 10px rgba(255,215,0,.8)}50%{background-position:100% 50%;box-shadow:0 0 18px rgba(255,165,0,1)}}
 .card-img-wrap{position:relative;overflow:hidden;background:var(--bg3);}
 .card-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;}
 .wish-btn{position:absolute;top:6px;right:6px;background:rgba(255,255,255,.9);border:none;border-radius:50%;width:26px;height:26px;font-size:13px;display:flex;align-items:center;justify-content:center;color:#ccc;transition:all .15s;}
@@ -777,11 +784,14 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <div class="rdrop-item" data-rarity="UC" onclick="setRarity(this)">⬜ UC</div>
           <div class="rdrop-item" data-rarity="C" onclick="setRarity(this)">⬜ C</div>
           <div class="rdrop-item" data-rarity="L" onclick="setRarity(this)">💚 L</div>
+          <div class="rdrop-item" data-rarity="P" onclick="setRarity(this)">💜 P</div>
           <div style="height:1px;background:var(--border);margin:3px 0"></div>
           <div class="rdrop-item" data-rarity="SEC★" onclick="setRarity(this)">✨ SEC★</div>
           <div class="rdrop-item" data-rarity="SR★" onclick="setRarity(this)">✨ SR★</div>
           <div class="rdrop-item" data-rarity="R★" onclick="setRarity(this)">✨ R★</div>
           <div class="rdrop-item" data-rarity="L★" onclick="setRarity(this)">✨ L★</div>
+          <div class="rdrop-item" data-rarity="SP" onclick="setRarity(this)">🌈 SP</div>
+          <div class="rdrop-item" data-rarity="★" onclick="setRarity(this)">⭐ ★</div>
         </div>
       </div>
       <div class="price-wrap">
@@ -1415,7 +1425,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <div class="afg"><label>카드명 *</label><input type="text" id="af-name" placeholder="몽키 D. 루피"></div>
             <div class="afg"><label>버전</label><select id="af-ver"><option>한글판</option><option>일판</option></select></div>
             <div class="afg"><label>시리즈</label><select id="af-series"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
-            <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option></select></div>
+            <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select></div>
             <div class="afg"><label>타입</label><select id="af-type"><option>캐릭터</option><option>리더</option><option>이벤트</option><option>스테이지</option></select></div>
             <div class="afg"><label>색깔</label><select id="af-color"><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
             <div class="afg"><label>이모지</label><input type="text" id="af-emoji" placeholder="👒"></div>
@@ -1438,7 +1448,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option>
             <option>EBK-01</option><option>EBK-02</option>
           </select>
-          <select id="a-rarity" onchange="aFilterCards()"><option value="">전체 희귀도</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option></select>
+          <select id="a-rarity" onchange="aFilterCards()"><option value="">전체 희귀도</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select>
         </div>
         <div class="atbl"><table>
           <thead><tr><th>이미지</th><th>번호</th><th>카드명</th><th>희귀도</th><th>버전</th><th>관리</th></tr></thead>
@@ -1588,7 +1598,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>한글판</option><option>일판</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option></select></div>
+      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select></div>
       <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
     </div>
     <div style="margin-bottom:14px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">이미지 URL</label><input type="text" id="edit-imgurl" placeholder="https://onepiece-cardgame.kr/fileDownload?downname=..." style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
@@ -1621,7 +1631,7 @@ let aiData = {};
 let adminCards = [];
 
 // ─── HELPERS ───
-const RC = r => ({'SEC':'rt-sec','SR':'rt-sr','R':'rt-r','UC':'rt-uc','C':'rt-c','L':'rt-l','P':'rt-p','SEC★':'rt-sec-p','SR★':'rt-sr-p','R★':'rt-r-p','L★':'rt-l-p'}[r]||'rt-none');
+const RC = r => ({'SEC':'rt-sec','SR':'rt-sr','R':'rt-r','UC':'rt-uc','C':'rt-c','L':'rt-l','P':'rt-p','SEC★':'rt-sec-p','SR★':'rt-sr-p','R★':'rt-r-p','L★':'rt-l-p','SP':'rt-sp','★':'rt-star'}[r]||'rt-none');
 const GC = g => ({S:'gd-s',A:'gd-a',B:'gd-b',C:'gd-c',D:'gd-d'}[g]||'');
 const GBG = g => ({S:'#16a34a',A:'#2563eb',B:'#ca8a04',C:'#dc2626',D:'#6B7280'}[g]||'#999');
 const AVA = ['#D85A30','#2563eb','#16a34a','#7c3aed','#B8860B'];
