@@ -338,15 +338,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   .d-name{font-size:19px;}
 
   /* 판매 목록 아이템 */
-  .l-item{padding:12px 0;gap:8px;align-items:flex-start;}
-  .l-img{width:40px;height:58px;}
-  .l-avatar{width:28px;height:28px;font-size:11px;}
-  .l-seller{font-size:12px;}
-  .l-meta{font-size:10px;}
-  .l-price{font-size:13px;}
-  /* 구매/사진요청 버튼 가로로 */
-  .l-item .l-actions{display:flex;flex-direction:row!important;gap:5px;align-items:center;flex-shrink:0;}
-  .l-contact-btn{padding:7px 10px;font-size:11px;white-space:nowrap;}
+  .l-item{padding:11px 0;gap:7px;align-items:center;flex-wrap:nowrap;}
+  .l-imgs{flex-shrink:0;}
+  .l-img{width:38px;height:54px;}
+  .l-avatar{width:26px;height:26px;font-size:11px;flex-shrink:0;}
+  .l-info{flex:1;min-width:0;}
+  .l-seller{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .l-meta{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .l-price{font-size:13px;white-space:nowrap;flex-shrink:0;}
+  .l-actions{display:flex;flex-direction:column;gap:3px;align-items:stretch;flex-shrink:0;min-width:72px;}
+  .l-contact-btn{padding:6px 8px;font-size:11px;white-space:nowrap;text-align:center;margin-left:0;}
+  .l-actions button:last-child{padding:4px 6px;font-size:10px;}
 
   /* 하단 CTA */
   .mob-cta-bar{display:flex!important;}
@@ -356,6 +358,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   /* 판매 모달 */
   .sell-body{padding:12px 14px;}
   .fg-2{grid-template-columns:1fr;}
+
+  /* 검색창 */
+  .search-ov-hd{padding:8px 10px;}
+  .search-ov-input{font-size:15px;padding:9px 12px 9px 36px;}
+  .search-ov-cancel{font-size:13px;padding:4px 4px;}
 
   /* iOS input zoom 방지 */
   input,select,textarea{font-size:16px!important;}
@@ -586,14 +593,14 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .no-chart-msg{text-align:center;padding:20px;color:var(--muted);font-size:13px;background:var(--bg2);border-radius:var(--r2);}
 
 /* 검색 오버레이 */
-.search-ov{display:none;position:fixed;inset:0;background:#fff;z-index:600;flex-direction:column;}
+.search-ov{display:none;position:fixed;inset:0;background:#fff;z-index:600;flex-direction:column;overflow:hidden;}
 .search-ov.on{display:flex;}
 @media(min-width:701px){
   .search-ov{background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:40px 20px;}
   .search-ov-inner{background:#fff;border-radius:16px;width:100%;max-width:600px;max-height:70vh;display:flex!important;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);}
 }
 .search-ov-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:#fff;}
-.search-ov-input{flex:1;border:2px solid var(--red);border-radius:22px;padding:10px 16px 10px 40px;font-size:15px;font-family:inherit;outline:none;color:var(--text);background:#fff;}
+.search-ov-input{flex:1;min-width:0;border:2px solid var(--red);border-radius:22px;padding:10px 16px 10px 40px;font-size:15px;font-family:inherit;outline:none;color:var(--text);background:#fff;}
 .search-ov-input::placeholder{color:var(--dim);}
 .search-ov-icon{position:absolute;left:26px;font-size:16px;color:var(--muted);}
 .search-ov-cancel{font-size:14px;font-weight:600;color:var(--red);white-space:nowrap;background:none;border:none;cursor:pointer;padding:4px 6px;}
@@ -2501,22 +2508,24 @@ async function openDetail(cid) {
       <div class="l-imgs">${fi}${bi}</div>
       <div class="l-avatar" style="background:${AVA[i%5]};cursor:pointer" onclick="event.stopPropagation();openProfile('${l.seller_username}')">${(l.seller_name||'?')[0]}</div>
       <div class="l-info">
-        <div class="l-seller" style="cursor:pointer" onclick="event.stopPropagation();openProfile('${l.seller_username}')">${l.seller_name}${ag}${eg}</div>
-        <div class="l-meta" style="display:flex;align-items:center;flex-wrap:wrap;gap:2px">
-          <span style="font-size:10px;color:var(--blue);cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();openProfile('${l.seller_username}')">@${l.seller_username}</span>
-          ${tradeTag}${ratingTag}
+        <div style="display:flex;align-items:center;gap:5px;flex-wrap:wrap">
+          <span class="l-seller" style="cursor:pointer" onclick="event.stopPropagation();openProfile('${l.seller_username}')">${l.seller_name}</span>
+          ${ag}${eg}${ratingTag}
         </div>
-        <div class="l-meta">${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red);font-size:11px">'+l.card_condition+'</span>' : ' · 양호'}${l.shipping_method ? ' · <span style="color:var(--blue);font-size:11px">'+l.shipping_method+'</span>' : ''}</div>
-        ${l.description ? `<div class="l-meta" style="color:var(--muted);font-style:italic">"${l.description}"</div>` : ''}
-        <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
-          <span style="font-size:10px;color:var(--dim);cursor:pointer" onclick="event.stopPropagation();openReport('listing','${l.id}','${l.seller_username}')">🚨 신고</span>
+        <div class="l-meta" style="margin-top:2px">
+          ${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red)">'+l.card_condition+'</span>' : ''}${l.shipping_method ? ' · '+l.shipping_method : ''}
         </div>
+        ${l.description ? `<div class="l-meta" style="color:var(--muted);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">"${l.description}"</div>` : ''}
       </div>
-      <span class="l-price">${l.price.toLocaleString()}원</span>
-      <div class="l-actions" style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
-        <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
-        <button onclick="event.stopPropagation();openPhotoReq('${l.id}','${l.seller_username}')"
-          style="padding:4px 10px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);font-size:11px;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap">📷 사진 요청</button>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+        <span class="l-price">${l.price.toLocaleString()}원</span>
+        <div style="display:flex;gap:4px">
+          <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매</button>
+          <button onclick="event.stopPropagation();openPhotoReq('${l.id}','${l.seller_username}')"
+            style="padding:5px 7px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);font-size:11px;color:var(--muted);font-family:inherit;cursor:pointer">📷</button>
+          <button onclick="event.stopPropagation();openReport('listing','${l.id}','${l.seller_username}')"
+            style="padding:5px 7px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);font-size:11px;color:var(--dim);font-family:inherit;cursor:pointer">🚨</button>
+        </div>
       </div>
     </div>`;
   }).join('') : '<div class="no-listings">현재 판매 중인 카드가 없어요<br><small style="color:var(--dim)">첫 번째 판매자가 되어보세요!</small></div>';
