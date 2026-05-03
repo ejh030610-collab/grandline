@@ -566,12 +566,6 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 /* 검색 오버레이 */
 .search-ov{display:none;position:fixed;inset:0;background:#fff;z-index:600;flex-direction:column;}
 .search-ov.on{display:flex;}
-@media(min-width:701px){
-  .search-ov{position:fixed;top:59px;left:50%;transform:translateX(-50%);inset:auto;width:620px;max-height:500px;border-radius:0 0 14px 14px;box-shadow:0 8px 32px rgba(0,0,0,.16);border:1px solid var(--border);border-top:none;background:#fff;}
-  .search-ov-hd{padding:10px 16px;}
-  .search-ov-body{flex:1;overflow-y:auto;max-height:380px;padding:12px 16px;}
-  .search-ov-hd>button:first-child{display:none;}
-}
 .search-ov-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:#fff;}
 .search-ov-input{flex:1;border:2px solid var(--red);border-radius:22px;padding:10px 16px 10px 40px;font-size:15px;font-family:inherit;outline:none;color:var(--text);background:#fff;}
 .search-ov-input::placeholder{color:var(--dim);}
