@@ -1194,12 +1194,18 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   <div class="modal profile-modal">
     <div class="profile-hd">
       <div class="profile-avatar" id="profile-avatar">?</div>
-      <div>
+      <div style="flex:1">
         <div style="font-size:18px;font-weight:700" id="profile-name">-</div>
         <div style="font-size:12px;opacity:.8" id="profile-id">-</div>
-        <div style="font-size:13px;margin-top:4px" id="profile-rating">-</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap">
+          <span id="profile-grade"></span>
+          <span style="font-size:13px" id="profile-rating">-</span>
+        </div>
       </div>
-      <button onclick="closeProfile()" style="margin-left:auto;background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer">✕</button>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;margin-left:auto">
+        <button onclick="closeProfile()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer">✕</button>
+        <button id="profile-report-btn" style="display:none;padding:4px 10px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:var(--r3);font-size:11px;color:#fff;font-family:inherit;cursor:pointer">🚨 신고</button>
+      </div>
     </div>
     <div class="profile-stat-row">
       <div class="profile-stat"><div class="profile-stat-v" id="profile-active">0</div><div class="profile-stat-l">판매 중</div></div>
@@ -1393,6 +1399,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="atab" onclick="switchAdminTab('members',this)">회원 관리</button>
       <button class="atab" onclick="switchAdminTab('notices',this)">공지사항</button>
       <button class="atab" onclick="switchAdminTab('inquiries',this)">1:1 문의</button>
+      <button class="atab" onclick="switchAdminTab('reports',this)">신고 관리</button>
     </div>
     <div class="admin-body">
       <!-- 현황 -->
@@ -1502,6 +1509,14 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </table></div>
       </div>
 
+      <!-- 신고 관리 -->
+      <div class="ap" id="ap-reports">
+        <div class="atbl"><table>
+          <thead><tr><th>신고자</th><th>대상</th><th>사유</th><th>상태</th><th>날짜</th><th>관리</th></tr></thead>
+          <tbody id="a-reports-list"></tbody>
+        </table></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1519,6 +1534,42 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
   </div>
 </div>
+<!-- 신고 오버레이 -->
+<div class="ov" id="reportOv" onclick="if(event.target===this)closeReport()">
+  <div class="modal" style="max-width:420px;padding:0;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#dc2626,#b91c1c);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div style="color:#fff">
+        <div style="font-size:16px;font-weight:700">🚨 신고하기</div>
+        <div style="font-size:11px;opacity:.7;margin-top:2px" id="report-target-label"></div>
+      </div>
+      <button onclick="closeReport()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:30px;height:30px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:18px 20px">
+      <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px">신고 사유</div>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px" id="report-reasons">
+        <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);cursor:pointer;font-size:13px">
+          <input type="radio" name="report-reason" value="사기/허위매물"> 사기 / 허위매물
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);cursor:pointer;font-size:13px">
+          <input type="radio" name="report-reason" value="욕설/비매너"> 욕설 / 비매너
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);cursor:pointer;font-size:13px">
+          <input type="radio" name="report-reason" value="중복/도배"> 중복 / 도배
+        </label>
+        <label style="display:flex;align-items:center;gap:8px;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);cursor:pointer;font-size:13px">
+          <input type="radio" name="report-reason" value="기타"> 기타
+        </label>
+      </div>
+      <textarea id="report-detail" placeholder="자세한 내용을 입력해주세요 (선택)"
+        style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;resize:none;height:70px;margin-bottom:12px"></textarea>
+      <button onclick="submitReport()"
+        style="width:100%;padding:12px;background:#dc2626;color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">
+        신고 접수
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- 사진 요청 오버레이 -->
 <div class="ov" id="photoReqOv" onclick="if(event.target===this)closePhotoReq()">
   <div class="modal" style="max-width:440px;padding:0;overflow:hidden">
@@ -2305,6 +2356,9 @@ async function openDetail(cid) {
         </div>
         <div class="l-meta">${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red);font-size:11px">'+l.card_condition+'</span>' : ' · 양호'}${l.shipping_method ? ' · <span style="color:var(--blue);font-size:11px">'+l.shipping_method+'</span>' : ''}</div>
         ${l.description ? `<div class="l-meta" style="color:var(--muted);font-style:italic">"${l.description}"</div>` : ''}
+        <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
+          <span style="font-size:10px;color:var(--dim);cursor:pointer" onclick="event.stopPropagation();openReport('listing','${l.id}','${l.seller_username}')">🚨 신고</span>
+        </div>
       </div>
       <span class="l-price">${l.price.toLocaleString()}원</span>
       <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
@@ -2756,6 +2810,60 @@ async function aDelNotice(id) {
   if (!confirm('공지를 삭제할까요?')) return;
   await sb.from('notices').delete().eq('id', id);
   toast('삭제됐어요'); aLoadNotices();
+}
+
+// ─── 신고 ───
+let reportData = {};
+function openReport(type, targetId, targetUser) {
+  if (!curUser) { openAuth('login'); return; }
+  if (curUser.username === targetUser) { toast('본인을 신고할 수 없어요'); return; }
+  reportData = { type, targetId, targetUser };
+  document.getElementById('report-target-label').textContent =
+    type === 'listing' ? `판매글 신고 · @${targetUser}` : `사용자 신고 · @${targetUser}`;
+  document.querySelectorAll('input[name="report-reason"]').forEach(r => r.checked = false);
+  document.getElementById('report-detail').value = '';
+  document.getElementById('reportOv').classList.add('on');
+}
+function closeReport() { document.getElementById('reportOv').classList.remove('on'); }
+
+async function submitReport() {
+  const reason = document.querySelector('input[name="report-reason"]:checked')?.value;
+  if (!reason) { toast('신고 사유를 선택해주세요'); return; }
+  const detail = document.getElementById('report-detail').value.trim();
+  const { error } = await sb.from('reports').insert({
+    reporter_username: curUser.username,
+    target_type: reportData.type,
+    target_id: reportData.targetId,
+    reason,
+    detail: detail || null,
+  });
+  if (error) { toast('신고 실패: ' + error.message); return; }
+  toast('신고가 접수됐어요. 검토 후 조치할게요 🙏');
+  closeReport();
+}
+
+// ─── 판매자 등급 ───
+const SELLER_GRADES = [
+  { min: 0,   label: '새싹',   emoji: '🌱', color: '#6b7280' },
+  { min: 5,   label: '일반',   emoji: '🃏', color: '#2563eb' },
+  { min: 20,  label: '우수',   emoji: '⭐', color: '#d97706' },
+  { min: 50,  label: 'MVP',    emoji: '🏆', color: '#dc2626' },
+  { min: 100, label: '레전드', emoji: '👑', color: '#7c3aed' },
+];
+function getSellerGrade(totalTrades) {
+  const g = [...SELLER_GRADES].reverse().find(g => totalTrades >= g.min);
+  return g || SELLER_GRADES[0];
+}
+function sellerGradeBadge(totalTrades) {
+  const g = getSellerGrade(totalTrades || 0);
+  return `<span style="font-size:10px;padding:1px 6px;border-radius:8px;background:${g.color}20;color:${g.color};font-weight:700;border:1px solid ${g.color}40">${g.emoji} ${g.label}</span>`;
+}
+
+async function updateSellerGrade(username) {
+  const { count } = await sb.from('trades').select('id', {count:'exact',head:true})
+    .eq('seller_username', username).eq('status', 'completed');
+  const grade = getSellerGrade(count || 0);
+  await sb.from('accounts').update({ seller_grade: grade.label, total_trades: count || 0 }).eq('username', username);
 }
 
 // ─── 사진 요청 ───
@@ -4030,6 +4138,9 @@ async function confirmReceipt(tradeId, listingId, btn) {
     Object.keys(listings).forEach(cid => {
       listings[cid] = listings[cid].filter(l => l.id !== listingId);
     });
+    // 판매자 등급 업데이트
+    const { data: trade } = await sb.from('trades').select('seller_username').eq('id', tradeId).single();
+    if (trade?.seller_username) updateSellerGrade(trade.seller_username);
     toast('🎉 거래완료! 후기도 남겨주세요');
     await notifyTrade(tradeId, 'completed');
     loadMyReq(); loadMyListings(); loadMyStats(); renderCards();
@@ -4276,10 +4387,19 @@ async function openProfile(username) {
   document.getElementById('profile-reviews').innerHTML = '';
 
   // 계정 정보
-  const { data: acc } = await sb.from('accounts').select('nickname,username,bank_name,bank_account').eq('username', username).single();
+  const { data: acc } = await sb.from('accounts').select('nickname,username,bank_name,bank_account,total_trades,seller_grade').eq('username', username).single();
   const nick = acc?.nickname || username;
   document.getElementById('profile-name').textContent = nick;
   document.getElementById('profile-avatar').textContent = nick[0];
+  // 등급 뱃지
+  const gradeEl = document.getElementById('profile-grade');
+  if (gradeEl) gradeEl.innerHTML = sellerGradeBadge(acc?.total_trades || 0);
+  // 신고 버튼
+  const reportEl = document.getElementById('profile-report-btn');
+  if (reportEl) {
+    reportEl.style.display = curUser && curUser.username !== username ? 'block' : 'none';
+    reportEl.onclick = () => { closeProfile(); openReport('user', username, username); };
+  }
   // 계좌번호 표시
   const bankEl = document.getElementById('profile-bank');
   if (bankEl) {
@@ -4362,6 +4482,33 @@ function switchAdminTab(id, btn) {
   document.getElementById('ap-'+id).classList.add('active'); btn.classList.add('active');
   if (id === 'notices') aLoadNotices();
   if (id === 'inquiries') aLoadInquiries();
+  if (id === 'reports') aLoadReports();
+}
+
+async function aLoadReports() {
+  const { data } = await sb.from('reports').select('*').order('created_at',{ascending:false});
+  const el = document.getElementById('a-reports-list');
+  if (!data?.length) { el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">신고 내역이 없어요</td></tr>'; return; }
+  el.innerHTML = data.map(r => `<tr>
+    <td style="font-size:11px">@${r.reporter_username}</td>
+    <td style="font-size:11px">${r.target_type==='listing'?'판매글':'사용자'} ${r.target_id}</td>
+    <td style="font-weight:500;font-size:12px">${r.reason}</td>
+    <td><span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${r.status==='pending'?'#fef2f2':'var(--green-light)'};color:${r.status==='pending'?'var(--red)':'var(--green)'};font-weight:600">${r.status==='pending'?'대기중':'처리완료'}</span></td>
+    <td style="color:var(--muted);font-size:11px">${r.created_at?.slice(0,10)}</td>
+    <td style="display:flex;gap:4px">
+      ${r.status==='pending' ? `<button class="aact" onclick="aResolveReport(${r.id})">처리</button>` : ''}
+      <button class="aact del" onclick="aDelReport(${r.id})">삭제</button>
+    </td>
+  </tr>`).join('');
+}
+async function aResolveReport(id) {
+  await sb.from('reports').update({ status: 'resolved' }).eq('id', id);
+  toast('처리됐어요'); aLoadReports();
+}
+async function aDelReport(id) {
+  if (!confirm('신고를 삭제할까요?')) return;
+  await sb.from('reports').delete().eq('id', id);
+  toast('삭제됐어요'); aLoadReports();
 }
 
 async function aLoadInquiries() {
