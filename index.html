@@ -1125,33 +1125,14 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 카드 상태 선택 -->
       <div class="fg" style="margin-top:10px">
         <label>카드 상태 <span style="color:var(--red)">*</span></label>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px" id="cond-grid">
-          <div class="cond-opt active" data-cond="양호" onclick="selectCond(this)"
-            style="padding:7px 14px;border:1.5px solid var(--green);background:var(--green-light);border-radius:20px;cursor:pointer;font-size:12px;font-weight:600;color:var(--green);transition:all .15s">
-            ✅ 양호
-          </div>
-          <div class="cond-opt" data-cond="스크래치" onclick="selectCond(this)"
-            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s">
-            🔅 스크래치
-          </div>
-          <div class="cond-opt" data-cond="화이트닝" onclick="selectCond(this)"
-            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s">
-            ⬜ 화이트닝
-          </div>
-          <div class="cond-opt" data-cond="휨/구김" onclick="selectCond(this)"
-            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s">
-            📐 휨/구김
-          </div>
-          <div class="cond-opt" data-cond="오염/지문" onclick="selectCond(this)"
-            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s">
-            👆 오염/지문
-          </div>
-          <div class="cond-opt" data-cond="센터링불량" onclick="selectCond(this)"
-            style="padding:7px 14px;border:1.5px solid var(--border);background:#fff;border-radius:20px;cursor:pointer;font-size:12px;font-weight:500;color:var(--muted);transition:all .15s">
-            ↔️ 센터링불량
-          </div>
-        </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:6px">복수 선택 가능 · 양호 선택 시 나머지 해제</div>
+        <select id="s_cond" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;margin-top:8px;background:#fff">
+          <option value="양호">✅ 양호 — 특이사항 없음</option>
+          <option value="스크래치">🔅 스크래치 — 표면 긁힘</option>
+          <option value="화이트닝">⬜ 화이트닝 — 모서리 흰 점</option>
+          <option value="휨/구김">📐 휨/구김 — 눌린 자국</option>
+          <option value="오염/지문">👆 오염/지문 — 이물질·지문</option>
+          <option value="센터링불량">↔️ 센터링불량 — 인쇄 치우침</option>
+        </select>
       </div>
       <!-- 배송 방법 -->
       <div class="fg" style="margin-top:10px">
@@ -2780,6 +2761,7 @@ function closeSell() {
     o.style.border = isGood ? '1.5px solid var(--green)' : '1.5px solid var(--border)';
     o.style.background = isGood ? 'var(--green-light)' : '#fff';
   });
+  if (document.getElementById('s_cond')) document.getElementById('s_cond').value = '양호';
   // 배송방법 초기화
   if (document.getElementById('s_ship')) document.getElementById('s_ship').value = '';
   if (document.getElementById('s_ship_price')) document.getElementById('s_ship_price').value = '';
@@ -3160,9 +3142,7 @@ async function submitSell() {
     }
 
     // 카드 상태 수집 (클릭 선택 방식)
-    const badItems = [...document.querySelectorAll('#cond-grid .cond-opt.active')]
-      .map(o => o.dataset.cond).filter(c => c !== '양호');
-    const conditionDesc = badItems.length ? badItems.join(', ') : '양호';
+    const conditionDesc = document.getElementById('s_cond')?.value || '양호';
 
     const { data, error } = await sb.from('listings').insert({
       card_id,
