@@ -778,20 +778,20 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </button>
         <div class="rarity-drop" id="rarityDrop">
           <div class="rdrop-item active" data-rarity="all" onclick="setRarity(this)">전체</div>
-          <div class="rdrop-item" data-rarity="SEC" onclick="setRarity(this)">⭐ SEC</div>
-          <div class="rdrop-item" data-rarity="SR" onclick="setRarity(this)">💜 SR</div>
-          <div class="rdrop-item" data-rarity="R" onclick="setRarity(this)">💙 R</div>
-          <div class="rdrop-item" data-rarity="UC" onclick="setRarity(this)">⬜ UC</div>
-          <div class="rdrop-item" data-rarity="C" onclick="setRarity(this)">⬜ C</div>
-          <div class="rdrop-item" data-rarity="L" onclick="setRarity(this)">💚 L</div>
-          <div class="rdrop-item" data-rarity="P" onclick="setRarity(this)">💜 P</div>
+          <div class="rdrop-item" data-rarity="SEC" onclick="setRarity(this)">SEC</div>
+          <div class="rdrop-item" data-rarity="SR" onclick="setRarity(this)">SR</div>
+          <div class="rdrop-item" data-rarity="R" onclick="setRarity(this)">R</div>
+          <div class="rdrop-item" data-rarity="UC" onclick="setRarity(this)">UC</div>
+          <div class="rdrop-item" data-rarity="C" onclick="setRarity(this)">C</div>
+          <div class="rdrop-item" data-rarity="L" onclick="setRarity(this)">L</div>
+          <div class="rdrop-item" data-rarity="P" onclick="setRarity(this)">P</div>
           <div style="height:1px;background:var(--border);margin:3px 0"></div>
-          <div class="rdrop-item" data-rarity="SEC★" onclick="setRarity(this)">✨ SEC★</div>
-          <div class="rdrop-item" data-rarity="SR★" onclick="setRarity(this)">✨ SR★</div>
-          <div class="rdrop-item" data-rarity="R★" onclick="setRarity(this)">✨ R★</div>
-          <div class="rdrop-item" data-rarity="L★" onclick="setRarity(this)">✨ L★</div>
-          <div class="rdrop-item" data-rarity="SP" onclick="setRarity(this)">🌈 SP</div>
-          <div class="rdrop-item" data-rarity="★" onclick="setRarity(this)">⭐ ★</div>
+          <div class="rdrop-item" data-rarity="SEC★" onclick="setRarity(this)">SEC★</div>
+          <div class="rdrop-item" data-rarity="SR★" onclick="setRarity(this)">SR★</div>
+          <div class="rdrop-item" data-rarity="R★" onclick="setRarity(this)">R★</div>
+          <div class="rdrop-item" data-rarity="L★" onclick="setRarity(this)">L★</div>
+          <div class="rdrop-item" data-rarity="SP" onclick="setRarity(this)">SP</div>
+          <div class="rdrop-item" data-rarity="★" onclick="setRarity(this)">★</div>
         </div>
       </div>
       <div class="price-wrap">
@@ -1177,14 +1177,34 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   <div class="search-ov-hd" style="position:relative">
     <button onclick="closeSearchOv()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:4px 8px 4px 0;flex-shrink:0;line-height:1">←</button>
     <span class="search-ov-icon" style="left:50px">🔍</span>
-    <input class="search-ov-input" id="searchOvInput" placeholder="카드명, 번호 검색..."
+    <input class="search-ov-input" id="searchOvInput" placeholder="카드명, 번호, 판매자 검색..."
       oninput="onSearchInput()" onkeydown="if(event.key==='Enter')submitSearch()">
     <button class="search-ov-cancel" onclick="closeSearchOv()">취소</button>
   </div>
+  <!-- 검색 탭 -->
+  <div style="display:flex;border-bottom:1px solid var(--border);padding:0 16px;background:#fff">
+    <button class="search-tab active" id="stab-card" onclick="switchSearchTab('card')"
+      style="padding:10px 14px;border:none;border-bottom:2px solid var(--red);background:none;font-size:13px;font-weight:600;color:var(--red);font-family:inherit;cursor:pointer">카드</button>
+    <button class="search-tab" id="stab-seller" onclick="switchSearchTab('seller')"
+      style="padding:10px 14px;border:none;border-bottom:2px solid transparent;background:none;font-size:13px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer">판매자</button>
+    <button class="search-tab" id="stab-price" onclick="switchSearchTab('price')"
+      style="padding:10px 14px;border:none;border-bottom:2px solid transparent;background:none;font-size:13px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer">가격범위</button>
+  </div>
+  <!-- 가격범위 패널 (기본 숨김) -->
+  <div id="search-price-panel" style="display:none;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--bg2)">
+    <div style="display:flex;align-items:center;gap:8px">
+      <input type="number" id="sp-min" placeholder="최저가" min="0"
+        style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none">
+      <span style="color:var(--muted)">~</span>
+      <input type="number" id="sp-max" placeholder="최고가" min="0"
+        style="flex:1;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none">
+      <span style="font-size:13px;color:var(--muted)">원</span>
+      <button onclick="searchByPrice()"
+        style="padding:8px 14px;background:var(--red);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">검색</button>
+    </div>
+  </div>
   <div class="search-ov-body" id="searchOvBody">
-    <!-- 기본: 최근 검색어 -->
     <div id="searchHistory"></div>
-    <!-- 실시간 결과 -->
     <div id="searchResults" style="display:none"></div>
   </div>
 </div>
@@ -2129,6 +2149,84 @@ function selectHistory(q) {
 }
 
 let searchTimer = null;
+let searchTab = 'card';
+function switchSearchTab(tab) {
+  searchTab = tab;
+  ['card','seller','price'].forEach(t => {
+    const btn = document.getElementById('stab-'+t);
+    if (!btn) return;
+    const isActive = t === tab;
+    btn.style.borderBottomColor = isActive ? 'var(--red)' : 'transparent';
+    btn.style.color = isActive ? 'var(--red)' : 'var(--muted)';
+    btn.style.fontWeight = isActive ? '600' : '500';
+  });
+  document.getElementById('search-price-panel').style.display = tab === 'price' ? 'block' : 'none';
+  if (tab !== 'price') {
+    const q = document.getElementById('searchOvInput').value.trim();
+    if (q) renderSearchResults(q);
+    else { document.getElementById('searchResults').style.display='none'; document.getElementById('searchHistory').style.display='block'; }
+  }
+}
+
+async function searchByPrice() {
+  const min = parseInt(document.getElementById('sp-min').value) || 0;
+  const max = parseInt(document.getElementById('sp-max').value) || 999999999;
+  if (min > max) { toast('최저가가 최고가보다 높아요'); return; }
+  closeSearchOv();
+  hideHome(); showCardView();
+  // 판매 중인 카드 중 가격 범위에 맞는 것
+  const results = allCards.filter(c => {
+    const lp = getLP(c.id);
+    return lp !== null && lp >= min && lp <= max;
+  }).sort((a,b) => (getLP(a.id)||0) - (getLP(b.id)||0));
+  document.getElementById('listTitle').textContent = `${min.toLocaleString()}원 ~ ${max===999999999?'':max.toLocaleString()+'원'} 가격범위`;
+  document.getElementById('listCnt').textContent = `총 ${results.length}종`;
+  if (!results.length) {
+    document.getElementById('cardGrid').innerHTML = '<div class="empty-grid">해당 가격대 판매 카드가 없어요</div>';
+    return;
+  }
+  renderCardGrid(results);
+}
+
+async function searchSeller(sellerQuery) {
+  closeSearchOv();
+  hideHome(); showCardView();
+  // 판매자 이름/아이디로 검색
+  const sellerListings = Object.values(listings).flat().filter(l =>
+    l.seller_username?.toLowerCase().includes(sellerQuery.toLowerCase()) ||
+    l.seller_name?.toLowerCase().includes(sellerQuery.toLowerCase())
+  );
+  const cardIds = [...new Set(sellerListings.map(l => l.card_id))];
+  const results = allCards.filter(c => cardIds.includes(c.id));
+  document.getElementById('listTitle').textContent = `"${sellerQuery}" 판매자 검색`;
+  document.getElementById('listCnt').textContent = `총 ${results.length}종`;
+  if (!results.length) {
+    document.getElementById('cardGrid').innerHTML = '<div class="empty-grid">해당 판매자의 판매글이 없어요</div>';
+    return;
+  }
+  renderCardGrid(results);
+}
+
+function renderCardGrid(cards) {
+  document.getElementById('cardGrid').innerHTML = cards.map(c => {
+    const lp = getLP(c.id);
+    const img = c.image_url||'';
+    const cnt = listings[c.id]?.length||0;
+    return `<div class="card" onclick="openDetail('${c.id}')">
+      <div class="card-thumb">${img?`<img src="${img}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`:''}
+        <div style="width:100%;height:100%;display:${img?'none':'flex'};align-items:center;justify-content:center;font-size:48px">${c.emoji||'🃏'}</div>
+        ${c.rarity?`<span class="rtag ${RC(c.rarity)}">${c.rarity}</span>`:''}
+        ${cnt>0?`<span class="list-badge">${cnt}</span>`:''}
+      </div>
+      <div class="card-info">
+        <div class="card-num">${c.id}</div>
+        <div class="card-name">${c.name||c.id}</div>
+        ${lp?`<div class="card-price">${lp.toLocaleString()}원~</div>`:`<div class="no-price">판매없음</div>`}
+      </div>
+    </div>`;
+  }).join('');
+}
+
 function onSearchInput() {
   const q = document.getElementById('searchOvInput').value.trim();
   clearTimeout(searchTimer);
@@ -2145,10 +2243,36 @@ function onSearchInput() {
 
 function renderSearchResults(q) {
   const ql = q.toLowerCase();
+  const el = document.getElementById('searchResults');
+
+  if (searchTab === 'seller') {
+    // 판매자 검색
+    const sellerMap = {};
+    Object.values(listings).flat().forEach(l => {
+      if (l.seller_username?.toLowerCase().includes(ql) || l.seller_name?.toLowerCase().includes(ql)) {
+        if (!sellerMap[l.seller_username]) sellerMap[l.seller_username] = { name: l.seller_name, count: 0 };
+        sellerMap[l.seller_username].count++;
+      }
+    });
+    const sellers = Object.entries(sellerMap);
+    if (!sellers.length) { el.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--muted)">판매자를 찾지 못했어요</div>`; return; }
+    el.innerHTML = `<div class="search-section-title">${sellers.length}명 검색됨</div>` +
+      sellers.map(([username, info]) => `
+        <div class="search-result-item" onclick="searchSeller('${username}')">
+          <div style="width:36px;height:36px;border-radius:50%;background:var(--red);color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;flex-shrink:0">${(info.name||username)[0]}</div>
+          <div style="flex:1">
+            <div style="font-size:14px;font-weight:600">${info.name||username}</div>
+            <div style="font-size:11px;color:var(--muted)">@${username}</div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">${info.count}개 판매중</div>
+        </div>`).join('');
+    return;
+  }
+
+  // 카드 검색 (기본)
   const results = allCards.filter(c =>
     (c.name||'').toLowerCase().includes(ql) || c.id.toLowerCase().includes(ql)
   ).slice(0, 20);
-  const el = document.getElementById('searchResults');
   if (!results.length) {
     el.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">🔍</div>"${q}" 검색 결과가 없어요</div>`;
     return;
@@ -2889,6 +3013,8 @@ async function submitPhotoReq() {
     status: 'pending'
   });
   if (error) { toast('요청 실패: ' + error.message); return; }
+  // 판매자에게 알림
+  await createNotification(photoReqSeller, 'photo_request', `📷 ${curUser.nickname||curUser.username}님이 추가 사진을 요청했어요`, photoReqListingId);
   toast('사진 요청을 보냈어요 📷');
   closePhotoReq();
 }
@@ -3475,6 +3601,20 @@ async function submitSell() {
       openDetail(card_id);
     }
     toast('판매 등록 완료! 🎉');
+
+    // 찜한 사용자들에게 알림 발송
+    try {
+      const { data: wishers } = await sb.from('wishlist').select('user_username').eq('card_id', card_id);
+      if (wishers?.length) {
+        const cardName = allCards.find(c=>c.id===card_id)?.name || card_id;
+        const notiPrice = price.toLocaleString();
+        await Promise.all(wishers
+          .filter(w => w.user_username !== curUser.username)
+          .map(w => createNotification(w.user_username, 'wish_new_listing',
+            `♥ 찜한 카드 "${cardName}"에 새 판매글이 등록됐어요 (${notiPrice}원)`, card_id))
+        );
+      }
+    } catch(e) { console.warn('찜 알림 발송 실패', e); }
 
   } catch(e) {
     toast('등록 실패: ' + e.message);
