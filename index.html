@@ -4785,9 +4785,22 @@ async function aOpenListingDetail(lid) {
 }
 async function aLoadMembers() {
   const { data } = await sb.from('accounts').select('*').order('created_at',{ascending:false});
+  // 테이블 헤더도 업데이트
+  const thead = document.querySelector('#ap-members thead tr');
+  if (thead) thead.innerHTML = '<th>닉네임</th><th>가입일</th><th>거래수</th><th>등급</th><th>권한</th><th>관리</th>';
   document.getElementById('a-members').innerHTML = data?.length
-    ? data.map(u=>`<tr><td style="font-weight:500">${u.nickname}</td><td style="color:var(--muted);font-size:11px">${u.created_at?.slice(0,10)||''}</td><td>${u.is_admin?'<span style="color:var(--gold);font-weight:600">⭐ 관리자</span>':'<span style="color:var(--dim)">일반</span>'}</td><td><button class="aact" onclick="aToggleAdmin('${u.username}',${u.is_admin})">${u.is_admin?'권한 해제':'관리자 지정'}</button></td></tr>`).join('')
-    : '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:14px">회원 없음</td></tr>';
+    ? data.map(u => {
+        const grade = getSellerGrade(u.total_trades || 0);
+        return `<tr>
+          <td style="font-weight:500">${u.nickname||u.username}</td>
+          <td style="color:var(--muted);font-size:11px">${u.created_at?.slice(0,10)||''}</td>
+          <td style="text-align:center;font-weight:600;color:var(--blue)">${u.total_trades||0}</td>
+          <td><span style="font-size:11px;padding:2px 8px;border-radius:8px;background:${grade.color}20;color:${grade.color};font-weight:700;border:1px solid ${grade.color}40">${grade.emoji} ${grade.label}</span></td>
+          <td>${u.is_admin?'<span style="color:var(--gold);font-weight:600">⭐ 관리자</span>':'<span style="color:var(--dim)">일반</span>'}</td>
+          <td><button class="aact" onclick="aToggleAdmin('${u.username}',${u.is_admin})">${u.is_admin?'권한 해제':'관리자 지정'}</button></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">회원 없음</td></tr>';
 }
 async function aToggleAdmin(username, isAdmin) {
   await sb.from('accounts').update({is_admin:!isAdmin}).eq('username',username);
