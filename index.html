@@ -566,6 +566,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 /* 검색 오버레이 */
 .search-ov{display:none;position:fixed;inset:0;background:#fff;z-index:600;flex-direction:column;}
 .search-ov.on{display:flex;}
+@media(min-width:701px){
+  .search-ov{background:rgba(0,0,0,.5);align-items:center;justify-content:center;padding:40px 20px;}
+  .search-ov-inner{background:#fff;border-radius:16px;width:100%;max-width:600px;max-height:70vh;display:flex!important;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+}
 .search-ov-hd{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);background:#fff;}
 .search-ov-input{flex:1;border:2px solid var(--red);border-radius:22px;padding:10px 16px 10px 40px;font-size:15px;font-family:inherit;outline:none;color:var(--text);background:#fff;}
 .search-ov-input::placeholder{color:var(--dim);}
@@ -1173,7 +1177,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- SEARCH OVERLAY -->
-<div class="search-ov" id="searchOv">
+<div class="search-ov" id="searchOv" onclick="if(event.target===this)closeSearchOv()">
+  <div class="search-ov-inner" style="display:contents">
   <div class="search-ov-hd" style="position:relative">
     <button onclick="closeSearchOv()" style="background:none;border:none;font-size:22px;color:var(--muted);cursor:pointer;padding:4px 8px 4px 0;flex-shrink:0;line-height:1">←</button>
     <span class="search-ov-icon" style="left:50px">🔍</span>
@@ -1190,7 +1195,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <button class="search-tab" id="stab-price" onclick="switchSearchTab('price')"
       style="padding:10px 14px;border:none;border-bottom:2px solid transparent;background:none;font-size:13px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer">가격범위</button>
   </div>
-  <!-- 가격범위 패널 (기본 숨김) -->
+  <!-- 가격범위 패널 -->
   <div id="search-price-panel" style="display:none;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--bg2)">
     <div style="display:flex;align-items:center;gap:8px">
       <input type="number" id="sp-min" placeholder="최저가" min="0"
@@ -1206,6 +1211,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   <div class="search-ov-body" id="searchOvBody">
     <div id="searchHistory"></div>
     <div id="searchResults" style="display:none"></div>
+  </div>
   </div>
 </div>
 
