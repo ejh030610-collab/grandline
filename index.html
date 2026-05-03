@@ -1324,6 +1324,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <button class="my-tab" onclick="switchMyTab('purchased',this)">구매내역</button>
       <button class="my-tab" onclick="switchMyTab('reviews',this)">받은 리뷰</button>
       <button class="my-tab" onclick="switchMyTab('wish',this)">찜</button>
+      <button class="my-tab" onclick="switchMyTab('photoreq',this)">사진 요청</button>
       <button class="my-tab" onclick="switchMyTab('profile',this)">정보 수정</button>
     </div>
     <div class="my-body">
@@ -1353,6 +1354,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       </div>
       <div class="my-page" id="mp-wish">
         <div id="my-wish-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:7px"></div>
+      </div>
+      <div class="my-page" id="mp-photoreq">
+        <div style="font-size:13px;font-weight:600;color:var(--muted);margin-bottom:10px">📤 내가 보낸 요청</div>
+        <div id="my-photo-req-sent">불러오는 중...</div>
+        <div style="font-size:13px;font-weight:600;color:var(--muted);margin:16px 0 10px">📥 받은 요청</div>
+        <div id="my-photo-requests">불러오는 중...</div>
       </div>
       <div class="my-page" id="mp-profile">
         <div id="mp-profile-body"></div>
@@ -1502,6 +1509,60 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
   </div>
 </div>
+<!-- 사진 요청 오버레이 -->
+<div class="ov" id="photoReqOv" onclick="if(event.target===this)closePhotoReq()">
+  <div class="modal" style="max-width:440px;padding:0;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#1a3a5c,#2563eb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div style="color:#fff">
+        <div style="font-size:16px;font-weight:700">📷 추가 사진 요청</div>
+        <div style="font-size:11px;opacity:.7;margin-top:2px">판매자에게 사진을 요청해요</div>
+      </div>
+      <button onclick="closePhotoReq()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:30px;height:30px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:18px 20px">
+      <textarea id="photo-req-msg" placeholder="예) 뒷면 사진 보내주세요 / 모서리 상태 확인하고 싶어요..."
+        style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;resize:none;height:80px;margin-bottom:14px"></textarea>
+      <button onclick="submitPhotoReq()"
+        style="width:100%;padding:12px;background:var(--blue);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">
+        요청 보내기
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 사진 요청 응답 오버레이 (판매자용) -->
+<div class="ov" id="photoResOv" onclick="if(event.target===this)closePhotoRes()">
+  <div class="modal" style="max-width:440px;padding:0;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#166534,#16a34a);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div style="color:#fff">
+        <div style="font-size:16px;font-weight:700">📷 사진 요청 응답</div>
+        <div style="font-size:11px;opacity:.7;margin-top:2px" id="photo-res-buyer"></div>
+      </div>
+      <button onclick="closePhotoRes()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:30px;height:30px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:18px 20px">
+      <div id="photo-res-msg" style="font-size:13px;color:var(--muted);margin-bottom:14px;padding:10px 12px;background:var(--bg2);border-radius:var(--r3)"></div>
+      <input type="file" id="photo-res-files" accept="image/*" multiple capture="environment"
+        style="width:100%;margin-bottom:12px;font-size:13px">
+      <button onclick="submitPhotoRes()"
+        style="width:100%;padding:12px;background:var(--green);color:#fff;border:none;border-radius:var(--r2);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">
+        사진 전송
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 사진 확인 오버레이 (구매자용) -->
+<div class="ov" id="photoViewOv" onclick="if(event.target===this)closePhotoView()">
+  <div class="modal" style="max-width:440px;padding:0;overflow:hidden">
+    <div style="background:linear-gradient(135deg,#1a3a5c,#2563eb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
+      <div style="color:#fff;font-size:16px;font-weight:700">📷 요청 사진 확인</div>
+      <button onclick="closePhotoView()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:30px;height:30px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:18px 20px;max-height:65vh;overflow-y:auto" id="photo-view-body"></div>
+  </div>
+</div>
+
 <div class="ov" id="adminDetailOv" onclick="if(event.target===this)closeAdminDetail()" style="z-index:400">
   <div class="modal" style="max-width:480px;padding:0;overflow:hidden">
     <div style="background:var(--red);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
@@ -2236,7 +2297,11 @@ async function openDetail(cid) {
         ${l.description ? `<div class="l-meta" style="color:var(--muted);font-style:italic">"${l.description}"</div>` : ''}
       </div>
       <span class="l-price">${l.price.toLocaleString()}원</span>
-      <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
+      <div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">
+        <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매하기</button>
+        <button onclick="event.stopPropagation();openPhotoReq('${l.id}','${l.seller_username}')"
+          style="padding:4px 10px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);font-size:11px;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap">📷 사진 요청</button>
+      </div>
     </div>`;
   }).join('') : '<div class="no-listings">현재 판매 중인 카드가 없어요<br><small style="color:var(--dim)">첫 번째 판매자가 되어보세요!</small></div>';
 
@@ -2681,6 +2746,123 @@ async function aDelNotice(id) {
   if (!confirm('공지를 삭제할까요?')) return;
   await sb.from('notices').delete().eq('id', id);
   toast('삭제됐어요'); aLoadNotices();
+}
+
+// ─── 사진 요청 ───
+let photoReqListingId = null, photoReqSeller = null, photoResId = null;
+
+function openPhotoReq(lid, sellerUsername) {
+  if (!curUser) { openAuth('login', ()=>openPhotoReq(lid, sellerUsername)); return; }
+  if (curUser.username === sellerUsername) { toast('본인 판매글에는 요청할 수 없어요'); return; }
+  photoReqListingId = lid;
+  photoReqSeller = sellerUsername;
+  document.getElementById('photo-req-msg').value = '';
+  document.getElementById('photoReqOv').classList.add('on');
+}
+function closePhotoReq() { document.getElementById('photoReqOv').classList.remove('on'); }
+
+async function submitPhotoReq() {
+  const msg = document.getElementById('photo-req-msg').value.trim();
+  const { error } = await sb.from('photo_requests').insert({
+    listing_id: photoReqListingId,
+    buyer_username: curUser.username,
+    seller_username: photoReqSeller,
+    message: msg || '추가 사진을 요청했어요',
+    status: 'pending'
+  });
+  if (error) { toast('요청 실패: ' + error.message); return; }
+  toast('사진 요청을 보냈어요 📷');
+  closePhotoReq();
+}
+
+// 판매자 - 사진 요청 응답
+async function openPhotoRes(reqId, buyerUsername, msg) {
+  photoResId = reqId;
+  document.getElementById('photo-res-buyer').textContent = `구매자: ${buyerUsername}`;
+  document.getElementById('photo-res-msg').textContent = msg || '추가 사진 요청';
+  document.getElementById('photo-res-files').value = '';
+  document.getElementById('photoResOv').classList.add('on');
+}
+function closePhotoRes() { document.getElementById('photoResOv').classList.remove('on'); }
+
+async function submitPhotoRes() {
+  const files = document.getElementById('photo-res-files').files;
+  if (!files.length) { toast('사진을 선택해주세요'); return; }
+  const btn = document.querySelector('#photoResOv button:last-child');
+  btn.disabled = true; btn.textContent = '전송 중...';
+  try {
+    const urls = [];
+    for (const file of files) {
+      const ext = file.name.split('.').pop();
+      const path = `photo-req/${photoResId}/${Date.now()}_${Math.random().toString(36).slice(2)}.${ext}`;
+      const { error: upErr } = await sb.storage.from('card-images').upload(path, file);
+      if (upErr) throw upErr;
+      const { data: { publicUrl } } = sb.storage.from('card-images').getPublicUrl(path);
+      urls.push(publicUrl);
+    }
+    await sb.from('photo_requests').update({ response_images: urls, status: 'responded' }).eq('id', photoResId);
+    toast('사진을 전송했어요 ✅');
+    closePhotoRes();
+    loadMyPhotoRequests();
+  } catch(e) {
+    toast('전송 실패: ' + e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = '사진 전송';
+  }
+}
+
+// 구매자 - 요청 사진 보기
+async function openPhotoView(reqId) {
+  const { data: req } = await sb.from('photo_requests').select('*').eq('id', reqId).single();
+  if (!req) return;
+  const body = document.getElementById('photo-view-body');
+  if (req.status === 'pending') {
+    body.innerHTML = '<div style="text-align:center;padding:30px;color:var(--muted)">⏳ 아직 판매자가 사진을 보내지 않았어요</div>';
+  } else {
+    body.innerHTML = `
+      <div style="font-size:12px;color:var(--muted);margin-bottom:12px">판매자가 보낸 사진</div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+        ${(req.response_images||[]).map(url=>`<img src="${url}" style="width:100%;border-radius:var(--r2);cursor:pointer" onclick="openLB('${url}')">`).join('')}
+      </div>`;
+  }
+  document.getElementById('photoViewOv').classList.add('on');
+}
+function closePhotoView() { document.getElementById('photoViewOv').classList.remove('on'); }
+
+// 마이페이지 - 사진 요청 목록 (판매자)
+async function loadMyPhotoRequests() {
+  const el = document.getElementById('my-photo-requests');
+  if (!el) return;
+  const { data } = await sb.from('photo_requests').select('*').eq('seller_username', curUser.username).order('created_at', {ascending: false});
+  if (!data?.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px">받은 사진 요청이 없어요</div>'; return; }
+  el.innerHTML = data.map(r => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">@${r.buyer_username}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${r.message}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px">${r.created_at?.slice(0,10)}</div>
+      </div>
+      <span style="font-size:10px;padding:2px 8px;border-radius:8px;background:${r.status==='responded'?'var(--green-light)':'var(--bg2)'};color:${r.status==='responded'?'var(--green)':'var(--muted)'};font-weight:600">${r.status==='responded'?'전송완료':'대기중'}</span>
+      ${r.status==='pending' ? `<button onclick="openPhotoRes(${r.id},'${r.buyer_username}','${r.message}')" style="padding:6px 10px;background:var(--blue);color:#fff;border:none;border-radius:var(--r3);font-size:11px;font-family:inherit;cursor:pointer">사진 보내기</button>` : ''}
+    </div>`).join('');
+}
+
+// 마이페이지 - 내가 보낸 요청 (구매자)
+async function loadMyPhotoReqSent() {
+  const el = document.getElementById('my-photo-req-sent');
+  if (!el) return;
+  const { data } = await sb.from('photo_requests').select('*').eq('buyer_username', curUser.username).order('created_at', {ascending: false});
+  if (!data?.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px">보낸 사진 요청이 없어요</div>'; return; }
+  el.innerHTML = data.map(r => `
+    <div style="display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600">@${r.seller_username}에게 요청</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${r.message}</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px">${r.created_at?.slice(0,10)}</div>
+      </div>
+      <span style="font-size:10px;padding:2px 8px;border-radius:8px;background:${r.status==='responded'?'var(--green-light)':'var(--bg2)'};color:${r.status==='responded'?'var(--green)':'var(--muted)'};font-weight:600">${r.status==='responded'?'답변도착':'대기중'}</span>
+      ${r.status==='responded' ? `<button onclick="openPhotoView(${r.id})" style="padding:6px 10px;background:var(--blue);color:#fff;border:none;border-radius:var(--r3);font-size:11px;font-family:inherit;cursor:pointer">사진 보기</button>` : ''}
+    </div>`).join('');
 }
 
 function openSellPicker() {
@@ -3306,6 +3488,7 @@ function switchMyTab(id, btn) {
   document.querySelectorAll('.my-page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.my-tab').forEach(b=>b.classList.remove('active'));
   document.getElementById('mp-'+id).classList.add('active'); btn.classList.add('active');
+  if (id === 'photoreq') { loadMyPhotoRequests(); loadMyPhotoReqSent(); }
 }
 async function loadMyStats() {
   const { data: ls } = await sb.from('listings').select('id,status').eq('seller_username',curUser.username).neq('listing_type','box');
