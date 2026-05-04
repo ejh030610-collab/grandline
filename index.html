@@ -1854,6 +1854,60 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- 카드 수정 모달 -->
+<!-- 판매글 수정 모달 -->
+<div class="ov" id="listingEditOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeListingEdit()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeListingEdit()"
+  style="z-index:560">
+  <div class="modal" style="max-width:420px;padding:0;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:15px;font-weight:700">판매글 수정</div>
+      <button onclick="closeListingEdit()" style="background:rgba(0,0,0,.07);border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:16px 20px;display:grid;gap:12px">
+      <input type="hidden" id="le-id">
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">가격 (원)</label>
+        <input type="number" id="le-price" placeholder="가격 입력"
+          style="width:100%;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 11px;font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">배송 방법</label>
+        <select id="le-shipping"
+          style="width:100%;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 11px;font-size:13px;font-family:inherit;outline:none;background:#fff;box-sizing:border-box">
+          <option value="prepay">선불</option>
+          <option value="postpay">착불</option>
+          <option value="free">무료배송</option>
+          <option value="direct">직거래</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">카드 상태</label>
+        <select id="le-condition"
+          style="width:100%;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 11px;font-size:13px;font-family:inherit;outline:none;background:#fff;box-sizing:border-box">
+          <option value="S">S - 최상</option>
+          <option value="A">A - 상</option>
+          <option value="B">B - 중</option>
+          <option value="C">C - 하</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">한줄 설명 (선택)</label>
+        <input type="text" id="le-desc" placeholder="카드 상태 등 추가 설명"
+          style="width:100%;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 11px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;border-top:1px solid var(--border)">
+      <button onclick="closeListingEdit()" style="padding:14px;background:#fff;border:none;border-right:1px solid var(--border);font-size:14px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer">취소</button>
+      <button onclick="submitListingEdit()" style="padding:14px;background:var(--red);border:none;font-size:14px;font-weight:700;color:#fff;font-family:inherit;cursor:pointer">저장하기</button>
+    </div>
+  </div>
+</div>
+
 <div class="ov" id="editCardOv"
   onmousedown="this._mx=event.clientX;this._my=event.clientY"
   onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeEditCard()"
@@ -3999,25 +4053,32 @@ function filterMyListings(status) {
 async function loadMyListings() {
   const { data } = await sb.from('listings').select('*,cards(name,image_url,emoji,rarity)')
     .eq('seller_username',curUser.username)
-    .neq('status','cancelled')
+    .in('status',['active','completed'])
     .order('created_at',{ascending:false});
   if (!data?.length) { document.getElementById('my-listings-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">판매 중인 카드가 없어요</div>'; return; }
   document.getElementById('my-listings-list').innerHTML = data.map(l => {
-    const psaColor = l.auto_grade>=9?'#16a34a':l.auto_grade>=7?'#2563eb':l.auto_grade>=5?'#d97706':'#dc2626';
-    const aiTag = ''; // AI 기능 준비 중
-    return `<div class="my-l-item">
-      ${l.cards?.image_url ? `<img src="${l.cards.image_url}" class="my-l-img" onerror="this.style.display='none'">` : `<div class="my-l-img-x">${l.listing_type==='box'?'📦':l.cards?.emoji||'🃏'}</div>`}
-      <div style="flex:1">
-        <div style="font-size:13px;font-weight:600;display:flex;align-items:center;gap:3px">
-          ${l.listing_type==='box' ? `📦 ${l.series} ${l.unit_type}` : `${l.cards?.name||l.card_id}${aiTag}`}
+    const thumb = l.image_front
+      ? `<img src="${l.image_front}" class="my-l-img" onerror="this.style.display='none'">`
+      : l.cards?.image_url
+        ? `<img src="${l.cards.image_url}" class="my-l-img" onerror="this.style.display='none'">`
+        : `<div class="my-l-img-x">${l.listing_type==='box'?'📦':l.cards?.emoji||'🃏'}</div>`;
+    return `<div class="my-l-item" style="flex-wrap:wrap;gap:8px">
+      ${thumb}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
+          ${l.listing_type==='box' ? `📦 ${l.series}` : `${l.cards?.name||l.card_id}`}
         </div>
-        <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.listing_type==='box' ? '박스' : l.grade_type||'미등급'} · ${l.card_id}</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">${l.grade_type||'미등급'} · ${l.created_at?.slice(0,10)}</div>
       </div>
-      <span class="sbadge ${l.status==='active'?'sb-active':'sb-sold'}">${l.status==='active'?'판매중':'완료'}</span>
-      <span style="font-size:14px;font-weight:700;color:var(--red);margin-left:8px" id="lp-${l.id}">${l.price.toLocaleString()}원</span>
+      <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
+        <span class="sbadge ${l.status==='active'?'sb-active':'sb-sold'}">${l.status==='active'?'판매중':'완료'}</span>
+        <span style="font-size:14px;font-weight:700;color:var(--red)" id="lp-${l.id}">${l.price.toLocaleString()}원</span>
+      </div>
       ${l.status==='active' ? `
-        <button class="cancel-btn" style="background:var(--blue);border-color:var(--blue);color:#fff;margin-left:4px" onclick="openPriceEdit('${l.id}',${l.price})">가격 수정</button>
-        <button class="cancel-btn" onclick="cancelListing('${l.id}')">취소</button>` : ''}
+      <div style="width:100%;display:flex;gap:6px;padding-left:46px">
+        <button class="cancel-btn" style="flex:1;background:var(--blue);border-color:var(--blue);color:#fff;text-align:center;justify-content:center" onclick="openListingEdit('${l.id}')">✏️ 수정</button>
+        <button class="cancel-btn" style="flex:1;text-align:center;justify-content:center" onclick="cancelListing('${l.id}')">취소</button>
+      </div>` : ''}
     </div>`;
   }).join('');
 }
@@ -4147,6 +4208,28 @@ async function saveMyProfile() {
   toast('정보가 저장됐어요 ✅');
   document.getElementById('ep-pw').value = '';
   document.getElementById('ep-pw2').value = '';
+}
+async function openListingEdit(lid) {
+  const { data: l } = await sb.from('listings').select('*').eq('id', lid).single();
+  if (!l) return;
+  document.getElementById('le-id').value = lid;
+  document.getElementById('le-price').value = l.price;
+  document.getElementById('le-shipping').value = l.shipping_method || 'prepay';
+  document.getElementById('le-condition').value = l.card_condition || 'S';
+  document.getElementById('le-desc').value = l.description || '';
+  document.getElementById('listingEditOv').classList.add('on');
+}
+function closeListingEdit() { document.getElementById('listingEditOv').classList.remove('on'); }
+async function submitListingEdit() {
+  const lid = document.getElementById('le-id').value;
+  const price = parseInt(document.getElementById('le-price').value);
+  const shipping_method = document.getElementById('le-shipping').value;
+  const card_condition = document.getElementById('le-condition').value;
+  const description = document.getElementById('le-desc').value.trim();
+  if (!price || price < 100) { toast('가격을 입력해주세요'); return; }
+  const { error } = await sb.from('listings').update({ price, shipping_method, card_condition, description }).eq('id', lid);
+  if (error) { toast('수정 실패: ' + error.message); return; }
+  toast('수정됐어요 ✅'); closeListingEdit(); loadMyListings(); renderCards();
 }
 async function cancelListing(id) {
   if (!confirm('판매를 취소할까요?')) return;
