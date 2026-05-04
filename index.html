@@ -535,11 +535,19 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .admin-hd h2{font-size:16px;font-weight:700;color:#fff;letter-spacing:-.2px;}
 .admin-close{padding:6px 14px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;border-radius:var(--r3);font-family:inherit;font-size:12px;cursor:pointer;transition:background .15s;}
 .admin-close:hover{background:rgba(255,255,255,.25);}
-.admin-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 20px;background:#fff;}
-.atab{font-size:13px;padding:11px 15px;border:none;border-bottom:2.5px solid transparent;background:none;color:var(--muted);font-family:inherit;font-weight:500;cursor:pointer;transition:color .15s;white-space:nowrap;}
+.admin-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 8px;background:#fff;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;flex-shrink:0;}
+.admin-tabs::-webkit-scrollbar{display:none;}
+.atab{font-size:13px;padding:11px 13px;border:none;border-bottom:2.5px solid transparent;background:none;color:var(--muted);font-family:inherit;font-weight:500;cursor:pointer;transition:color .15s;white-space:nowrap;flex-shrink:0;}
 .atab.active{color:var(--red);border-bottom-color:var(--red);font-weight:600;}
 .atab:hover:not(.active){color:var(--text);}
 .admin-body{padding:20px;min-height:400px;max-height:calc(100vh - 120px);overflow-y:auto;}
+@media(max-width:700px){
+  .admin-panel{padding:0;}
+  .admin-box{border-radius:0;min-height:100dvh;}
+  .admin-body{max-height:calc(100dvh - 104px);padding:12px;}
+  .atab{font-size:12px;padding:10px 10px;}
+  .a-stat-row{grid-template-columns:repeat(2,1fr);}
+}
 .ap{display:none;}
 .ap.active{display:block;}
 .a-stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px;}
@@ -1502,7 +1510,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="admin-tabs">
       <button class="atab active" onclick="switchAdminTab('overview',this)">현황</button>
-      <button class="atab" onclick="switchAdminTab('escrow',this)" id="escrow-tab-btn">💰 에스크로</button>
+      <button class="atab" onclick="switchAdminTab('escrow',this)" id="escrow-tab-btn" style="display:none">💰 에스크로</button>
       <button class="atab" onclick="switchAdminTab('addcard',this)">카드 추가</button>
       <button class="atab" onclick="switchAdminTab('cardlist',this)">카드 관리</button>
       <button class="atab" onclick="switchAdminTab('orders',this)">판매 관리</button>
@@ -1762,21 +1770,26 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 <!-- 카드 수정 모달 -->
 <div class="ov" id="editCardOv" style="z-index:600" onclick="if(event.target===this)closeEditCard()">
-  <div class="modal" style="max-width:500px;padding:22px">
-    <h3 style="font-size:16px;font-weight:700;margin-bottom:16px">카드 수정</h3>
-    <input type="hidden" id="edit-id">
-    <div class="af-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px">
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드 번호</label><input type="text" id="edit-id-show" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>한글판</option><option>일판</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select></div>
-      <div class="afg"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"><option value="">미입력</option><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
+  <div class="modal" style="max-width:500px;padding:0;overflow:hidden">
+    <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1">
+      <h3 style="font-size:16px;font-weight:700">카드 수정</h3>
+      <button onclick="closeEditCard()" style="background:rgba(0,0,0,.07);border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center">✕</button>
     </div>
-    <div style="margin-bottom:14px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:3px;font-weight:500">이미지 URL</label><input type="text" id="edit-imgurl" placeholder="https://onepiece-cardgame.kr/fileDownload?downname=..." style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 9px;font-size:12px;font-family:inherit;outline:none;color:var(--text)"></div>
-    <div style="display:flex;gap:8px">
-      <button class="mbtn-cancel" onclick="closeEditCard()" style="flex:1;padding:9px;font-size:13px;font-weight:600;border-radius:var(--r2);background:#fff;border:1px solid var(--border);color:var(--muted)">취소</button>
-      <button class="mbtn-ok" onclick="submitEditCard()" style="flex:1;padding:9px;font-size:13px;font-weight:600;border-radius:var(--r2);background:var(--red);border:1px solid var(--red);color:#fff">저장하기</button>
+    <div style="padding:16px 20px;overflow-y:auto;max-height:calc(80vh - 110px)">
+      <input type="hidden" id="edit-id">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px">
+        <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">카드 번호</label><input type="text" id="edit-id-show" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></div>
+        <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></div>
+        <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option>한글판</option><option>일판</option></select></div>
+        <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
+        <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option value="">미입력</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select></div>
+        <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option value="">미입력</option><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
+      </div>
+      <div style="margin-bottom:6px"><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">이미지 URL</label><input type="text" id="edit-imgurl" placeholder="https://..." style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;border-top:1px solid var(--border)">
+      <button onclick="closeEditCard()" style="padding:14px;background:#fff;border:none;border-right:1px solid var(--border);font-size:14px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer">취소</button>
+      <button onclick="submitEditCard()" style="padding:14px;background:var(--red);border:none;font-size:14px;font-weight:700;color:#fff;font-family:inherit;cursor:pointer">저장하기</button>
     </div>
   </div>
 </div>
@@ -5575,12 +5588,13 @@ init();
       ③ 서비스는 거래 당사자 간의 중개자 역할을 하며, 거래의 직접 당사자가 아닙니다.<br>
       ④ 이용자는 실제 소유한 물품만 판매할 수 있으며, 사기, 허위 등록 등 불법 행위를 해서는 안 됩니다.</p>
 
-      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제3조 (에스크로 안전결제)</h4>
-      <p>① 서비스는 구매자와 판매자를 보호하기 위해 에스크로 방식의 안전결제를 운영합니다.<br>
-      ② 구매자는 서비스가 지정한 에스크로 계좌로 대금을 입금합니다.<br>
-      ③ 서비스 관리자는 입금 확인 후 판매자에게 배송을 지시합니다.<br>
-      ④ 구매자의 수령 확인 후 서비스는 판매자에게 대금을 송금합니다 (수수료 제외 시 전액).<br>
-      ⑤ 분쟁 발생 시 서비스는 합리적인 범위에서 중재를 시도하나, 법적 책임을 부담하지는 않습니다.</p>
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제3조 (직거래 방식 및 주의사항)</h4>
+      <p>① 서비스는 에스크로(대금 예치) 방식을 운영하지 않는 개인 간 직거래 플랫폼입니다.<br>
+      ② 거래 대금은 구매자가 판매자에게 직접 입금하는 방식으로 이루어집니다.<br>
+      ③ 구매자는 입금 전 반드시 판매자의 등급 및 거래 이력을 확인해야 합니다.<br>
+      ④ 판매자는 입금 확인 전 절대 물품을 발송해서는 안 됩니다.<br>
+      ⑤ 서비스는 직거래 과정에서 발생하는 사기, 미발송 등의 금전적 피해에 대해 법적 책임을 지지 않습니다.<br>
+      ⑥ 사기 등 범죄 피해 발생 시 즉시 수사기관에 신고하시기 바랍니다.</p>
 
       <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제4조 (금지 행위)</h4>
       <p>다음 각 호에 해당하는 행위는 금지됩니다.<br>
@@ -5593,7 +5607,7 @@ init();
       <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제5조 (면책 조항)</h4>
       <p>① 서비스는 천재지변 또는 이에 준하는 불가항력으로 인한 서비스 장애에 대해 책임지지 않습니다.<br>
       ② 서비스는 이용자 간의 거래에서 발생하는 분쟁에 대해 직접적인 법적 책임을 지지 않습니다.<br>
-      ③ 다만, 에스크로 대금의 분실·오입금에 대해서는 최선을 다해 처리합니다.</p>
+      ③ 서비스는 이용자 간 직거래에서 발생하는 금전적 분쟁에 대해 법적 책임을 지지 않습니다.</p>
 
       <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제6조 (약관 변경)</h4>
       <p>서비스는 필요한 경우 약관을 변경할 수 있으며, 변경 시 공지사항을 통해 사전 안내합니다.</p>
@@ -5627,7 +5641,7 @@ init();
         <tbody>
           <tr><td style="padding:7px 10px;border:1px solid var(--border)">필수</td><td style="padding:7px 10px;border:1px solid var(--border)">아이디, 비밀번호(암호화), 닉네임</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 식별 및 서비스 이용</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 탈퇴 시까지</td></tr>
           <tr><td style="padding:7px 10px;border:1px solid var(--border)">필수</td><td style="padding:7px 10px;border:1px solid var(--border)">전화번호, 주소</td><td style="padding:7px 10px;border:1px solid var(--border)">거래 시 배송 및 연락</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 탈퇴 후 1년</td></tr>
-          <tr><td style="padding:7px 10px;border:1px solid var(--border)">필수</td><td style="padding:7px 10px;border:1px solid var(--border)">은행명, 계좌번호</td><td style="padding:7px 10px;border:1px solid var(--border)">에스크로 대금 정산</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 탈퇴 후 5년(전자금융법)</td></tr>
+          <tr><td style="padding:7px 10px;border:1px solid var(--border)">필수</td><td style="padding:7px 10px;border:1px solid var(--border)">은행명, 계좌번호</td><td style="padding:7px 10px;border:1px solid var(--border)">거래 입금용 계좌 정보 상대방 공개</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 탈퇴 후 5년(전자상거래법)</td></tr>
           <tr><td style="padding:7px 10px;border:1px solid var(--border)">자동수집</td><td style="padding:7px 10px;border:1px solid var(--border)">거래 기록, 접속 IP, 접속 일시</td><td style="padding:7px 10px;border:1px solid var(--border)">분쟁 해결, 서비스 개선</td><td style="padding:7px 10px;border:1px solid var(--border)">3년</td></tr>
         </tbody>
       </table>
