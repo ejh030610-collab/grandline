@@ -1878,20 +1878,22 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">배송 방법</label>
         <select id="le-shipping"
           style="width:100%;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 11px;font-size:13px;font-family:inherit;outline:none;background:#fff;box-sizing:border-box">
-          <option value="prepay">선불</option>
-          <option value="postpay">착불</option>
-          <option value="free">무료배송</option>
-          <option value="direct">직거래</option>
+          <option value="">배송 방법 선택</option>
+          <option value="등기">📮 등기 (우체국 등기)</option>
+          <option value="일반택배">📦 일반택배 (CJ/한진/롯데)</option>
+          <option value="반값택배">💸 반값택배 (편의점 접수)</option>
         </select>
       </div>
       <div>
         <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">카드 상태</label>
         <select id="le-condition"
           style="width:100%;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 11px;font-size:13px;font-family:inherit;outline:none;background:#fff;box-sizing:border-box">
-          <option value="S">S - 최상</option>
-          <option value="A">A - 상</option>
-          <option value="B">B - 중</option>
-          <option value="C">C - 하</option>
+          <option value="양호">✅ 양호 — 특이사항 없음</option>
+          <option value="스크래치">🔅 스크래치 — 표면 긁힘</option>
+          <option value="화이트닝">⬜ 화이트닝 — 모서리 흰 점</option>
+          <option value="휨/구김">📐 휨/구김 — 눌린 자국</option>
+          <option value="오염/지문">👆 오염/지문 — 이물질·지문</option>
+          <option value="센터링불량">↔️ 센터링불량 — 인쇄 치우침</option>
         </select>
       </div>
       <div>
