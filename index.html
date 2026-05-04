@@ -1594,14 +1594,14 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 판매 관리 -->
       <div class="ap" id="ap-orders">
         <div class="atbl"><table>
-          <thead><tr><th>카드</th><th>판매자</th><th>버전</th><th>등급</th><th>자체등급</th><th>가격</th><th>날짜</th><th>관리</th></tr></thead>
+          <thead><tr><th>카드</th><th>판매자</th><th>등급</th><th>가격</th><th>날짜</th><th>관리</th></tr></thead>
           <tbody id="a-orders"></tbody>
         </table></div>
       </div>
       <!-- 회원 관리 -->
       <div class="ap" id="ap-members">
         <div class="atbl"><table>
-          <thead><tr><th>닉네임</th><th>가입일</th><th>권한</th><th>관리</th></tr></thead>
+          <thead><tr><th>닉네임</th><th>아이디</th><th>가입일</th><th>거래수</th><th>등급</th><th>권한</th><th>관리</th></tr></thead>
           <tbody id="a-members"></tbody>
         </table></div>
       </div>
@@ -3900,6 +3900,7 @@ function filterMyListings(status) {
 async function loadMyListings() {
   const { data } = await sb.from('listings').select('*,cards(name,image_url,emoji,rarity)')
     .eq('seller_username',curUser.username)
+    .neq('status','cancelled')
     .order('created_at',{ascending:false});
   if (!data?.length) { document.getElementById('my-listings-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">판매 중인 카드가 없어요</div>'; return; }
   document.getElementById('my-listings-list').innerHTML = data.map(l => {
@@ -5117,19 +5118,19 @@ async function aDelCard(id) {
   toast('삭제됐어요'); aLoadCards(); aLoadOverview();
 }
 async function aLoadOrders() {
-  const { data } = await sb.from('listings').select('*,cards(name,rarity)').order('created_at',{ascending:false}).limit(100);
+  const { data } = await sb.from('listings').select('*,cards(name,rarity)')
+    .neq('status','cancelled')
+    .order('created_at',{ascending:false}).limit(100);
   document.getElementById('a-orders').innerHTML = data?.length
     ? data.map(l=>`<tr style="cursor:pointer" onclick="aOpenListingDetail('${l.id}')">
-        <td><b>${l.listing_type==='box'?'📦 '+l.series:(l.cards?.name||'-')}</b></td>
-        <td style="color:var(--muted)">${l.seller_name}</td>
-        <td style="font-size:11px">${l.version||'-'}</td>
-        <td style="font-size:11px">${l.grade_type||l.unit_type||'-'}</td>
-        <td style="font-size:11px;font-weight:700;color:${GBG(l.auto_grade)||'var(--muted)'}">${l.auto_grade||'-'}</td>
-        <td style="color:var(--red);font-weight:600">${l.price.toLocaleString()}원</td>
+        <td><b style="font-size:12px">${l.listing_type==='box'?'📦 '+l.series:(l.cards?.name||'-')}</b></td>
+        <td style="font-size:12px">${l.seller_name||'-'}</td>
+        <td style="font-size:11px;color:var(--muted)">${l.grade_type||'미등급'}</td>
+        <td style="color:var(--red);font-weight:600;font-size:12px">${l.price.toLocaleString()}원</td>
         <td style="color:var(--muted);font-size:11px">${l.created_at?.slice(0,10)||''}</td>
         <td><button class="aact del" onclick="event.stopPropagation();aDelListing('${l.id}')">삭제</button></td>
       </tr>`).join('')
-    : '<tr><td colspan="8" style="text-align:center;color:var(--muted);padding:14px">판매 내역 없음</td></tr>';
+    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">판매 내역 없음</td></tr>';
 }
 async function aDelListing(id) {
   if (!confirm('삭제할까요?')) return;
@@ -5229,24 +5230,35 @@ async function aLoadMembers() {
   const { data } = await sb.from('accounts').select('*').order('created_at',{ascending:false});
   // 테이블 헤더도 업데이트
   const thead = document.querySelector('#ap-members thead tr');
-  if (thead) thead.innerHTML = '<th>닉네임</th><th>가입일</th><th>거래수</th><th>등급</th><th>권한</th><th>관리</th>';
+  if (thead) thead.innerHTML = '<th>닉네임</th><th>아이디</th><th>가입일</th><th>거래수</th><th>등급</th><th>권한</th><th>관리</th>';
   document.getElementById('a-members').innerHTML = data?.length
     ? data.map(u => {
         const grade = getSellerGrade(u.total_trades || 0);
         return `<tr>
-          <td style="font-weight:500">${u.nickname||u.username}</td>
+          <td style="font-weight:500;font-size:12px">${u.nickname||u.username}</td>
+          <td style="color:var(--muted);font-size:11px">${u.username}</td>
           <td style="color:var(--muted);font-size:11px">${u.created_at?.slice(0,10)||''}</td>
-          <td style="text-align:center;font-weight:600;color:var(--blue)">${u.total_trades||0}</td>
-          <td><span style="font-size:11px;padding:2px 8px;border-radius:8px;background:${grade.color}20;color:${grade.color};font-weight:700;border:1px solid ${grade.color}40">${grade.emoji} ${grade.label}</span></td>
-          <td>${u.is_admin?'<span style="color:var(--gold);font-weight:600">⭐ 관리자</span>':'<span style="color:var(--dim)">일반</span>'}</td>
-          <td><button class="aact" onclick="aToggleAdmin('${u.username}',${u.is_admin})">${u.is_admin?'권한 해제':'관리자 지정'}</button></td>
+          <td style="text-align:center;font-weight:600;color:var(--blue);font-size:12px">${u.total_trades||0}</td>
+          <td><span style="font-size:10px;padding:2px 6px;border-radius:8px;background:${grade.color}20;color:${grade.color};font-weight:700;border:1px solid ${grade.color}40">${grade.emoji} ${grade.label}</span></td>
+          <td>${u.is_admin?'<span style="color:var(--gold);font-weight:600;font-size:11px">⭐ 관리자</span>':'<span style="color:var(--dim);font-size:11px">일반</span>'}</td>
+          <td style="display:flex;gap:4px;flex-wrap:wrap">
+            <button class="aact" style="font-size:10px;padding:4px 7px" onclick="aToggleAdmin('${u.username}',${u.is_admin})">${u.is_admin?'권한해제':'관리자'}</button>
+            ${!u.is_admin?`<button class="aact del" style="font-size:10px;padding:4px 7px" onclick="aDeleteMember('${u.username}','${u.nickname||u.username}')">삭제</button>`:''}
+          </td>
         </tr>`;
       }).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">회원 없음</td></tr>';
+    : '<tr><td colspan="7" style="text-align:center;color:var(--muted);padding:14px">회원 없음</td></tr>';
 }
 async function aToggleAdmin(username, isAdmin) {
   await sb.from('accounts').update({is_admin:!isAdmin}).eq('username',username);
   toast(isAdmin?'권한 해제됨':'관리자 지정됨 ⭐'); aLoadMembers();
+}
+async function aDeleteMember(username, nickname) {
+  if (!confirm(`'${nickname}' 계정을 삭제할까요?\n판매 목록, 거래 내역도 함께 삭제됩니다.`)) return;
+  await sb.from('listings').update({status:'cancelled'}).eq('seller_username',username);
+  const { error } = await sb.from('accounts').delete().eq('username',username);
+  if (error) { toast('삭제 실패: ' + error.message); return; }
+  toast(`'${nickname}' 계정 삭제됐어요`); aLoadMembers(); aLoadOverview();
 }
 function aClearForm() {
   ['af-id','af-name','af-imgurl'].forEach(id=>{const e=document.getElementById(id);if(e)e.value='';}); 
