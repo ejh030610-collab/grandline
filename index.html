@@ -1926,7 +1926,7 @@ function switchAuth(mode) {
   const isLogin = mode==='login';
   document.getElementById('tab-login').classList.toggle('active', isLogin);
   document.getElementById('tab-signup').classList.toggle('active', !isLogin);
-  document.getElementById('nickField').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('nickField').style.display = 'none'; // 닉네임 항상 숨김
   document.getElementById('phoneField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('addrField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('bankField').style.display = isLogin ? 'none' : 'block';
@@ -1980,7 +1980,7 @@ async function submitAuth() {
     if (!bank) { errEl.textContent='은행을 선택해주세요 (거래 입금용)'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
     if (!acct) { errEl.textContent='계좌번호를 입력해주세요 (거래 입금용)'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
     if (!/^\d[\d\-]{5,20}$/.test(acct)) { errEl.textContent='계좌번호는 숫자와 하이픈(-)만 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
-    if (!document.getElementById('agreeTerms').checked) { errEl.textContent='이용약관 및 개인정보처리방침에 동의해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
+    if (!document.getElementById('termsAgree').checked) { errEl.textContent='이용약관 및 개인정보처리방침에 동의해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
 
     // 전화번호 중복 체크
     const { data: phoneCheck } = await sb.from('accounts').select('username').eq('phone', phone).maybeSingle();
