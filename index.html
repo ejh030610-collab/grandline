@@ -46,10 +46,16 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .user-chip{display:flex;align-items:center;gap:6px;cursor:pointer;}
 .avatar{width:29px;height:29px;border-radius:50%;background:var(--red-light);border:1.5px solid var(--red);display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--red);font-weight:700;}
 .menu-btn{display:none;background:none;border:none;padding:5px;color:var(--muted);font-size:20px;}
+/* 모바일 헤더 알림 아이콘 버튼 */
+.noti-icon-btn{background:none;border:none;font-size:20px;padding:6px;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;}
+.noti-badge-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid #fff;display:none;}
+.noti-badge-dot.on{display:block;}
 @media(max-width:700px){
   .menu-btn{display:flex;align-items:center;}
+  /* 모바일 검색창: 배경색 넣어서 버튼처럼 */
   .h-search{max-width:none;flex:1;}
-  .h-search input{font-size:14px;padding:8px 14px 8px 36px;}
+  .h-search input{background:var(--bg2);border-color:var(--bg3);border-radius:22px;font-size:13px;padding:9px 14px 9px 36px;color:var(--muted);}
+  .h-search input::placeholder{color:#9CA3AF;font-size:13px;}
   /* 로고 텍스트 숨기기 */
   .logo-sub{display:none;}
   .logo-text{font-size:14px;}
@@ -65,9 +71,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 /* ── LAYOUT ── */
 .layout{display:flex;min-height:calc(100vh - 58px);max-width:1600px;margin:0 auto;align-items:flex-start;}
-.scroll-top{position:fixed;bottom:24px;right:24px;width:44px;height:44px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:18px;cursor:pointer;box-shadow:var(--sh2);display:none;align-items:center;justify-content:center;z-index:200;transition:all .2s;}
+.scroll-top{position:fixed;bottom:80px;right:16px;width:40px;height:40px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:16px;cursor:pointer;box-shadow:var(--sh2);display:none;align-items:center;justify-content:center;z-index:200;transition:all .2s;}
 .scroll-top.on{display:flex;}
 .scroll-top:hover{background:#b91c1c;transform:translateY(-2px);}
+@media(min-width:701px){.scroll-top{bottom:24px;right:24px;width:44px;height:44px;font-size:18px;}}
 /* ── STICKY SIDEBAR ── */
 .sidebar{width:240px;height:calc(100vh - 58px);position:sticky;top:58px;border-right:1px solid var(--border);background:#fff;flex-shrink:0;overflow-y:auto;padding:10px 0;}
 .sidebar.mobile-open{display:block;}
@@ -283,9 +290,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
   /* 헤더 */
   .h-right .hbtn:not(.noti-btn):not(.user-chip){display:none!important;}
-  header{padding:0 12px;height:52px;}
-  .logo img{height:28px!important;}
-  .h-search input{font-size:14px;}
+  header{padding:0 10px;height:52px;}
+  .logo img{height:26px!important;}
+  /* 검색창: gray pill 스타일 */
+  .h-search input{font-size:13px;background:var(--bg2);border-color:transparent;border-radius:22px;padding:9px 12px 9px 34px;}
+  .h-search-icon{font-size:14px;left:10px;}
 
   /* 모달 바텀시트 */
   .ov{align-items:flex-end!important;padding:0!important;}
@@ -299,7 +308,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   .my-tab{white-space:nowrap;flex-shrink:0;font-size:12px;padding:9px 12px;}
 
   /* 카드 그리드 */
-  .grid{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .grid{grid-template-columns:repeat(3,1fr);gap:6px;}
   .card-thumb{font-size:36px;}
   .card-info{padding:6px 8px 9px;}
   .card-num{font-size:9px;}
@@ -887,7 +896,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="fg" id="phoneField" style="display:none"><label>전화번호 <span style="color:var(--red)">*</span></label><input type="tel" id="authPhone" placeholder="010-0000-0000"></div>
       <div class="fg" id="addrField" style="display:none"><label>주소 <span style="color:var(--red)">*</span></label><input type="text" id="authAddr" placeholder="배송을 위한 기본 주소 (예: 서울시 강남구...)"></div>
       <div id="bankField" style="display:none;margin-bottom:11px">
-        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;font-weight:500">계좌번호 <span style="font-size:11px;color:var(--dim);font-weight:400">(선택 · 구매 승인 후 자동 공개)</span></label>
+        <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;font-weight:500">계좌번호 <span style="font-size:11px;color:var(--red);font-weight:600">* 필수</span> <span style="font-size:11px;color:var(--dim);font-weight:400">(구매자 입금용)</span></label>
         <div style="display:flex;gap:6px;align-items:center">
           <div style="position:relative;flex-shrink:0">
             <button id="bankToggleBtn" onclick="toggleBankDrop()" type="button"
@@ -916,6 +925,19 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="mbtns">
         <button class="mbtn-cancel" onclick="closeAuth()">취소</button>
         <button class="mbtn-ok" id="authBtn" onclick="submitAuth()">로그인</button>
+      </div>
+      <!-- 약관 동의 (회원가입 시 노출) -->
+      <div id="termsAgreeField" style="display:none;margin-top:10px;padding:12px 14px;background:var(--bg2);border-radius:var(--r3)">
+        <label style="display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:12px;color:var(--muted)">
+          <input type="checkbox" id="termsAgree" style="margin-top:2px;flex-shrink:0;accent-color:var(--red)">
+          <span>
+            <button type="button" onclick="openTerms()" style="background:none;border:none;color:var(--red);font-weight:700;font-size:12px;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline">이용약관</button>
+            및
+            <button type="button" onclick="openPrivacy()" style="background:none;border:none;color:var(--red);font-weight:700;font-size:12px;cursor:pointer;padding:0;font-family:inherit;text-decoration:underline">개인정보처리방침</button>
+            에 동의합니다. <span style="color:var(--red)">*</span><br>
+            <span style="font-size:11px;color:var(--dim)">전화번호·주소·계좌번호 등 개인정보가 수집됩니다.</span>
+          </span>
+        </label>
       </div>
     </div>
   </div>
@@ -1093,7 +1115,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   <div class="modal sell-modal">
     <div class="head" style="position:relative">
       <h3>카드 판매 등록</h3>
-      <p>사진을 올리면 AI가 상태를 자동 분석해드려요</p>
+      <p>카드 사진을 올리고 상태를 등록해주세요</p>
       <button class="modal-close-btn" onclick="closeSell()">✕</button>
     </div>
     <div class="sell-body">
@@ -1143,7 +1165,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             </div>
           </div>
         </div>
-        <button class="ai-btn" id="ai-btn" onclick="analyzeCard()" disabled>
+        <button class="ai-btn" id="ai-btn" onclick="analyzeCard()" disabled style="display:none">
           <span>📐</span> 센터링 분석
         </button>
         <div class="ai-result" id="ai-result" style="display:none">
@@ -1448,6 +1470,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="admin-tabs">
       <button class="atab active" onclick="switchAdminTab('overview',this)">현황</button>
+      <button class="atab" onclick="switchAdminTab('escrow',this)" id="escrow-tab-btn">💰 에스크로</button>
       <button class="atab" onclick="switchAdminTab('addcard',this)">카드 추가</button>
       <button class="atab" onclick="switchAdminTab('cardlist',this)">카드 관리</button>
       <button class="atab" onclick="switchAdminTab('orders',this)">판매 관리</button>
@@ -1469,6 +1492,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <thead><tr><th>카드</th><th>판매자</th><th>버전</th><th>등급</th><th>가격</th><th>날짜</th></tr></thead>
           <tbody id="a-recent"></tbody>
         </table></div>
+      </div>
+      <!-- 에스크로 관리 -->
+      <div class="ap" id="ap-escrow">
+        <div style="margin-bottom:16px">
+          <div style="font-size:15px;font-weight:700;margin-bottom:4px">💰 에스크로 입금 관리</div>
+          <div style="font-size:12px;color:var(--muted)">구매자가 "입금 완료했어요"를 누른 거래들이에요. 실제 입금 확인 후 [입금확인] 버튼을 눌러주세요.</div>
+        </div>
+        <div style="background:var(--gold-light);border:1px solid #D4A017;border-radius:var(--r2);padding:12px 16px;margin-bottom:16px;font-size:13px;font-weight:600">
+          🏦 NEXO 에스크로 계좌: <span id="escrow-info-display"></span>
+        </div>
+        <div id="admin-escrow-list"><div style="text-align:center;padding:30px;color:var(--muted)">로딩 중...</div></div>
       </div>
       <!-- 카드 추가 -->
       <div class="ap" id="ap-addcard">
@@ -1727,6 +1761,15 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 const SB_URL = 'https://tsizvmhzdaocxmfuswft.supabase.co';
 const SB_KEY = 'sb_publishable_9w5Cx4fCOqtlbFhQiAbxBw_I1OfD_5v';
 const sb = supabase.createClient(SB_URL, SB_KEY);
+
+// ── NEXO 에스크로 계좌 (관리자가 직접 수정) ──────────────────────
+const ESCROW = {
+  bank: '카카오뱅크',       // ← 실제 관리자 은행명으로 교체
+  account: '3333-00-0000000', // ← 실제 관리자 계좌번호로 교체
+  holder: 'NEXO마켓',         // ← 예금주
+  adminUsername: 'admin'      // ← 관리자 계정 username
+};
+// ─────────────────────────────────────────────────────────────────
 const CDN = 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/one-piece';
 
 let allCards = [], listings = {}, trades = {}, wishSet = new Set();
@@ -1842,8 +1885,10 @@ function switchAuth(mode) {
   document.getElementById('phoneField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('addrField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('bankField').style.display = isLogin ? 'none' : 'block';
+  document.getElementById('termsAgreeField').style.display = isLogin ? 'none' : 'block';
   document.getElementById('authBtn').textContent = isLogin ? '로그인' : '가입하기';
   document.getElementById('authErr').style.display = 'none';
+  if (!isLogin) { const cb = document.getElementById('termsAgree'); if(cb) cb.checked=false; }
 }
 function toggleBankDrop() {
   const d = document.getElementById('bankDrop');
@@ -1887,6 +1932,11 @@ async function submitAuth() {
     if (!nick) { errEl.textContent='닉네임을 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
     if (!phone) { errEl.textContent='전화번호를 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
     if (!addr) { errEl.textContent='주소를 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
+    if (!bank) { errEl.textContent='은행을 선택해주세요 (거래 입금용)'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
+    if (!acct) { errEl.textContent='계좌번호를 입력해주세요 (거래 입금용)'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
+    if (!/^\d[\d\-]{5,20}$/.test(acct)) { errEl.textContent='계좌번호는 숫자와 하이픈(-)만 입력해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
+    const termsChecked = document.getElementById('termsAgree')?.checked;
+    if (!termsChecked) { errEl.textContent='이용약관 및 개인정보처리방침에 동의해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
     const { data, error } = await sb.rpc('sign_up', {p_username:id, p_password:pw, p_nickname:nick});
     if (error || data?.error) { errEl.textContent = data?.error||'가입 실패'; errEl.style.display='block'; }
     else {
@@ -3146,6 +3196,22 @@ async function loadMyPhotoReqSent() {
     </div>`).join('');
 }
 
+// ─── 분쟁 신고 ───
+async function openDisputeReport(tradeId, targetUsername) {
+  if (!curUser) return;
+  const reason = prompt('분쟁 내용을 간략히 입력해주세요:\n(예: 입금했는데 배송 안 함 / 물건 상태가 설명과 다름 / 연락 두절)');
+  if (!reason) return;
+  const { error } = await sb.from('reports').insert({
+    reporter_username: curUser.username,
+    target_type: 'trade',
+    target_id: tradeId,
+    reason: '거래 분쟁',
+    detail: `거래 상대: @${targetUsername}\n${reason}`,
+  });
+  if (error) { toast('신고 실패: ' + error.message); return; }
+  toast('🚨 분쟁 신고가 접수됐어요. 관리자가 확인 후 연락드릴게요.');
+}
+
 function openSellPicker() {
   if (!curUser) { openAuth('login'); return; }
   document.getElementById('sellPickerOv').classList.add('on');
@@ -3259,7 +3325,7 @@ function previewPhoto(side, e) {
   };
   reader.readAsDataURL(file);
   e.target.value = '';
-  if (sellFront || sellBack) document.getElementById('ai-btn').disabled = false;
+  if (sellFront || sellBack) { /* AI 기능 준비 중 */ }
 }
 
 // 이미지 리사이즈 — Vercel 4.5MB 제한 초과 방지 (HTTP 413 해결)
@@ -3410,9 +3476,9 @@ PSA 등급 기준:
 }
 
 async function analyzeCard() {
-  const btn = document.getElementById('ai-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="ai-spin"></span> 센터링 분석 중...';
+  // AI 분석 기능 준비 중 - 추후 오픈 예정
+  return;
+}
   document.getElementById('ai-result').classList.add('on');
   document.getElementById('ai-lbl').textContent = '이미지 분석 중...';
   document.getElementById('ai-reason').textContent = '카드 경계를 감지하고 센터링을 측정하고 있어요...';
@@ -3820,9 +3886,7 @@ async function loadMyListings() {
   if (!data?.length) { document.getElementById('my-listings-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">판매 중인 카드가 없어요</div>'; return; }
   document.getElementById('my-listings-list').innerHTML = data.map(l => {
     const psaColor = l.auto_grade>=9?'#16a34a':l.auto_grade>=7?'#2563eb':l.auto_grade>=5?'#d97706':'#dc2626';
-    const aiTag = l.auto_grade
-      ? `<span style="font-size:10px;font-weight:700;color:#fff;background:${psaColor};border-radius:4px;padding:1px 5px;margin-left:4px">PSA ${l.auto_grade}</span>`
-      : '';
+    const aiTag = ''; // AI 기능 준비 중
     return `<div class="my-l-item">
       ${l.cards?.image_url ? `<img src="${l.cards.image_url}" class="my-l-img" onerror="this.style.display='none'">` : `<div class="my-l-img-x">${l.listing_type==='box'?'📦':l.cards?.emoji||'🃏'}</div>`}
       <div style="flex:1">
@@ -4008,7 +4072,7 @@ async function loadMyRequests() {
   const { data } = await sb.from('trades')
     .select('*, listings(card_id, price, grade_type, unit_type, image_front, status, contact_info), created_at, shipped_at, confirmed_at')
     .eq('seller_username', curUser.username)
-    .in('status', ['pending', 'approved', 'shipping'])
+    .in('status', ['pending', 'approved', 'payment_pending', 'payment_confirmed', 'shipping'])
     .order('created_at', { ascending: false });
   if (!data?.length) {
     el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:30px">아직 구매 요청이 없어요</div>';
@@ -4025,20 +4089,26 @@ async function loadMyRequests() {
 
   el.innerHTML = data.map(t => {
     const statusMap = {
-      pending:  '⏳ 대기중',
-      approved: '✅ 승인됨 — 운송장 등록 필요',
-      shipping: '🚚 배송중',
-      completed:'🎉 거래완료',
+      pending:           '⏳ 대기중',
+      approved:          '✅ 승인됨 — 구매자 입금 대기',
+      payment_pending:   '💰 입금 확인 중 (관리자)',
+      payment_confirmed: '✅ 입금 확인 완료 — 운송장 등록 필요',
+      shipping:          '🚚 배송중',
+      completed:         '🎉 거래완료',
       rejected: '❌ 거절됨'
     };
     const statusColor = {
       pending:'var(--gold)', approved:'var(--blue)',
+      payment_pending:'var(--gold)', payment_confirmed:'var(--green)',
       shipping:'var(--green)', completed:'var(--muted)', rejected:'var(--red)'
     };
     const isPending = t.status === 'pending';
     const isApproved = t.status === 'approved';
+    const isPaymentPending = t.status === 'payment_pending';
+    const isPaymentConfirmed = t.status === 'payment_confirmed';
     const isShipping = t.status === 'shipping';
     const buyer = buyerAccountMap[t.buyer_username] || {};
+    const showBuyerInfo = isApproved || isPaymentPending || isPaymentConfirmed || isShipping || t.status==='completed';
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
         <div>
@@ -4049,7 +4119,7 @@ async function loadMyRequests() {
       </div>
       ${renderTradeSteps(t)}
       <!-- 구매자 정보 (승인 후 공개) -->
-      ${(isApproved || isShipping || t.status==='completed') ? `
+      ${showBuyerInfo ? `
       <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--r3);padding:10px 12px;font-size:12px;margin-bottom:8px">
         <div style="font-weight:700;color:var(--blue);margin-bottom:6px">📋 구매자 정보</div>
         <div style="margin-bottom:3px"><b>${buyer.nickname || t.buyer_username}</b></div>
@@ -4080,10 +4150,30 @@ async function loadMyRequests() {
         <button onclick="rejectTrade('${t.id}', this)" style="flex:1;padding:8px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">❌ 거절</button>
       </div>` : ''}
       ${isApproved ? `
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r3);padding:10px 14px;font-size:12px;margin-bottom:6px">
+          🔒 <b>NEXO 안전결제 진행 중</b><br>
+          <span style="color:var(--muted)">구매자가 NEXO 에스크로 계좌로 입금하면 관리자가 확인 후 알려드려요.</span>
+        </div>` : ''}
+      ${isPaymentPending ? `
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r3);padding:10px 14px;font-size:12px;color:#92400e;margin-bottom:6px">
+          💰 구매자가 입금했어요! 관리자가 확인 중이에요.<br>
+          <span style="font-size:11px">확인 완료되면 운송장 등록 알림이 와요.</span>
+        </div>` : ''}
+      ${isPaymentConfirmed ? `
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r3);padding:8px 12px;font-size:11px;color:#166534;margin-bottom:6px">
+          ✅ 입금 확인 완료! 바로 배송해주세요.
+        </div>
         <button onclick="openShipping('${t.id}')" style="width:100%;padding:9px;background:var(--blue);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
-          📦 운송장 등록
+          📦 운송장 등록 (필수)
+        </button>
+        <button onclick="openDisputeReport('${t.id}','${t.buyer_username}')" style="width:100%;margin-top:6px;padding:7px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">
+          🚨 분쟁 신고
         </button>` : ''}
-      ${isShipping ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px">구매자가 수령 확인 중이에요</div>` : ''}
+      ${isShipping ? `
+        <div style="font-size:12px;color:var(--muted);text-align:center;padding:6px">구매자가 수령 확인 중이에요</div>
+        <button onclick="openDisputeReport('${t.id}','${t.buyer_username}')" style="width:100%;margin-top:4px;padding:7px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">
+          🚨 분쟁 신고
+        </button>` : ''}
     </div>`;
   }).join('');
 }
@@ -4111,6 +4201,41 @@ async function rejectTrade(tradeId, btn) {
   await loadMyRequests();
 }
 
+// 구매자: 에스크로 계좌 입금 완료 알림
+async function buyerConfirmPayment(tradeId, btn) {
+  if (!confirm(`NEXO 에스크로 계좌(${ESCROW.bank} ${ESCROW.account})로 입금하셨나요?\n\n입금 확인 후 관리자가 배송을 지시해요.`)) return;
+  if (btn) { btn.disabled = true; btn.textContent = '처리 중...'; }
+  const { error } = await sb.from('trades').update({ status: 'payment_pending' }).eq('id', tradeId);
+  if (error) { toast('처리 실패: ' + error.message); if (btn) { btn.disabled=false; btn.textContent='✅ 입금 완료했어요'; } return; }
+  // 관리자에게 알림
+  await sb.from('notifications').insert({
+    username: ESCROW.adminUsername,
+    message: `💰 에스크로 입금 알림: 거래 #${tradeId?.slice(0,8)} — 입금 확인 필요`,
+    type: 'payment_pending',
+    target_id: tradeId
+  }).catch(()=>{});
+  toast('✅ 입금 알림을 보냈어요! 관리자가 확인 후 배송이 시작돼요.');
+  await new Promise(r => setTimeout(r, 500));
+  await loadMyReq();
+}
+
+// 관리자: 에스크로 입금 확인 → 판매자에게 배송 지시
+async function adminConfirmPayment(tradeId, sellerUsername, btn) {
+  if (!confirm(`거래 #${tradeId?.slice(0,8)} 입금을 확인하셨나요?\n\n확인하면 판매자(${sellerUsername})에게 배송 알림이 가요.`)) return;
+  if (btn) { btn.disabled = true; btn.textContent = '처리 중...'; }
+  const { error } = await sb.from('trades').update({ status: 'payment_confirmed' }).eq('id', tradeId);
+  if (error) { toast('처리 실패: ' + error.message); if (btn) { btn.disabled=false; btn.textContent='✅ 입금확인'; } return; }
+  // 판매자에게 알림
+  await sb.from('notifications').insert({
+    username: sellerUsername,
+    message: `✅ 입금이 확인됐어요! 거래 #${tradeId?.slice(0,8)} — 지금 바로 배송해주세요.`,
+    type: 'payment_confirmed',
+    target_id: tradeId
+  }).catch(()=>{});
+  toast('✅ 입금 확인 완료! 판매자에게 배송 알림을 보냈어요.');
+  await loadAdminTrades();
+}
+
 // ─── 내 구매요청 탭 (구매자용) ───
 async function loadMyReq() {
   const el = document.getElementById('my-myreq-list');
@@ -4125,19 +4250,22 @@ async function loadMyReq() {
     return;
   }
   const statusMap = {
-    pending:  '⏳ 답변 대기중',
-    approved: '✅ 승인됨 — 판매자 연락처 확인',
-    shipping: '🚚 배송중',
-    completed:'🎉 거래완료',
-    rejected: '❌ 거절됨'
+    pending:           '⏳ 답변 대기중',
+    approved:          '✅ 승인됨 — NEXO 계좌로 입금해주세요',
+    payment_pending:   '💰 입금 확인 중 (관리자)',
+    payment_confirmed: '✅ 입금 확인 완료 — 배송 준비중',
+    shipping:          '🚚 배송중',
+    completed:         '🎉 거래완료',
+    rejected:          '❌ 거절됨'
   };
   const statusColor = {
     pending:'var(--gold)', approved:'var(--blue)',
+    payment_pending:'var(--gold)', payment_confirmed:'var(--green)',
     shipping:'var(--green)', completed:'var(--muted)', rejected:'#dc2626'
   };
 
   // approved/shipping 건들의 판매자 연락처
-  const activeIds = data.filter(t=>['approved','shipping','completed'].includes(t.status)).map(t=>t.listing_id).filter(Boolean);
+  const activeIds = data.filter(t=>['approved','payment_pending','payment_confirmed','shipping','completed'].includes(t.status)).map(t=>t.listing_id).filter(Boolean);
   let listingMap = {};
   if (activeIds.length) {
     const { data: ls } = await sb.from('listings').select('id,contact_info,seller_name,seller_username').in('id', activeIds);
@@ -4154,6 +4282,8 @@ async function loadMyReq() {
     const listing = listingMap[t.listing_id];
     const sellerAcc = listing?.account;
     const isApproved = t.status === 'approved';
+    const isPaymentPending = t.status === 'payment_pending';
+    const isPaymentConfirmed = t.status === 'payment_confirmed';
     const isShipping = t.status === 'shipping';
     const isCompleted = t.status === 'completed';
     return `<div style="padding:14px 0;border-bottom:1px solid var(--border)">
@@ -4164,13 +4294,35 @@ async function loadMyReq() {
       <div style="font-size:12px;color:var(--muted);margin-bottom:2px">판매자: <b>${t.seller_username}</b> · ${t.price?.toLocaleString()}원</div>
       ${renderTradeSteps(t)}
 
-      ${(isApproved || isShipping || isCompleted) ? `
-        <div style="background:var(--blue-light);border:1px solid #bfdbfe;border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
-          <div style="font-size:12px;font-weight:700;color:var(--blue);margin-bottom:8px">📋 판매자 연락처</div>
-          <div style="font-size:13px;margin-bottom:4px"><b>${sellerAcc?.nickname || listing?.seller_name || t.seller_username}</b></div>
-          <div style="font-size:13px;font-weight:700;color:var(--blue);margin-bottom:4px">📱 ${sellerAcc?.phone || listing?.contact_info || '연락처 없음'}</div>
-          ${sellerAcc?.bank_name && sellerAcc?.bank_account ? `<div style="font-size:13px;font-weight:700;color:var(--red);margin-bottom:4px">🏦 ${sellerAcc.bank_name} ${sellerAcc.bank_account}</div>` : ''}
-          <div style="font-size:11px;color:var(--muted)">위 연락처로 연락해서 입금 후 주소를 알려드리세요</div>
+      ${isApproved ? `
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:14px 16px;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:10px">🔒 NEXO 안전결제 계좌</div>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:6px">아래 NEXO 공식 계좌로 입금해주세요. <b>절대 판매자 개인 계좌로 보내지 마세요.</b></div>
+          <div style="background:#fff;border:2px solid var(--green);border-radius:var(--r3);padding:12px 14px;margin-bottom:12px">
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:4px">🏦 ${ESCROW.bank}</div>
+            <div style="font-size:18px;font-weight:800;color:var(--green);letter-spacing:1px;margin-bottom:4px">${ESCROW.account}</div>
+            <div style="font-size:12px;color:var(--muted)">예금주: ${ESCROW.holder}</div>
+          </div>
+          <div style="font-size:12px;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r3);padding:8px 10px;margin-bottom:12px">
+            💰 입금액: <b>${t.price?.toLocaleString()}원</b> · 입금자명: <b>${curUser?.nickname || t.buyer_username}</b>
+          </div>
+          <button onclick="buyerConfirmPayment('${t.id}', this)"
+            style="width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer">
+            ✅ 입금 완료했어요
+          </button>
+          <div style="font-size:10px;color:var(--dim);text-align:center;margin-top:8px">입금 후 관리자가 확인하면 배송이 시작돼요 (평일 기준 수시 확인)</div>
+        </div>` : ''}
+
+      ${isPaymentPending ? `
+        <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;color:#92400e;margin-bottom:4px">⏳ 입금 확인 중</div>
+          <div style="font-size:12px;color:var(--muted)">관리자가 입금을 확인하고 있어요. 확인되면 판매자가 바로 배송을 시작해요.<br>보통 수 시간 내 처리돼요.</div>
+        </div>` : ''}
+
+      ${isPaymentConfirmed ? `
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:12px 14px;margin-bottom:8px">
+          <div style="font-size:12px;font-weight:700;color:var(--green);margin-bottom:4px">✅ 입금 확인 완료!</div>
+          <div style="font-size:12px;color:var(--muted)">판매자가 배송을 준비하고 있어요. 운송장이 등록되면 알림을 드릴게요.</div>
         </div>` : ''}
 
       ${isShipping ? `
@@ -4179,14 +4331,18 @@ async function loadMyReq() {
           <div style="font-size:13px;margin-bottom:4px"><b>${t.carrier||''}</b> · ${t.tracking_number||''}</div>
           ${t.tracking_number ? `<a href="${getTrackingUrl(t.carrier, t.tracking_number)}" target="_blank" style="display:inline-block;margin-top:6px;padding:7px 14px;background:var(--blue);color:#fff;border-radius:var(--r3);font-size:12px;font-weight:600;text-decoration:none">🔍 배송 조회하기</a>` : ''}
         </div>
-        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:14px 16px">
+        <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:var(--r2);padding:14px 16px;margin-bottom:8px">
           <div style="font-size:13px;font-weight:600;color:var(--green);margin-bottom:4px">📬 물건을 받으셨나요?</div>
-          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">수령 확인 후 거래가 완료돼요. 후기도 남겨주세요!</div>
+          <div style="font-size:12px;color:var(--muted);margin-bottom:12px">수령 확인 후 거래가 완료되고, NEXO가 판매자에게 대금을 송금해요.</div>
           <button onclick="confirmReceipt('${t.id}','${t.listing_id}', this)"
             style="width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
             ✅ 수령 확인하기
           </button>
-        </div>` : ''}
+        </div>
+        <button onclick="openDisputeReport('${t.id}','${t.seller_username}')"
+          style="width:100%;padding:9px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">
+          🚨 물건을 못 받았거나 문제가 있어요
+        </button>` : ''}
 
       ${isCompleted ? `<div style="font-size:12px;color:var(--muted);text-align:center;padding:6px">🎉 거래가 완료됐어요</div>` : ''}
 
@@ -4221,19 +4377,23 @@ function renderTradeSteps(t) {
   };
 
   const STEPS = [
-    { key:'pending',   icon:'🙋', label:'구매요청', date: fmt(t.created_at) },
-    { key:'approved',  icon:'✅', label:'승인완료', date: fmt(t.approved_at||null) },
-    { key:'shipping',  icon:'🚀', label:'배송중',   date: fmt(t.shipped_at||null) },
-    { key:'completed', icon:'🎉', label:'수령완료', date: fmt(t.confirmed_at||null) },
+    { key:'pending',           icon:'🙋', label:'구매요청',   date: fmt(t.created_at) },
+    { key:'approved',          icon:'✅', label:'승인완료',   date: fmt(t.approved_at||null) },
+    { key:'payment_pending',   icon:'💰', label:'입금중',     date: '' },
+    { key:'payment_confirmed', icon:'🔐', label:'입금확인',   date: '' },
+    { key:'shipping',          icon:'🚀', label:'배송중',     date: fmt(t.shipped_at||null) },
+    { key:'completed',         icon:'🎉', label:'수령완료',   date: fmt(t.confirmed_at||null) },
   ];
-  const ORDER = ['pending','approved','shipping','completed'];
-  const cur = ORDER.indexOf(status);
+  const ORDER = ['pending','approved','payment_pending','payment_confirmed','shipping','completed'];
+  const cur = ORDER.indexOf(status) === -1 ? 0 : ORDER.indexOf(status);
 
   const STATUS_MSG = {
-    pending:   { icon:'⏳', msg:'판매자 승인 대기중', sub:'판매자가 요청을 확인하고 있어요' },
-    approved:  { icon:'✅', msg:'승인 완료 — 입금 후 주소 전달', sub:'판매자 연락처를 확인해서 입금해주세요' },
-    shipping:  { icon:'🚀', msg:`배송중${t.carrier ? ' · '+t.carrier : ''}`, sub: t.tracking_number ? `운송장 ${t.tracking_number}` : '판매자가 발송했어요' },
-    completed: { icon:'🎉', msg:'거래 완료!', sub:'성공적으로 거래가 완료됐어요' },
+    pending:           { icon:'⏳', msg:'판매자 승인 대기중', sub:'판매자가 요청을 확인하고 있어요' },
+    approved:          { icon:'✅', msg:'승인 완료 — NEXO 계좌로 입금해주세요', sub:'아래 NEXO 안전결제 계좌로 입금하세요' },
+    payment_pending:   { icon:'💰', msg:'입금 확인 중', sub:'관리자가 입금을 확인하고 있어요' },
+    payment_confirmed: { icon:'🔐', msg:'입금 확인 완료!', sub:'판매자가 배송을 준비하고 있어요' },
+    shipping:          { icon:'🚀', msg:`배송중${t.carrier ? ' · '+t.carrier : ''}`, sub: t.tracking_number ? `운송장 ${t.tracking_number}` : '판매자가 발송했어요' },
+    completed:         { icon:'🎉', msg:'거래 완료!', sub:'성공적으로 거래가 완료됐어요' },
   };
   const sm = STATUS_MSG[status] || { icon:'⏳', msg:status, sub:'' };
 
@@ -4651,7 +4811,13 @@ function openLB(url) { document.getElementById('lb-img').src=url; document.getEl
 function closeLB() { document.getElementById('lightbox').classList.remove('on'); }
 
 // ─── ADMIN ───
-function openAdmin() { document.getElementById('adminPanel').classList.add('on'); aLoadOverview(); aLoadCards(); aLoadOrders(); aLoadMembers(); }
+function openAdmin() {
+  document.getElementById('adminPanel').classList.add('on');
+  aLoadOverview(); aLoadCards(); aLoadOrders(); aLoadMembers();
+  // 에스크로 계좌 표시
+  const el = document.getElementById('escrow-info-display');
+  if (el) el.textContent = `${ESCROW.bank} ${ESCROW.account} (예금주: ${ESCROW.holder})`;
+}
 function closeAdmin() { document.getElementById('adminPanel').classList.remove('on'); }
 function switchAdminTab(id, btn) {
   document.querySelectorAll('.ap').forEach(p=>p.classList.remove('active'));
@@ -4660,6 +4826,80 @@ function switchAdminTab(id, btn) {
   if (id === 'notices') aLoadNotices();
   if (id === 'inquiries') aLoadInquiries();
   if (id === 'reports') aLoadReports();
+  if (id === 'escrow') loadAdminTrades();
+}
+
+async function loadAdminTrades() {
+  const el = document.getElementById('admin-escrow-list');
+  if (!el) return;
+  el.innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner"></div></div>';
+  const { data, error } = await sb.from('trades')
+    .select('*, listings(card_id,price,grade_type,image_front)')
+    .in('status', ['payment_pending', 'payment_confirmed'])
+    .order('created_at', { ascending: false });
+  if (error || !data?.length) {
+    el.innerHTML = `<div style="text-align:center;padding:30px;color:var(--muted)">
+      ${error ? '❌ 로딩 실패: '+error.message : '✅ 확인 대기 중인 입금이 없어요'}
+    </div>`;
+    // 에스크로 탭 뱃지 제거
+    const tabBtn = document.getElementById('escrow-tab-btn');
+    if (tabBtn) tabBtn.textContent = '💰 에스크로';
+    return;
+  }
+  // 에스크로 탭 뱃지 업데이트
+  const pending = data.filter(t=>t.status==='payment_pending').length;
+  const tabBtn = document.getElementById('escrow-tab-btn');
+  if (tabBtn) tabBtn.innerHTML = `💰 에스크로 ${pending>0?`<span style="background:var(--red);color:#fff;border-radius:8px;padding:0 6px;font-size:10px;margin-left:4px">${pending}</span>`:''}`;
+
+  el.innerHTML = data.map(t => {
+    const isPP = t.status === 'payment_pending';
+    return `<div style="background:${isPP?'#fffbeb':'#f0fdf4'};border:1px solid ${isPP?'#fcd34d':'#86efac'};border-radius:var(--r2);padding:14px 16px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div>
+          <div style="font-size:13px;font-weight:700">${t.card_id || t.listings?.card_id || '-'}</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">
+            구매자: <b>${t.buyer_username}</b> · 판매자: <b>${t.seller_username}</b>
+          </div>
+          <div style="font-size:14px;font-weight:700;color:var(--red);margin-top:4px">${t.price?.toLocaleString()}원</div>
+        </div>
+        <span style="font-size:10px;padding:3px 9px;border-radius:8px;font-weight:700;background:${isPP?'#fef9c3':'#dcfce7'};color:${isPP?'#92400e':'#166534'}">
+          ${isPP?'💰 입금확인 대기':'✅ 확인완료 (배송대기)'}
+        </span>
+      </div>
+      <div style="font-size:11px;color:var(--dim);margin-bottom:10px">거래 ID: ${t.id?.slice(0,8)} · ${t.created_at?.slice(0,16).replace('T',' ')}</div>
+      ${isPP ? `
+        <div style="background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:10px 12px;margin-bottom:10px;font-size:12px;color:var(--muted)">
+          ⚠️ 실제로 <b>${ESCROW.bank} ${ESCROW.account}</b> 계좌에 <b>${t.price?.toLocaleString()}원</b> 입금됐는지 확인 후 아래 버튼을 눌러주세요.
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="adminConfirmPayment('${t.id}','${t.seller_username}',this)"
+            style="flex:1;padding:10px;background:var(--green);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">
+            ✅ 입금 확인 완료
+          </button>
+          <button onclick="adminRejectPayment('${t.id}','${t.buyer_username}',this)"
+            style="padding:10px 14px;background:#fff;color:var(--red);border:1px solid var(--red);border-radius:var(--r3);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">
+            ❌ 입금 안됨
+          </button>
+        </div>` : `
+        <div style="font-size:12px;color:var(--green);font-weight:600">✅ 입금 확인됨 — 판매자 배송 대기 중</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">판매자가 운송장을 등록하면 배송중으로 바뀌어요</div>`}
+    </div>`;
+  }).join('');
+}
+
+async function adminRejectPayment(tradeId, buyerUsername, btn) {
+  if (!confirm('입금이 확인되지 않았나요? 거래를 다시 "승인" 상태로 되돌려요.')) return;
+  if (btn) { btn.disabled=true; btn.textContent='처리 중...'; }
+  const { error } = await sb.from('trades').update({ status: 'approved' }).eq('id', tradeId);
+  if (error) { toast('실패: '+error.message); if(btn){btn.disabled=false;btn.textContent='❌ 입금 안됨';} return; }
+  await sb.from('notifications').insert({
+    username: buyerUsername,
+    message: `⚠️ 입금이 확인되지 않았어요. 거래 #${tradeId?.slice(0,8)} — 다시 NEXO 계좌로 입금해주세요.`,
+    type: 'payment_rejected',
+    target_id: tradeId
+  }).catch(()=>{});
+  toast('되돌렸어요. 구매자에게 알림을 보냈어요.');
+  await loadAdminTrades();
 }
 
 async function aLoadReports() {
@@ -4668,8 +4908,9 @@ async function aLoadReports() {
   if (!data?.length) { el.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">신고 내역이 없어요</td></tr>'; return; }
   el.innerHTML = data.map(r => `<tr>
     <td style="font-size:11px">@${r.reporter_username}</td>
-    <td style="font-size:11px">${r.target_type==='listing'?'판매글':'사용자'} ${r.target_id}</td>
+    <td style="font-size:11px">${r.target_type==='trade'?'🔥 거래분쟁':r.target_type==='listing'?'판매글':'사용자'} ${r.target_id}</td>
     <td style="font-weight:500;font-size:12px">${r.reason}</td>
+    <td style="font-size:11px;color:var(--muted);max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.detail||'-'}</td>
     <td><span style="font-size:10px;padding:2px 7px;border-radius:8px;background:${r.status==='pending'?'#fef2f2':'var(--green-light)'};color:${r.status==='pending'?'var(--red)':'var(--green)'};font-weight:600">${r.status==='pending'?'대기중':'처리완료'}</span></td>
     <td style="color:var(--muted);font-size:11px">${r.created_at?.slice(0,10)}</td>
     <td style="display:flex;gap:4px">
@@ -5304,7 +5545,132 @@ async function submitEditCard() {
 
 init();
 </script>
-<!-- SCROLL TO TOP -->
+<!-- ── 이용약관 오버레이 ── -->
+<div class="ov" id="termsOv" onclick="if(event.target===this)closeTerms()" style="z-index:600;align-items:flex-start;padding:20px 14px">
+  <div class="modal" style="max-width:640px;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
+    <div style="background:var(--red);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div style="color:#fff;font-size:16px;font-weight:700">📋 이용약관</div>
+      <button onclick="closeTerms()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:20px 22px;overflow-y:auto;font-size:13px;line-height:1.7;color:var(--text)" id="terms-body">
+      <p style="color:var(--muted);font-size:12px;margin-bottom:16px">최종 수정일: 2025년 1월 1일 · 시행일: 서비스 오픈일</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제1조 (목적)</h4>
+      <p>본 약관은 NEXO(이하 "서비스")가 제공하는 원피스 카드 C2C 거래 서비스의 이용에 관한 조건 및 절차, 서비스 이용자와 서비스 제공자 간의 권리·의무 및 책임사항을 규정함을 목적으로 합니다.</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제2조 (서비스 이용)</h4>
+      <p>① 서비스는 원피스 TCG 카드를 개인 간(C2C)으로 거래할 수 있는 플랫폼을 제공합니다.<br>
+      ② 이용자는 만 14세 이상이어야 합니다.<br>
+      ③ 서비스는 거래 당사자 간의 중개자 역할을 하며, 거래의 직접 당사자가 아닙니다.<br>
+      ④ 이용자는 실제 소유한 물품만 판매할 수 있으며, 사기, 허위 등록 등 불법 행위를 해서는 안 됩니다.</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제3조 (에스크로 안전결제)</h4>
+      <p>① 서비스는 구매자와 판매자를 보호하기 위해 에스크로 방식의 안전결제를 운영합니다.<br>
+      ② 구매자는 서비스가 지정한 에스크로 계좌로 대금을 입금합니다.<br>
+      ③ 서비스 관리자는 입금 확인 후 판매자에게 배송을 지시합니다.<br>
+      ④ 구매자의 수령 확인 후 서비스는 판매자에게 대금을 송금합니다 (수수료 제외 시 전액).<br>
+      ⑤ 분쟁 발생 시 서비스는 합리적인 범위에서 중재를 시도하나, 법적 책임을 부담하지는 않습니다.</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제4조 (금지 행위)</h4>
+      <p>다음 각 호에 해당하는 행위는 금지됩니다.<br>
+      ① 타인의 계정을 무단으로 사용하는 행위<br>
+      ② 허위 또는 과장된 상품 정보 등록<br>
+      ③ 거래 대금을 수령하고 물품을 발송하지 않는 행위 (사기)<br>
+      ④ 서비스를 통하지 않고 직접 거래를 유도하는 행위<br>
+      ⑤ 기타 관련 법령에 위반되는 행위</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제5조 (면책 조항)</h4>
+      <p>① 서비스는 천재지변 또는 이에 준하는 불가항력으로 인한 서비스 장애에 대해 책임지지 않습니다.<br>
+      ② 서비스는 이용자 간의 거래에서 발생하는 분쟁에 대해 직접적인 법적 책임을 지지 않습니다.<br>
+      ③ 다만, 에스크로 대금의 분실·오입금에 대해서는 최선을 다해 처리합니다.</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:var(--red)">제6조 (약관 변경)</h4>
+      <p>서비스는 필요한 경우 약관을 변경할 수 있으며, 변경 시 공지사항을 통해 사전 안내합니다.</p>
+
+      <div style="margin-top:20px;padding:12px 14px;background:var(--bg2);border-radius:var(--r3);font-size:11px;color:var(--muted)">
+        문의: NEXO 마켓 1:1 문의 (서비스 내 문의 기능 이용)
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 개인정보처리방침 오버레이 ── -->
+<div class="ov" id="privacyOv" onclick="if(event.target===this)closePrivacy()" style="z-index:600;align-items:flex-start;padding:20px 14px">
+  <div class="modal" style="max-width:640px;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
+    <div style="background:#1a3a5c;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div style="color:#fff;font-size:16px;font-weight:700">🔐 개인정보처리방침</div>
+      <button onclick="closePrivacy()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div style="padding:20px 22px;overflow-y:auto;font-size:13px;line-height:1.7;color:var(--text)">
+      <p style="color:var(--muted);font-size:12px;margin-bottom:16px">최종 수정일: 2025년 1월 1일 · 「개인정보 보호법」 제30조에 따라 작성</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:#1a3a5c">1. 개인정보 수집 항목 및 목적</h4>
+      <div style="overflow-x:auto">
+      <table style="width:100%;border-collapse:collapse;font-size:12px">
+        <thead><tr style="background:var(--bg2)">
+          <th style="padding:8px 10px;border:1px solid var(--border);text-align:left">구분</th>
+          <th style="padding:8px 10px;border:1px solid var(--border);text-align:left">수집 항목</th>
+          <th style="padding:8px 10px;border:1px solid var(--border);text-align:left">목적</th>
+          <th style="padding:8px 10px;border:1px solid var(--border);text-align:left">보유 기간</th>
+        </tr></thead>
+        <tbody>
+          <tr><td style="padding:7px 10px;border:1px solid var(--border)">필수</td><td style="padding:7px 10px;border:1px solid var(--border)">아이디, 비밀번호(암호화), 닉네임</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 식별 및 서비스 이용</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 탈퇴 시까지</td></tr>
+          <tr><td style="padding:7px 10px;border:1px solid var(--border)">필수</td><td style="padding:7px 10px;border:1px solid var(--border)">전화번호, 주소</td><td style="padding:7px 10px;border:1px solid var(--border)">거래 시 배송 및 연락</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 탈퇴 후 1년</td></tr>
+          <tr><td style="padding:7px 10px;border:1px solid var(--border)">필수</td><td style="padding:7px 10px;border:1px solid var(--border)">은행명, 계좌번호</td><td style="padding:7px 10px;border:1px solid var(--border)">에스크로 대금 정산</td><td style="padding:7px 10px;border:1px solid var(--border)">회원 탈퇴 후 5년(전자금융법)</td></tr>
+          <tr><td style="padding:7px 10px;border:1px solid var(--border)">자동수집</td><td style="padding:7px 10px;border:1px solid var(--border)">거래 기록, 접속 IP, 접속 일시</td><td style="padding:7px 10px;border:1px solid var(--border)">분쟁 해결, 서비스 개선</td><td style="padding:7px 10px;border:1px solid var(--border)">3년</td></tr>
+        </tbody>
+      </table>
+      </div>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:#1a3a5c">2. 개인정보의 제3자 제공</h4>
+      <p>서비스는 원칙적으로 이용자의 개인정보를 외부에 제공하지 않습니다. 다만, 거래 성사 시 구매자-판매자 간 연락을 위해 상대방에게 전화번호가 공개됩니다. 이 점을 인지하고 가입하시기 바랍니다.</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:#1a3a5c">3. 개인정보의 파기</h4>
+      <p>전자적 파일: 복구 불가능한 방법으로 영구 삭제<br>
+      서면 자료: 분쇄 또는 소각</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:#1a3a5c">4. 이용자의 권리</h4>
+      <p>이용자는 언제든지 자신의 개인정보를 조회·수정·삭제를 요청할 수 있습니다. 서비스 내 [내정보 → 정보수정] 또는 1:1 문의를 통해 요청하세요.</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:#1a3a5c">5. 쿠키 및 서비스 운영</h4>
+      <p>본 서비스는 Supabase(미국 Supabase, Inc.)를 데이터베이스로 활용합니다. 이에 따라 데이터는 해외 서버에 저장될 수 있으며, 이용자는 이에 동의한 것으로 간주됩니다.</p>
+
+      <h4 style="font-size:14px;font-weight:700;margin:16px 0 6px;color:#1a3a5c">6. 개인정보 보호 책임자</h4>
+      <p>서비스 내 1:1 문의를 통해 연락하시기 바랍니다.</p>
+
+      <div style="margin-top:20px;padding:12px 14px;background:#f0f9ff;border:1px solid #bae6fd;border-radius:var(--r3);font-size:11px;color:#0369a1">
+        본 방침은 「개인정보 보호법」 제30조 및 관련 법령에 따라 작성되었습니다.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── 푸터 ── -->
+<footer style="background:#1f2937;color:#9ca3af;text-align:center;padding:20px 16px;font-size:12px;margin-top:0">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">
+      <span style="background:var(--red);color:#fff;padding:2px 8px;border-radius:5px;font-weight:700;font-size:13px">NEXO</span>
+      <span style="color:#6b7280">원피스 카드 C2C 마켓</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap">
+      <button onclick="openTerms()" style="background:none;border:none;color:#9ca3af;font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit">이용약관</button>
+      <span style="color:#374151">|</span>
+      <button onclick="openPrivacy()" style="background:none;border:none;color:#9ca3af;font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit"><b>개인정보처리방침</b></button>
+      <span style="color:#374151">|</span>
+      <span>NEXO마켓 · 에스크로 안전결제 운영</span>
+    </div>
+    <div style="margin-top:8px;color:#4b5563;font-size:11px">
+      본 서비스는 원피스 카드 팬 커뮤니티를 위한 개인 C2C 거래 플랫폼입니다. NEXO는 ONE PIECE와 공식적인 관계가 없습니다.
+    </div>
+  </div>
+</footer>
+
+<script>
+function openTerms() { document.getElementById('termsOv').classList.add('on'); }
+function closeTerms() { document.getElementById('termsOv').classList.remove('on'); }
+function openPrivacy() { document.getElementById('privacyOv').classList.add('on'); }
+function closePrivacy() { document.getElementById('privacyOv').classList.remove('on'); }
+</script>
 <button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="맨 위로">↑</button>
 
 <script>
