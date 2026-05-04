@@ -1885,6 +1885,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         </select>
       </div>
       <div>
+        <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">배송비 (원, 0이면 무료)</label>
+        <input type="number" id="le-ship-price" placeholder="예: 3000" min="0"
+          style="width:100%;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 11px;font-size:13px;font-family:inherit;outline:none;box-sizing:border-box"
+          onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
+      <div>
         <label style="font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px">카드 상태</label>
         <select id="le-condition"
           style="width:100%;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 11px;font-size:13px;font-family:inherit;outline:none;background:#fff;box-sizing:border-box">
@@ -2770,7 +2776,7 @@ async function openDetail(cid) {
           ${ag}${eg}${ratingTag}
         </div>
         <div class="l-meta" style="margin-top:2px">
-          ${l.condition||'미등급'}${l.card_condition && l.card_condition!=='양호' ? ' · <span style="color:var(--red)">'+l.card_condition+'</span>' : ''}${l.shipping_method ? ' · '+l.shipping_method : ''}
+          ${l.card_condition && l.card_condition!=='양호' ? `<span style="color:var(--red)">${l.card_condition}</span> · ` : ''}${l.shipping_method ? l.shipping_method : ''}${l.shipping_prices ? ` +${Object.values(l.shipping_prices)[0]?.toLocaleString()||0}원` : ''}
         </div>
         ${l.description ? `<div class="l-meta" style="color:var(--muted);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">"${l.description}"</div>` : ''}
       </div>
@@ -4221,8 +4227,10 @@ async function openListingEdit(lid) {
   if (!l) return;
   document.getElementById('le-id').value = lid;
   document.getElementById('le-price').value = l.price;
-  document.getElementById('le-shipping').value = l.shipping_method || 'prepay';
-  document.getElementById('le-condition').value = l.card_condition || 'S';
+  document.getElementById('le-shipping').value = l.shipping_method || '';
+  const shipPrice = l.shipping_prices ? (Object.values(l.shipping_prices)[0] || 0) : 0;
+  document.getElementById('le-ship-price').value = shipPrice;
+  document.getElementById('le-condition').value = l.card_condition || '양호';
   document.getElementById('le-desc').value = l.description || '';
   document.getElementById('listingEditOv').classList.add('on');
 }
@@ -4231,10 +4239,12 @@ async function submitListingEdit() {
   const lid = document.getElementById('le-id').value;
   const price = parseInt(document.getElementById('le-price').value);
   const shipping_method = document.getElementById('le-shipping').value;
+  const shipPrice = parseInt(document.getElementById('le-ship-price').value) || 0;
   const card_condition = document.getElementById('le-condition').value;
   const description = document.getElementById('le-desc').value.trim();
   if (!price || price < 100) { toast('가격을 입력해주세요'); return; }
-  const { error } = await sb.from('listings').update({ price, shipping_method, card_condition, description }).eq('id', lid);
+  const shipping_prices = shipping_method ? { [shipping_method]: shipPrice } : null;
+  const { error } = await sb.from('listings').update({ price, shipping_method, shipping_prices, card_condition, description }).eq('id', lid);
   if (error) { toast('수정 실패: ' + error.message); return; }
   toast('수정됐어요 ✅'); closeListingEdit(); loadMyListings(); renderCards();
 }
