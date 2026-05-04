@@ -1432,6 +1432,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <div class="stat-box" onclick="switchMyTab('reviews',document.querySelector('.my-tab:nth-child(6)'))" style="cursor:pointer" title="받은 리뷰 보기"><div class="stat-n" style="color:var(--gold)" id="my-s-rating">-</div><div class="stat-l">평균 별점</div></div>
         </div>
         <div id="my-recent" style="font-size:13px;color:var(--muted);text-align:center;padding:18px">불러오는 중...</div>
+        <!-- 모바일 전용: 1:1 문의 + 로그아웃 -->
+        <div style="display:flex;gap:8px;margin-top:4px;padding-top:14px;border-top:1px solid var(--border)">
+          <button onclick="closeMyPage();openInquiry();"
+            style="flex:1;padding:11px;background:#fff;border:1px solid var(--border);border-radius:var(--r2);font-size:13px;font-weight:600;color:var(--text);font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
+            💬 1:1 문의
+          </button>
+          <button onclick="doLogout()"
+            style="flex:1;padding:11px;background:#fff;border:1px solid var(--red);border-radius:var(--r2);font-size:13px;font-weight:600;color:var(--red);font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px">
+            🚪 로그아웃
+          </button>
+        </div>
       </div>
       <div class="my-page" id="mp-listings">
         <div id="my-listings-list">불러오는 중...</div>
