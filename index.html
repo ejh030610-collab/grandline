@@ -52,10 +52,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .noti-badge-dot.on{display:block;}
 @media(max-width:700px){
   .menu-btn{display:flex;align-items:center;}
-  /* 모바일 검색창: 배경색 넣어서 버튼처럼 */
+  /* 모바일 검색창: 깔끔한 pill 스타일 */
   .h-search{max-width:none;flex:1;}
-  .h-search input{background:var(--bg2);border-color:var(--bg3);border-radius:22px;font-size:13px;padding:9px 14px 9px 36px;color:var(--muted);}
+  .h-search input{background:#f3f4f6;border:1.5px solid transparent;border-radius:22px;font-size:13px;padding:9px 14px 9px 36px;color:var(--text);}
   .h-search input::placeholder{color:#9CA3AF;font-size:13px;}
+  .h-search input:focus{background:#fff;border-color:var(--red);}
   /* 로고 텍스트 숨기기 */
   .logo-sub{display:none;}
   .logo-text{font-size:14px;}
@@ -71,10 +72,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 /* ── LAYOUT ── */
 .layout{display:flex;min-height:calc(100vh - 58px);max-width:1600px;margin:0 auto;align-items:flex-start;}
-.scroll-top{position:fixed;bottom:80px;right:16px;width:40px;height:40px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:16px;cursor:pointer;box-shadow:var(--sh2);display:none;align-items:center;justify-content:center;z-index:200;transition:all .2s;}
+/* 스크롤 상단 버튼: 모바일에서 내정보 버튼과 안 겹치게 왼쪽 배치 */
+.scroll-top{position:fixed;bottom:76px;left:16px;width:36px;height:36px;background:var(--red);color:#fff;border:none;border-radius:50%;font-size:15px;cursor:pointer;box-shadow:var(--sh2);display:none;align-items:center;justify-content:center;z-index:200;transition:all .2s;opacity:.85;}
 .scroll-top.on{display:flex;}
-.scroll-top:hover{background:#b91c1c;transform:translateY(-2px);}
-@media(min-width:701px){.scroll-top{bottom:24px;right:24px;width:44px;height:44px;font-size:18px;}}
+.scroll-top:hover{background:#b91c1c;transform:translateY(-2px);opacity:1;}
+@media(min-width:701px){.scroll-top{bottom:24px;right:24px;left:auto;width:44px;height:44px;font-size:18px;opacity:1;}}
 /* ── STICKY SIDEBAR ── */
 .sidebar{width:240px;height:calc(100vh - 58px);position:sticky;top:58px;border-right:1px solid var(--border);background:#fff;flex-shrink:0;overflow-y:auto;padding:10px 0;}
 .sidebar.mobile-open{display:block;}
@@ -292,8 +294,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   .h-right .hbtn:not(.noti-btn):not(.user-chip){display:none!important;}
   header{padding:0 10px;height:52px;}
   .logo img{height:26px!important;}
-  /* 검색창: gray pill 스타일 */
-  .h-search input{font-size:13px;background:var(--bg2);border-color:transparent;border-radius:22px;padding:9px 12px 9px 34px;}
+  /* 검색창: 깔끔한 pill 스타일 */
+  .h-search input{font-size:13px;background:#f3f4f6;border:1.5px solid transparent;border-radius:22px;padding:9px 12px 9px 34px;color:var(--text);}
+  .h-search input:focus{background:#fff;border-color:var(--red);}
   .h-search-icon{font-size:14px;left:10px;}
 
   /* 모달 바텀시트 */
@@ -309,11 +312,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
   /* 카드 그리드 */
   .grid{grid-template-columns:repeat(3,1fr);gap:6px;}
-  .card-thumb{font-size:36px;}
-  .card-info{padding:6px 8px 9px;}
+  .card-thumb{font-size:32px;}
+  .card-info{padding:5px 7px 8px;}
   .card-num{font-size:9px;}
-  .card-name{font-size:12px;margin:2px 0;}
-  .card-price{font-size:13px;}
+  .card-name{font-size:11px;margin:2px 0;}
+  .card-feat{font-size:10px;margin-bottom:4px;}
+  .card-price{font-size:12px;}
   .rtag{font-size:9px;padding:1px 5px;}
   .wish-btn{width:28px;height:28px;font-size:14px;}
   .list-badge{font-size:9px;padding:1px 5px;}
@@ -3479,40 +3483,6 @@ async function analyzeCard() {
   // AI 분석 기능 준비 중 - 추후 오픈 예정
   return;
 }
-  document.getElementById('ai-result').classList.add('on');
-  document.getElementById('ai-lbl').textContent = '이미지 분석 중...';
-  document.getElementById('ai-reason').textContent = '카드 경계를 감지하고 센터링을 측정하고 있어요...';
-  document.getElementById('ai-checks').innerHTML = '';
-  document.getElementById('ai-centering-wrap').style.display = 'none';
-  document.getElementById('ai-centering-info').style.display = 'none';
-  try {
-    if (!sellFront) throw new Error('앞면 사진을 먼저 올려주세요');
-    const result = await analyzeCardCanvas(sellFront);
-    aiData = result;
-    const psaGrade = result.psa_grade;
-    const psaColor = psaGrade>=9?'#16a34a':psaGrade>=7?'#2563eb':psaGrade>=5?'#d97706':'#dc2626';
-    const psaLabel = psaGrade>=10?'Gem Mint':psaGrade>=9?'Mint':psaGrade>=8?'NM-MT':psaGrade>=7?'NM':psaGrade>=6?'EX-MT':psaGrade>=5?'EX':'VG 이하';
-    document.getElementById('ai-badge').style.background = psaColor;
-    document.getElementById('ai-badge').textContent = 'PSA '+psaGrade;
-    document.getElementById('ai-badge').style.fontSize = '11px';
-    document.getElementById('ai-lbl').textContent = 'PSA '+psaGrade+' - '+psaLabel;
-    document.getElementById('ai-reason').textContent = result.reason;
-    const checks = [
-      {l:'센터링 (좌우)', v: result.checks.lr},
-      {l:'센터링 (상하)', v: result.checks.tb},
-      {l:'전체 점수',     v: result.checks.overall},
-    ];
-    document.getElementById('ai-checks').innerHTML = checks.map(c =>
-      `<div class="ai-check-item"><span class="ai-check-key">${c.l}</span><span class="ai-check-val">${c.v}</span></div>`
-    ).join('');
-    if (result.centering && sellFront) drawCenteringOverlay(result.centering);
-  } catch(err) {
-    document.getElementById('ai-lbl').textContent = '분석 실패';
-    document.getElementById('ai-reason').textContent = err.message;
-  }
-  btn.disabled = false;
-  btn.innerHTML = '<span>📐</span> 센터링 재분석';
-}
 
 function analyzeCardCanvas(file) {
   return new Promise((resolve, reject) => {
@@ -5657,7 +5627,7 @@ init();
       <span style="color:#374151">|</span>
       <button onclick="openPrivacy()" style="background:none;border:none;color:#9ca3af;font-size:12px;cursor:pointer;text-decoration:underline;font-family:inherit"><b>개인정보처리방침</b></button>
       <span style="color:#374151">|</span>
-      <span>NEXO마켓 · 에스크로 안전결제 운영</span>
+      <span>개인 간 직거래 플랫폼</span>
     </div>
     <div style="margin-top:8px;color:#4b5563;font-size:11px">
       본 서비스는 원피스 카드 팬 커뮤니티를 위한 개인 C2C 거래 플랫폼입니다. NEXO는 ONE PIECE와 공식적인 관계가 없습니다.
