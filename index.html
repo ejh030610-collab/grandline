@@ -1345,34 +1345,45 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
 <!-- REVIEW OVERLAY -->
 <div class="ov" id="reviewOv" onclick="if(event.target===this)closeReview()" style="z-index:520">
-  <div class="modal" style="max-width:420px">
-    <div class="head" style="position:relative">
-      <h3>⭐ 거래 후기 작성</h3>
-      <p id="review-seller-name" style="font-size:13px;color:var(--muted)"></p>
+  <div class="modal" style="max-width:400px;padding:0;overflow:hidden">
+    <!-- 헤더 -->
+    <div style="padding:18px 20px 14px;border-bottom:1px solid var(--border);position:relative">
       <button class="modal-close-btn" onclick="closeReview()">✕</button>
+      <div style="font-size:16px;font-weight:700;margin-bottom:4px">⭐ 거래 후기 작성</div>
+      <div id="review-seller-name" style="font-size:12px;color:var(--muted)"></div>
     </div>
-    <div style="padding:16px 20px">
+    <!-- 바디 -->
+    <div style="padding:20px">
       <!-- 별점 -->
-      <div style="margin-bottom:16px">
-        <label style="font-size:13px;font-weight:600;display:block;margin-bottom:8px">별점</label>
-        <div id="star-row" style="display:flex;gap:6px;font-size:32px">
-          <span class="star" data-v="1" onclick="setStar(1)" style="cursor:pointer;opacity:.3">⭐</span>
-          <span class="star" data-v="2" onclick="setStar(2)" style="cursor:pointer;opacity:.3">⭐</span>
-          <span class="star" data-v="3" onclick="setStar(3)" style="cursor:pointer;opacity:.3">⭐</span>
-          <span class="star" data-v="4" onclick="setStar(4)" style="cursor:pointer;opacity:.3">⭐</span>
-          <span class="star" data-v="5" onclick="setStar(5)" style="cursor:pointer;opacity:.3">⭐</span>
+      <div style="background:var(--bg2);border-radius:var(--r2);padding:18px 16px;margin-bottom:14px;text-align:center">
+        <div style="font-size:12px;color:var(--muted);margin-bottom:12px;font-weight:500">판매자는 어떠셨나요?</div>
+        <div style="display:flex;justify-content:center;gap:8px;margin-bottom:10px" id="star-row">
+          <span class="star" data-v="1" onclick="setStar(1)" style="cursor:pointer;font-size:40px;color:#e5e7eb;transition:all .15s;user-select:none;line-height:1">★</span>
+          <span class="star" data-v="2" onclick="setStar(2)" style="cursor:pointer;font-size:40px;color:#e5e7eb;transition:all .15s;user-select:none;line-height:1">★</span>
+          <span class="star" data-v="3" onclick="setStar(3)" style="cursor:pointer;font-size:40px;color:#e5e7eb;transition:all .15s;user-select:none;line-height:1">★</span>
+          <span class="star" data-v="4" onclick="setStar(4)" style="cursor:pointer;font-size:40px;color:#e5e7eb;transition:all .15s;user-select:none;line-height:1">★</span>
+          <span class="star" data-v="5" onclick="setStar(5)" style="cursor:pointer;font-size:40px;color:#e5e7eb;transition:all .15s;user-select:none;line-height:1">★</span>
         </div>
-        <div id="star-label" style="font-size:12px;color:var(--muted);margin-top:4px">별점을 선택해주세요</div>
+        <div id="star-label" style="font-size:13px;font-weight:600;color:var(--muted);min-height:20px;transition:all .2s">별점을 눌러주세요</div>
       </div>
-      <!-- 코멘트 -->
-      <div class="fg">
-        <label>한줄 후기 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
-        <textarea id="review-comment" placeholder="거래는 어떠셨나요? 다른 구매자에게 도움이 돼요." style="height:80px"></textarea>
+      <!-- 한줄 후기 -->
+      <div>
+        <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:7px">한줄 후기 <span style="font-weight:400;font-size:11px;color:var(--muted)">(선택)</span></div>
+        <textarea id="review-comment" placeholder="거래는 어떠셨나요? 다른 구매자에게 도움이 돼요."
+          style="width:100%;height:80px;border:1.5px solid var(--border);border-radius:var(--r2);padding:10px 12px;font-size:13px;font-family:inherit;resize:none;outline:none;color:var(--text);background:#fff;box-sizing:border-box"
+          onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></textarea>
       </div>
     </div>
-    <div class="mbtns">
-      <button class="mbtn-cancel" onclick="closeReview()">취소</button>
-      <button class="mbtn-ok" id="review-submit-btn" onclick="submitReview()">후기 등록</button>
+    <!-- 버튼 -->
+    <div style="display:grid;grid-template-columns:1fr 2fr;border-top:1px solid var(--border)">
+      <button onclick="closeReview()"
+        style="padding:15px;background:#fff;border:none;border-right:1px solid var(--border);font-size:14px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer">
+        취소
+      </button>
+      <button id="review-submit-btn" onclick="submitReview()"
+        style="padding:15px;background:var(--red);border:none;font-size:14px;font-weight:700;color:#fff;font-family:inherit;cursor:pointer">
+        후기 등록
+      </button>
     </div>
   </div>
 </div>
@@ -4545,11 +4556,17 @@ function closeReview() { document.getElementById('reviewOv').classList.remove('o
 
 function setStar(n) {
   curStar = n;
-  const labels = ['', '별로예요', '그저그래요', '보통이에요', '좋아요', '최고예요!'];
-  document.querySelectorAll('.star').forEach(s => {
-    s.style.opacity = parseInt(s.dataset.v) <= n ? '1' : '0.3';
+  const labels = ['', '별로예요 😞', '그저그래요 😐', '보통이에요 🙂', '좋아요 😊', '최고예요! 🤩'];
+  const colors = ['', '#ef4444', '#f97316', '#eab308', '#22c55e', '#f59e0b'];
+  document.querySelectorAll('#star-row .star').forEach(s => {
+    const v = parseInt(s.dataset.v);
+    s.style.opacity = v <= n ? '1' : '0.2';
+    s.style.color = v <= n ? '#f59e0b' : '#9ca3af';
+    s.style.transform = v <= n ? 'scale(1.1)' : 'scale(1)';
   });
-  document.getElementById('star-label').textContent = n ? `${n}점 — ${labels[n]}` : '별점을 선택해주세요';
+  const lbl = document.getElementById('star-label');
+  lbl.textContent = n ? `${n}점 — ${labels[n]}` : '별점을 눌러주세요';
+  lbl.style.color = n ? colors[n] : 'var(--muted)';
 }
 
 async function submitReview() {
