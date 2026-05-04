@@ -1204,13 +1204,13 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <div style="font-size:11px;color:var(--muted);margin-bottom:8px">📐 카드를 가이드 테두리 안에 맞춰서 촬영해주세요</div>
           <div class="photo-row">
             <div class="photo-slot" onclick="document.getElementById('photo-front').click()" style="position:relative">
-              <input type="file" id="photo-front" accept="image/*" onchange="previewPhoto('front',event)" style="display:none">
+              <input type="file" id="photo-front" accept="image/*" capture="environment" onchange="previewPhoto('front',event)" style="display:none">
               <div id="front-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div></div>
               <!-- 가이드 테두리 -->
               <div id="front-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none"></div>
             </div>
             <div class="photo-slot" onclick="document.getElementById('photo-back').click()" style="position:relative">
-              <input type="file" id="photo-back" accept="image/*" onchange="previewPhoto('back',event)" style="display:none">
+              <input type="file" id="photo-back" accept="image/*" capture="environment" onchange="previewPhoto('back',event)" style="display:none">
               <div id="back-preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div></div>
               <!-- 가이드 테두리 -->
               <div id="back-guide" style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none"></div>
@@ -4053,15 +4053,14 @@ function filterMyListings(status) {
 async function loadMyListings() {
   const { data } = await sb.from('listings').select('*,cards(name,image_url,emoji,rarity)')
     .eq('seller_username',curUser.username)
-    .in('status',['active','completed'])
+    .eq('status','active')
     .order('created_at',{ascending:false});
   if (!data?.length) { document.getElementById('my-listings-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">판매 중인 카드가 없어요</div>'; return; }
   document.getElementById('my-listings-list').innerHTML = data.map(l => {
-    const thumb = l.image_front
-      ? `<img src="${l.image_front}" class="my-l-img" loading="eager" onerror="this.outerHTML='<div class=my-l-img-x>🃏</div>'">`
-      : l.cards?.image_url
-        ? `<img src="${l.cards.image_url}" class="my-l-img" loading="eager" onerror="this.outerHTML='<div class=my-l-img-x>🃏</div>'">`
-        : `<div class="my-l-img-x">${l.listing_type==='box'?'📦':l.cards?.emoji||'🃏'}</div>`;
+    const imgSrc = l.image_front || l.cards?.image_url || '';
+    const thumb = imgSrc
+      ? `<img src="${imgSrc}" class="my-l-img" loading="eager" onerror="this.style.display='none'">`
+      : `<div class="my-l-img-x">${l.listing_type==='box'?'📦':l.cards?.emoji||'🃏'}</div>`;
     return `<div class="my-l-item" style="flex-wrap:wrap;gap:8px">
       ${thumb}
       <div style="flex:1;min-width:0">
