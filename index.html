@@ -1454,6 +1454,13 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             🚪 로그아웃
           </button>
         </div>
+        <!-- 관리자 전용 버튼 -->
+        <div id="mob-admin-btn-wrap" style="display:none;margin-top:8px">
+          <button onclick="closeMyPage();openAdmin();"
+            style="width:100%;padding:11px;background:var(--gold-light);border:1px solid #D4A017;border-radius:var(--r2);font-size:13px;font-weight:700;color:var(--gold);font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+            ⚙️ 관리자 패널
+          </button>
+        </div>
       </div>
       <div class="my-page" id="mp-listings">
         <div id="my-listings-list">불러오는 중...</div>
@@ -1994,6 +2001,9 @@ async function onLogin(user) {
     ${adminBtn}
     <button class="hbtn mob-hide" onclick="doLogout()">로그아웃</button>
     <button class="hbtn primary" onclick="openSellPicker()">+ 판매</button>`;
+  // 모바일 관리자 버튼 표시
+  const mobAdminWrap = document.getElementById('mob-admin-btn-wrap');
+  if (mobAdminWrap) mobAdminWrap.style.display = user.is_admin ? 'block' : 'none';
 }
 async function doLogout() {
   localStorage.removeItem('gl_session');
