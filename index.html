@@ -4027,14 +4027,20 @@ async function loadMyStats() {
   document.getElementById('my-s-active').textContent = (ls||[]).filter(l=>l.status==='active').length;
   document.getElementById('my-s-sold').textContent = (ls||[]).filter(l=>l.status==='sold').length;
   document.getElementById('my-s-wish').textContent = wishSet.size;
-  const { data: recent } = await sb.from('listings').select('*,cards(name,rarity,emoji)').eq('seller_username',curUser.username).order('created_at',{ascending:false}).limit(5);
+  const { data: recent } = await sb.from('listings').select('*,cards(name,rarity,emoji,image_url)').eq('seller_username',curUser.username).eq('status','active').order('created_at',{ascending:false}).limit(5);
   document.getElementById('my-recent').innerHTML = recent?.length
-    ? recent.map(l=>`<div class="my-l-item">
-        <div class="my-l-img-x">${l.cards?.emoji||'🃏'}</div>
-        <div style="flex:1"><div style="font-size:13px;font-weight:600">${l.cards?.name||l.card_id}</div><div style="font-size:11px;color:var(--muted)">${l.grade_type||'미등급'} · ${l.created_at?.slice(0,10)}</div></div>
-        <span class="sbadge ${l.status==='active'?'sb-active':'sb-sold'}">${l.status==='active'?'판매중':'완료'}</span>
-        <span style="font-size:14px;font-weight:700;color:var(--red);margin-left:8px">${l.price.toLocaleString()}원</span>
-      </div>`).join('')
+    ? recent.map(l=>{
+        const imgSrc = l.image_front || l.cards?.image_url || '';
+        const thumb = imgSrc
+          ? `<img src="${imgSrc}" width="38" height="54" class="my-l-img" loading="eager" decoding="sync" onerror="this.style.display='none'">`
+          : `<div class="my-l-img-x">${l.cards?.emoji||'🃏'}</div>`;
+        return `<div class="my-l-item">
+          ${thumb}
+          <div style="flex:1"><div style="font-size:13px;font-weight:600">${l.cards?.name||l.card_id}</div><div style="font-size:11px;color:var(--muted)">${l.grade_type||'미등급'} · ${l.created_at?.slice(0,10)}</div></div>
+          <span class="sbadge sb-active">판매중</span>
+          <span style="font-size:14px;font-weight:700;color:var(--red);margin-left:8px">${l.price.toLocaleString()}원</span>
+        </div>`;
+      }).join('')
     : '<div style="text-align:center;color:var(--muted);padding:20px">아직 판매 내역이 없어요</div>';
 }
 let myListingsFilter = 'all';
