@@ -4059,7 +4059,7 @@ async function loadMyListings() {
   document.getElementById('my-listings-list').innerHTML = data.map(l => {
     const imgSrc = l.image_front || l.cards?.image_url || '';
     const thumb = imgSrc
-      ? `<img src="${imgSrc}" class="my-l-img" loading="eager" onerror="this.style.display='none'">`
+      ? `<img src="${imgSrc}" width="38" height="54" class="my-l-img" loading="eager" decoding="sync" onerror="this.style.display='none'">`
       : `<div class="my-l-img-x">${l.listing_type==='box'?'📦':l.cards?.emoji||'🃏'}</div>`;
     return `<div class="my-l-item" style="flex-wrap:wrap;gap:8px">
       ${thumb}
