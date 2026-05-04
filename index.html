@@ -505,7 +505,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .stat-l{font-size:11px;color:var(--muted);margin-top:5px;}
 .my-l-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
 .my-l-item:last-child{border-bottom:none;}
-.my-l-img{width:38px;height:54px;object-fit:cover;border-radius:4px;border:1px solid var(--border);}
+.my-l-img{width:38px;height:54px;object-fit:cover;border-radius:4px;border:1px solid var(--border);display:block;flex-shrink:0;}
 .my-l-img-x{width:38px;height:54px;background:var(--bg3);border-radius:4px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;}
 .sbadge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:9px;}
 .sb-active{background:var(--green-light);color:var(--green);}
@@ -4058,9 +4058,9 @@ async function loadMyListings() {
   if (!data?.length) { document.getElementById('my-listings-list').innerHTML='<div style="text-align:center;color:var(--muted);padding:24px">판매 중인 카드가 없어요</div>'; return; }
   document.getElementById('my-listings-list').innerHTML = data.map(l => {
     const thumb = l.image_front
-      ? `<img src="${l.image_front}" class="my-l-img" onerror="this.style.display='none'">`
+      ? `<img src="${l.image_front}" class="my-l-img" loading="eager" onerror="this.outerHTML='<div class=my-l-img-x>🃏</div>'">`
       : l.cards?.image_url
-        ? `<img src="${l.cards.image_url}" class="my-l-img" onerror="this.style.display='none'">`
+        ? `<img src="${l.cards.image_url}" class="my-l-img" loading="eager" onerror="this.outerHTML='<div class=my-l-img-x>🃏</div>'">`
         : `<div class="my-l-img-x">${l.listing_type==='box'?'📦':l.cards?.emoji||'🃏'}</div>`;
     return `<div class="my-l-item" style="flex-wrap:wrap;gap:8px">
       ${thumb}
