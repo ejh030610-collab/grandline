@@ -659,6 +659,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .profile-stat-l{font-size:11px;color:var(--muted);margin-top:2px;}
 
 </style>
+<script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 </head>
 <body>
 
@@ -911,7 +912,19 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <div class="fg"><label>비밀번호</label><input type="password" id="authPw" placeholder="6자 이상" autocomplete="current-password" onkeydown="if(event.key==='Enter')submitAuth()"></div>
       <div class="fg" id="nickField" style="display:none!important"><label>닉네임</label><input type="text" id="authNick" placeholder="예: 밀짚모자루피" maxlength="12"></div>
       <div class="fg" id="phoneField" style="display:none"><label>전화번호 <span style="color:var(--red)">*</span></label><input type="tel" id="authPhone" placeholder="010-0000-0000"></div>
-      <div class="fg" id="addrField" style="display:none"><label>주소 <span style="color:var(--red)">*</span></label><input type="text" id="authAddr" placeholder="배송을 위한 기본 주소 (예: 서울시 강남구...)"></div>
+      <div class="fg" id="addrField" style="display:none">
+        <label>주소 <span style="color:var(--red)">*</span></label>
+        <div style="display:flex;gap:6px;margin-bottom:5px">
+          <input type="text" id="authAddr" placeholder="주소 검색 버튼을 눌러주세요" readonly
+            style="flex:1;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);padding:8px 11px;font-size:13px;font-family:inherit;outline:none;color:var(--text);cursor:pointer"
+            onclick="openAddrSearch('authAddr','authAddrDetail')">
+          <button type="button" onclick="openAddrSearch('authAddr','authAddrDetail')"
+            style="padding:8px 12px;background:var(--red);color:#fff;border:none;border-radius:var(--r3);font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;white-space:nowrap">🔍 검색</button>
+        </div>
+        <input type="text" id="authAddrDetail" placeholder="상세 주소 (동/호수 등)"
+          style="width:100%;background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:8px 11px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"
+          onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+      </div>
       <div id="bankField" style="display:none;margin-bottom:11px">
         <label style="font-size:12px;color:var(--muted);display:block;margin-bottom:6px;font-weight:500">계좌번호 <span style="font-size:11px;color:var(--red);font-weight:600">* 필수</span> <span style="font-size:11px;color:var(--dim);font-weight:400">(구매자 입금용)</span></label>
         <div style="display:flex;gap:6px;align-items:center">
@@ -2030,7 +2043,9 @@ async function submitAuth() {
   const pw = document.getElementById('authPw').value;
   const nick = id; // 닉네임 = 아이디로 자동 설정
   const phone = document.getElementById('authPhone').value.trim();
-  const addr = document.getElementById('authAddr').value.trim();
+  const addrBase = document.getElementById('authAddr').value.trim();
+  const addrDetail = document.getElementById('authAddrDetail')?.value.trim() || '';
+  const addr = addrDetail ? `${addrBase} ${addrDetail}` : addrBase;
   const bank = document.getElementById('authBank')?.value.trim() || '';
   const acct = document.getElementById('authAcct')?.value.trim() || '';
   const errEl = document.getElementById('authErr');
@@ -5847,6 +5862,17 @@ init();
 </footer>
 
 <script>
+function openAddrSearch(baseId, detailId) {
+  new daum.Postcode({
+    oncomplete: function(data) {
+      const addr = data.roadAddress || data.jibunAddress;
+      document.getElementById(baseId).value = addr;
+      const detailEl = document.getElementById(detailId);
+      if (detailEl) { detailEl.value = ''; detailEl.focus(); }
+    },
+    theme: { bgColor:'#fff', searchBgColor:'#e53e3e', contentBgColor:'#fff', pageBgColor:'#fafafa', textColor:'#333', queryTextColor:'#fff' }
+  }).open();
+}
 function openTerms() { document.getElementById('termsOv').classList.add('on'); }
 function closeTerms() { document.getElementById('termsOv').classList.remove('on'); }
 function openPrivacy() { document.getElementById('privacyOv').classList.add('on'); }
