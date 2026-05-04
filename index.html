@@ -1270,7 +1270,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- PROFILE MODAL -->
-<div class="ov" id="profileOv" onclick="if(event.target===this)closeProfile()">
+<div class="ov" id="profileOv" onclick="if(event.target===this)closeProfile()" style="z-index:520">
   <div class="modal profile-modal">
     <div class="profile-hd">
       <div class="profile-avatar" id="profile-avatar">?</div>
@@ -1344,7 +1344,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- REVIEW OVERLAY -->
-<div class="ov" id="reviewOv" onclick="if(event.target===this)closeReview()">
+<div class="ov" id="reviewOv" onclick="if(event.target===this)closeReview()" style="z-index:520">
   <div class="modal" style="max-width:420px">
     <div class="head" style="position:relative">
       <h3>⭐ 거래 후기 작성</h3>
@@ -1988,6 +1988,10 @@ async function doLogout() {
   localStorage.removeItem('gl_session');
   curUser = null; curProfile = null; wishSet = new Set();
   document.getElementById('hRight').innerHTML = `<button class="hbtn" onclick="openAuth('login')">로그인</button><button class="hbtn primary" onclick="openSellPicker()">+ 판매 등록</button>`;
+  // 열려있는 모달 모두 닫기
+  document.querySelectorAll('.ov.on').forEach(el => el.classList.remove('on'));
+  closeMyPage();
+  showHome();
   toast('로그아웃 했어요');
   renderCards();
 }
