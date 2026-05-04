@@ -883,12 +883,20 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- DETAIL OVERLAY -->
-<div class="ov" id="detailOv" onclick="if(event.target===this)closeDetail()">
+<div class="ov" id="detailOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeDetail()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeDetail()">
   <div class="modal detail-modal" id="detailWrap"></div>
 </div>
 
 <!-- AUTH OVERLAY -->
-<div class="ov" id="authOv" onclick="if(event.target===this)closeAuth()">
+<div class="ov" id="authOv" 
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeAuth()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeAuth()">
   <div class="modal" style="position:relative">
     <button class="modal-close-btn" onclick="closeAuth()">✕</button>
     <div class="auth-wrap">
@@ -953,7 +961,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- 공지사항 오버레이 -->
-<div class="ov" id="noticeOv" onclick="if(event.target===this)closeNotice()">
+<div class="ov" id="noticeOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeNotice()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeNotice()">
   <div class="modal" style="max-width:500px;padding:0;overflow:hidden">
     <div style="background:var(--red);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:#fff;font-size:16px;font-weight:700">📢 공지사항</div>
@@ -966,7 +978,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- 1:1 문의 오버레이 -->
-<div class="ov" id="inquiryOv" onclick="if(event.target===this)closeInquiry()">
+<div class="ov" id="inquiryOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeInquiry()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeInquiry()">
   <div class="modal" style="max-width:500px;padding:0;overflow:hidden">
     <div style="background:linear-gradient(135deg,#1a3a5c,#2563eb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:#fff;font-size:16px;font-weight:700">💬 1:1 문의</div>
@@ -996,7 +1012,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- SELL PICKER OVERLAY -->
-<div class="ov" id="sellPickerOv" onclick="if(event.target===this)closeSellPicker()">
+<div class="ov" id="sellPickerOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeSellPicker()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeSellPicker()">
   <div class="modal" style="max-width:340px;padding:26px 24px;position:relative">
     <button class="modal-close-btn" onclick="closeSellPicker()">✕</button>
     <div style="font-size:17px;font-weight:700;margin-bottom:3px">판매 등록</div>
@@ -1029,7 +1049,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- BOX SELL OVERLAY -->
-<div class="ov" id="boxSellOv" onclick="if(event.target===this)closeBoxSell()">
+<div class="ov" id="boxSellOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeBoxSell()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeBoxSell()">
   <div class="modal sell-modal" style="overflow:hidden">
     <!-- 컬러 헤더 -->
     <div style="background:linear-gradient(135deg,#B8860B,#D4A830);padding:20px 22px;color:#fff;position:relative">
@@ -1120,7 +1144,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
   </div>
 </div>
-<div class="ov" id="sellOv" onclick="if(event.target===this)closeSell()">
+<div class="ov" id="sellOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeSell()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeSell()">
   <div class="modal sell-modal">
     <div class="head" style="position:relative">
       <h3>카드 판매 등록</h3>
@@ -1278,7 +1306,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- PROFILE MODAL -->
-<div class="ov" id="profileOv" onclick="if(event.target===this)closeProfile()" style="z-index:520">
+<div class="ov" id="profileOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeProfile()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeProfile()" style="z-index:520">
   <div class="modal profile-modal">
     <div class="profile-hd">
       <div class="profile-avatar" id="profile-avatar">?</div>
@@ -1313,7 +1345,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- SHIPPING OVERLAY -->
-<div class="ov" id="shippingOv" onclick="if(event.target===this)closeShipping()" style="z-index:700">
+<div class="ov" id="shippingOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeShipping()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeShipping()" style="z-index:700">
   <div class="modal" style="max-width:380px;border-radius:20px;overflow:hidden">
     <!-- 헤더 -->
     <div style="background:linear-gradient(135deg,var(--blue),#1d4ed8);padding:22px 24px;color:#fff;position:relative">
@@ -1352,7 +1388,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- REVIEW OVERLAY -->
-<div class="ov" id="reviewOv" onclick="if(event.target===this)closeReview()" style="z-index:520">
+<div class="ov" id="reviewOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeReview()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeReview()" style="z-index:520">
   <div class="modal" style="max-width:400px;padding:0;overflow:hidden">
     <!-- 헤더 -->
     <div style="padding:18px 20px 14px;border-bottom:1px solid var(--border);position:relative">
@@ -1397,7 +1437,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- CONTACT OVERLAY -->
-<div class="ov" id="contactOv" onclick="if(event.target===this)closeContact()">
+<div class="ov" id="contactOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeContact()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeContact()">
   <div class="modal contact-modal" style="position:relative">
     <button class="modal-close-btn" onclick="closeContact()">✕</button>
     <div class="body">
@@ -1424,7 +1468,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- MYPAGE OVERLAY -->
-<div class="ov" id="myOv" onclick="if(event.target===this)closeMyPage()">
+<div class="ov" id="myOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeMyPage()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeMyPage()">
   <div class="modal my-modal">
     <div class="my-hd">
       <div class="my-avatar" id="my-avatar">?</div>
@@ -1649,7 +1697,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
   </div>
 </div>
-<div class="ov" id="noticeOv" onclick="if(event.target===this)closeNotice()">
+<div class="ov" id="noticeOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeNotice()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeNotice()">
   <div class="modal" style="max-width:540px;padding:0;overflow:hidden">
     <div style="background:linear-gradient(135deg,var(--red),#c0392b);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:#fff">
@@ -1664,7 +1716,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   </div>
 </div>
 <!-- 신고 오버레이 -->
-<div class="ov" id="reportOv" onclick="if(event.target===this)closeReport()">
+<div class="ov" id="reportOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeReport()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeReport()">
   <div class="modal" style="max-width:420px;padding:0;overflow:hidden">
     <div style="background:linear-gradient(135deg,#dc2626,#b91c1c);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:#fff">
@@ -1700,7 +1756,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- 사진 요청 오버레이 -->
-<div class="ov" id="photoReqOv" onclick="if(event.target===this)closePhotoReq()">
+<div class="ov" id="photoReqOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closePhotoReq()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closePhotoReq()">
   <div class="modal" style="max-width:440px;padding:0;overflow:hidden">
     <div style="background:linear-gradient(135deg,#1a3a5c,#2563eb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:#fff">
@@ -1721,7 +1781,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- 사진 요청 응답 오버레이 (판매자용) -->
-<div class="ov" id="photoResOv" onclick="if(event.target===this)closePhotoRes()">
+<div class="ov" id="photoResOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closePhotoRes()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closePhotoRes()">
   <div class="modal" style="max-width:440px;padding:0;overflow:hidden">
     <div style="background:linear-gradient(135deg,#166534,#16a34a);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:#fff">
@@ -1743,7 +1807,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- 사진 확인 오버레이 (구매자용) -->
-<div class="ov" id="photoViewOv" onclick="if(event.target===this)closePhotoView()">
+<div class="ov" id="photoViewOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closePhotoView()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closePhotoView()">
   <div class="modal" style="max-width:440px;padding:0;overflow:hidden">
     <div style="background:linear-gradient(135deg,#1a3a5c,#2563eb);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:#fff;font-size:16px;font-weight:700">📷 요청 사진 확인</div>
@@ -1753,7 +1821,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   </div>
 </div>
 
-<div class="ov" id="adminDetailOv" onclick="if(event.target===this)closeAdminDetail()" style="z-index:400">
+<div class="ov" id="adminDetailOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeAdminDetail()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeAdminDetail()" style="z-index:400">
   <div class="modal" style="max-width:480px;padding:0;overflow:hidden">
     <div style="background:var(--red);padding:16px 20px;display:flex;align-items:center;justify-content:space-between">
       <div style="color:#fff">
@@ -1769,7 +1841,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 </div>
 
 <!-- 카드 수정 모달 -->
-<div class="ov" id="editCardOv" style="z-index:600" onclick="if(event.target===this)closeEditCard()">
+<div class="ov" id="editCardOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeEditCard()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeEditCard()" style="z-index:600">
   <div class="modal" style="max-width:500px;padding:0;overflow:hidden">
     <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1">
       <h3 style="font-size:16px;font-weight:700">카드 수정</h3>
@@ -5628,7 +5704,11 @@ init();
 </script>
 <!-- ── 이용약관 오버레이 ── -->
 <!-- 회원 상세 팝업 -->
-<div class="ov" id="memberDetailOv" onclick="if(event.target===this)closeMemberDetail()" style="z-index:620">
+<div class="ov" id="memberDetailOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeMemberDetail()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeMemberDetail()" style="z-index:620">
   <div class="modal" style="max-width:400px;padding:0;overflow:hidden">
     <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between">
       <div style="font-size:15px;font-weight:700">회원 정보</div>
@@ -5638,7 +5718,11 @@ init();
   </div>
 </div>
 
-<div class="ov" id="termsOv" onclick="if(event.target===this)closeTerms()" style="z-index:600;align-items:flex-start;padding:20px 14px">
+<div class="ov" id="termsOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeTerms()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeTerms()" style="z-index:600;align-items:flex-start;padding:20px 14px">
   <div class="modal" style="max-width:640px;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
     <div style="background:var(--red);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <div style="color:#fff;font-size:16px;font-weight:700">📋 이용약관</div>
@@ -5688,7 +5772,11 @@ init();
 </div>
 
 <!-- ── 개인정보처리방침 오버레이 ── -->
-<div class="ov" id="privacyOv" onclick="if(event.target===this)closePrivacy()" style="z-index:600;align-items:flex-start;padding:20px 14px">
+<div class="ov" id="privacyOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closePrivacy()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closePrivacy()" style="z-index:600;align-items:flex-start;padding:20px 14px">
   <div class="modal" style="max-width:640px;padding:0;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
     <div style="background:#1a3a5c;padding:16px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
       <div style="color:#fff;font-size:16px;font-weight:700">🔐 개인정보처리방침</div>
