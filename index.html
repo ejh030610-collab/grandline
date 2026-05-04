@@ -2077,21 +2077,19 @@ async function submitAuth() {
     const { data: phoneCheck } = await sb.from('accounts').select('username').eq('phone', phone).maybeSingle();
     if (phoneCheck) { errEl.textContent='이미 가입된 전화번호예요. 다른 번호를 사용해주세요'; errEl.style.display='block'; btn.disabled=false; btn.textContent='가입하기'; return; }
 
-    const { data, error } = await sb.rpc('sign_up', {p_username:id, p_password:pw, p_nickname:nick});
-    if (error || data?.error) { errEl.textContent = data?.error||'가입 실패'; errEl.style.display='block'; }
+    const { data, error } = await sb.rpc('sign_up', {
+      p_username: id,
+      p_password: pw,
+      p_nickname: id,
+      p_phone: phone,
+      p_address: addr,
+      p_bank_name: bank,
+      p_bank_account: acct
+    });
+    if (error || data?.error) { errEl.textContent = data?.error || error?.message || JSON.stringify({error, data}); errEl.style.display='block'; }
     else {
-      // 전화번호/주소/계좌 accounts 테이블에 추가 저장
-      const updateData = { phone, address: addr };
-      if (bank && acct) { updateData.bank_name = bank; updateData.bank_account = acct; }
-      const { error: updateErr } = await sb.from('accounts').update(updateData).eq('username', id);
-      if (updateErr) {
-        // 업데이트 실패 시 생성된 계정 삭제 (롤백)
-        await sb.from('accounts').delete().eq('username', id).catch(()=>{});
-        errEl.textContent = '가입 중 오류가 발생했어요. 다시 시도해주세요'; errEl.style.display='block';
-        btn.disabled=false; btn.textContent='가입하기'; return;
-      }
       localStorage.setItem('gl_session', JSON.stringify(data));
-      await onLogin(data); closeAuth(); toast(`환영해요 ${nick}님! 🏴‍☠️`);
+      await onLogin(data); closeAuth(); toast(`환영해요 ${id}님! 🏴‍☠️`);
     }
   }
   btn.disabled = false;
