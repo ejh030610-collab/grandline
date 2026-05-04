@@ -51,13 +51,16 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .noti-badge-dot{position:absolute;top:4px;right:4px;width:7px;height:7px;background:var(--red);border-radius:50%;border:1.5px solid #fff;display:none;}
 .noti-badge-dot.on{display:block;}
 @media(max-width:700px){
-  .menu-btn{display:flex;align-items:center;}
-  /* 모바일 검색창: 깔끔한 pill 스타일 */
-  .h-search{max-width:none;flex:1;}
-  .h-search input{background:#f3f4f6;border:1.5px solid transparent;border-radius:22px;font-size:13px;padding:9px 14px 9px 36px;color:var(--text);}
+  .menu-btn{display:flex;align-items:center;font-size:22px;padding:4px 6px;color:var(--text);}
+  /* 모바일 헤더 간격 균형 */
+  .header-inner{height:54px;gap:6px;padding:0 12px;}
+  .logo{gap:5px;}
+  .h-search{max-width:none;flex:1;min-width:0;}
+  .h-right{gap:4px;margin-left:0;}
+  .h-search input{background:#f3f4f6;border:1.5px solid transparent;border-radius:22px;font-size:13px;padding:9px 12px 9px 34px;color:var(--text);}
   .h-search input::placeholder{color:#9CA3AF;font-size:13px;}
   .h-search input:focus{background:#fff;border-color:var(--red);}
-  /* 로고 텍스트 숨기기 */
+  .h-search-icon{font-size:13px;left:11px;}
   .logo-sub{display:none;}
   .logo-text{font-size:16px;}
   .logo-mark{width:36px;height:36px;font-size:18px;border-radius:10px;}
@@ -295,9 +298,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   .h-right .hbtn:not(.noti-btn):not(.user-chip){display:none!important;}
   header{padding:0 10px;height:52px;}
   .logo img{height:34px!important;}
-  /* 검색창: 깔끔한 pill 스타일 */
-  .h-search input{font-size:13px;background:#f3f4f6;border:1.5px solid transparent;border-radius:22px;padding:9px 12px 9px 34px;color:var(--text);}
-  .h-search input:focus{background:#fff;border-color:var(--red);}
+  /* 검색창 두 번째 미디어쿼리 정리 */
   .h-search-icon{font-size:14px;left:10px;}
 
   /* 모달 바텀시트 */
@@ -733,7 +734,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-01" onclick="selectCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-02" onclick="selectCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
       </div>
-      <!-- 등급 싱글 (SEC/SR/R 이상만) -->
+      <!-- 등급 싱글 - 추후 오픈 예정
       <div class="s-grade-hd" onclick="toggleGrp('kr-grade')">
         <span>🏆</span> 등급 싱글 <span class="s-arrow" id="arr-kr-grade" style="margin-left:auto">▶</span>
       </div>
@@ -743,10 +744,11 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="s-series" data-ver="한글판" data-grade="CCG" data-set="all" onclick="selectCat(this)">🥈 CCG<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="BRG" data-set="all" onclick="selectCat(this)">🥉 BRG<span class="s-cnt">-</span></div>
       </div>
+      -->
     </div>
     <div class="s-divider"></div>
 
-    <!-- 일판 -->
+    <!-- 일판 - 추후 오픈 예정
     <div class="s-ver" onclick="toggleVer('jp')">
       <span class="s-ver-icon" style="background:#FFF0F0">🇯🇵</span>
       일판
@@ -760,15 +762,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-01" onclick="selectCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-02" onclick="selectCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
       </div>
-      <div class="s-grade-hd" onclick="toggleGrp('jp-grade')">
-        <span>🏆</span> 등급 <span class="s-arrow" id="arr-jp-grade" style="margin-left:auto">▶</span>
-      </div>
-      <div id="grp-jp-grade" style="display:none">
-        <div class="s-series" data-ver="일판" data-grade="PSA" data-set="all" onclick="selectCat(this)">🥇 PSA<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="일판" data-grade="CCG" data-set="all" onclick="selectCat(this)">🥈 CCG<span class="s-cnt">-</span></div>
-      </div>
     </div>
     <div class="s-divider"></div>
+    -->
 
   </aside>
 
@@ -1004,7 +1000,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div style="font-size:28px;flex-shrink:0">🃏</div>
         <div>
           <div style="font-size:14px;font-weight:700;color:var(--text)">카드 판매</div>
-          <div style="font-size:12px;color:var(--muted);margin-top:2px">싱글 카드 사진 업로드 · AI PSA 등급 분석</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:2px">싱글 카드 사진 업로드 · 미등급</div>
         </div>
       </button>
       <button onclick="closeSellPicker();openBoxSell()"
@@ -1125,7 +1121,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="sell-body">
       <div class="fg-2" style="margin-bottom:10px">
-        <div class="fg" style="margin-bottom:0"><label>버전</label><select id="s_ver" onchange="filterSellCards()"><option>한글판</option><option>일판</option></select></div>
+        <div class="fg" style="margin-bottom:0"><label>버전</label><select id="s_ver" onchange="filterSellCards()"><option>한글판</option><!-- <option>일판</option> --></select></div>
         <div class="fg" style="margin-bottom:0"><label>시리즈</label>
           <select id="s_set" onchange="filterSellCards()">
             <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
@@ -1142,6 +1138,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <input type="text" id="s_search" placeholder="🔍 카드명 또는 번호 검색..." oninput="filterSellCards()" style="margin-bottom:6px;">
         <select id="s_card"><option value="">-- 카드 선택 --</option></select>
       </div>
+      <!-- 등급 유형 선택 - 추후 오픈 예정
       <div class="fg">
         <label>등급 유형</label>
         <div class="grade-type-row">
@@ -1151,6 +1148,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <button class="gtype" onclick="switchGrade('BRG',this)">🥉 BRG</button>
         </div>
       </div>
+      -->
       <!-- 미등급: 앞뒤사진 + AI -->
       <div id="ungr-sec">
         <div class="fg"><label>카드 사진 (앞면 + 뒷면)</label>
