@@ -4700,8 +4700,191 @@ function closeWelcomeNotice() {
 let scanSide = 'front';
 let scanStream = null;
 let scanFacingMode = 'environment';
+let scanAutoTimer = null;
+let scanCountNum = 0;
+let scanDetectInterval = null;
+let scanPrevData = null;
 
-async function openGradeScan(side) {
+function getScanGuideRect() {
+  const vw = window.innerWidth;
+  const vh = window.innerHeight - 120; // 헤더+하단 제외
+  const cardRatio = 63 / 88; // 카드 비율
+  const padding = 24;
+  let gw = vw - padding * 2;
+  let gh = gw / cardRatio;
+  if (gh > vh * 0.75) { gh = vh * 0.75; gw = gh * cardRatio; }
+  const gx = (vw - gw) / 2;
+  const gy = 60 + (vh - gh) / 2;
+  return { x: gx, y: gy, w: gw, h: gh };
+}
+
+function updateScanGuide() {
+  const r = getScanGuideRect();
+  const guide = document.getElementById('scanGuide');
+  if (guide) {
+    guide.style.left = r.x + 'px';
+    guide.style.top = r.y + 'px';
+    guide.style.width = r.w + 'px';
+    guide.style.height = r.h + 'px';
+  }
+  const oc = document.getElementById('scanOverlayCanvas');
+  if (oc) {
+    const W = window.innerWidth, H = window.innerHeight;
+    oc.width = W; oc.height = H;
+    const ctx = oc.getContext('2d');
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillRect(0, 0, W, H);
+    ctx.clearRect(r.x, r.y, r.w, r.h);
+  }
+}
+
+async function openCardScan(side) {
+  scanSide = side;
+  document.getElementById('scanTitle').textContent = side === 'front' ? '앞면 스캔' : '뒷면 스캔';
+  document.getElementById('scanSubtitle').textContent = side === 'front' ? '카드 앞면을 가이드 안에 맞춰주세요' : '카드 뒷면을 가이드 안에 맞춰주세요';
+  document.getElementById('cardScanOv').style.display = 'flex';
+  setTimeout(updateScanGuide, 50);
+  await startScanCamera();
+}
+
+async function startScanCamera() {
+  try {
+    if (scanStream) scanStream.getTracks().forEach(t => t.stop());
+    scanStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: scanFacingMode, width:{ideal:1920}, height:{ideal:1080} }
+    });
+    const video = document.getElementById('scanVideo');
+    video.srcObject = scanStream;
+    video.onloadedmetadata = () => { updateScanGuide(); startAutoDetect(); };
+    document.getElementById('scanStatus').textContent = '카드를 가이드 안에 맞춰주세요';
+    document.getElementById('scanStatus').style.color = '#fff';
+  } catch(e) {
+    document.getElementById('scanStatus').textContent = '카메라 권한이 필요해요';
+    document.getElementById('scanStatus').style.color = '#ef4444';
+  }
+}
+
+function startAutoDetect() {
+  if (scanDetectInterval) clearInterval(scanDetectInterval);
+  scanPrevData = null;
+  let stableCount = 0;
+  scanDetectInterval = setInterval(() => {
+    const video = document.getElementById('scanVideo');
+    if (!video.srcObject || video.paused) return;
+    const r = getScanGuideRect();
+    const tempCanvas = document.createElement('canvas');
+    tempCanvas.width = r.w; tempCanvas.height = r.h;
+    const ctx = tempCanvas.getContext('2d');
+    const vw = video.videoWidth, vh = video.videoHeight;
+    const scaleX = vw / window.innerWidth, scaleY = vh / window.innerHeight;
+    ctx.drawImage(video, r.x*scaleX, r.y*scaleY, r.w*scaleX, r.h*scaleY, 0, 0, r.w, r.h);
+    const curr = ctx.getImageData(0, 0, r.w, r.h).data;
+    if (scanPrevData) {
+      let diff = 0;
+      for (let i = 0; i < curr.length; i += 16) diff += Math.abs(curr[i] - scanPrevData[i]);
+      const avgDiff = diff / (curr.length / 16);
+      if (avgDiff < 8) {
+        stableCount++;
+        if (stableCount === 1) startCountdown();
+      } else {
+        stableCount = 0;
+        cancelCountdown();
+      }
+    }
+    scanPrevData = curr;
+  }, 300);
+}
+
+function startCountdown() {
+  if (scanAutoTimer) return;
+  scanCountNum = 3;
+  const el = document.getElementById('scanCountdown');
+  el.style.display = 'block';
+  el.textContent = scanCountNum;
+  document.getElementById('scanStatus').textContent = '정지 감지됨 — 자동 촬영 중...';
+  scanAutoTimer = setInterval(() => {
+    scanCountNum--;
+    if (scanCountNum <= 0) {
+      cancelCountdown();
+      captureCardScan();
+    } else {
+      el.textContent = scanCountNum;
+    }
+  }, 1000);
+}
+
+function cancelCountdown() {
+  if (scanAutoTimer) { clearInterval(scanAutoTimer); scanAutoTimer = null; }
+  const el = document.getElementById('scanCountdown');
+  if (el) el.style.display = 'none';
+  if (scanCountNum > 0) {
+    scanCountNum = 0;
+    document.getElementById('scanStatus').textContent = '카드를 가이드 안에 맞춰주세요';
+  }
+}
+
+function switchScanCamera() {
+  scanFacingMode = scanFacingMode === 'environment' ? 'user' : 'environment';
+  cancelCountdown();
+  startScanCamera();
+}
+
+function captureCardScan() {
+  const video = document.getElementById('scanVideo');
+  const canvas = document.getElementById('scanCanvas');
+  if (!video.srcObject) return;
+  const btn = document.getElementById('scanCaptureBtn');
+  btn.style.background = '#16a34a'; btn.textContent = '✓';
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0);
+  const r = getScanGuideRect();
+  const scaleX = video.videoWidth / window.innerWidth;
+  const scaleY = video.videoHeight / window.innerHeight;
+  const cropX = r.x * scaleX, cropY = r.y * scaleY;
+  const cropW = r.w * scaleX, cropH = r.h * scaleY;
+  const cropCanvas = document.createElement('canvas');
+  cropCanvas.width = cropW; cropCanvas.height = cropH;
+  cropCanvas.getContext('2d').drawImage(canvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+  cropCanvas.toBlob(blob => {
+    const file = new File([blob], `scan_${scanSide}_${Date.now()}.jpg`, {type:'image/jpeg'});
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const src = ev.target.result;
+      if (scanSide === 'front') {
+        sellFront = file;
+        document.getElementById('front-preview').innerHTML = `<img src="${src}" class="photo-preview">`;
+        const fg = document.getElementById('front-guide'); if(fg) fg.style.display='none';
+      } else if (scanSide === 'back') {
+        sellBack = file;
+        document.getElementById('back-preview').innerHTML = `<img src="${src}" class="photo-preview">`;
+        const bg = document.getElementById('back-guide'); if(bg) bg.style.display='none';
+      } else if (scanSide === 'grade_front') {
+        gradeFront = file;
+        document.getElementById('g_front_preview').innerHTML = `<img src="${src}" class="photo-preview">`;
+        const gfg = document.getElementById('g_front_guide'); if(gfg) gfg.style.display='none';
+      } else if (scanSide === 'grade_back') {
+        gradeBack = file;
+        document.getElementById('g_back_preview').innerHTML = `<img src="${src}" class="photo-preview">`;
+        const gbg = document.getElementById('g_back_guide'); if(gbg) gbg.style.display='none';
+      }
+      const label = scanSide.includes('front') ? '앞면' : '뒷면';
+      setTimeout(() => { closeCardScan(); toast(`${label} 스캔 완료! ✅`); }, 300);
+    };
+    reader.readAsDataURL(file);
+  }, 'image/jpeg', 0.92);
+}
+
+function closeCardScan() {
+  if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
+  if (scanDetectInterval) { clearInterval(scanDetectInterval); scanDetectInterval = null; }
+  cancelCountdown();
+  scanPrevData = null;
+  document.getElementById('cardScanOv').style.display = 'none';
+  const btn = document.getElementById('scanCaptureBtn');
+  btn.style.background = '#D85A30'; btn.textContent = '⊙';
+}
   scanSide = 'grade_' + side;
   const ov = document.getElementById('cardScanOv');
   document.getElementById('scanTitle').textContent = side === 'front' ? '슬랩 앞면 스캔' : '슬랩 뒷면 스캔';
@@ -6456,23 +6639,17 @@ init();
   <div style="flex:1;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center">
     <video id="scanVideo" autoplay playsinline muted style="width:100%;height:100%;object-fit:cover"></video>
     <!-- 어두운 오버레이 (가이드 밖) -->
-    <div style="position:absolute;inset:0;pointer-events:none">
-      <svg width="100%" height="100%" style="position:absolute;inset:0" id="scanMask">
-        <defs>
-          <mask id="holeMask">
-            <rect width="100%" height="100%" fill="white"/>
-            <rect id="holeRect" x="10%" y="15%" width="80%" height="70%" rx="8" fill="black"/>
-          </mask>
-        </defs>
-        <rect width="100%" height="100%" fill="rgba(0,0,0,0.55)" mask="url(#holeMask)"/>
-      </svg>
+    <div style="position:absolute;inset:0;pointer-events:none" id="scanOverlayWrap">
+      <canvas id="scanOverlayCanvas" style="position:absolute;inset:0;width:100%;height:100%"></canvas>
       <!-- 가이드 코너 -->
-      <div id="scanGuide" style="position:absolute;left:10%;top:15%;width:80%;height:70%">
-        <div style="position:absolute;top:0;left:0;width:20px;height:20px;border-top:3px solid #D85A30;border-left:3px solid #D85A30;border-radius:3px 0 0 0"></div>
-        <div style="position:absolute;top:0;right:0;width:20px;height:20px;border-top:3px solid #D85A30;border-right:3px solid #D85A30;border-radius:0 3px 0 0"></div>
-        <div style="position:absolute;bottom:0;left:0;width:20px;height:20px;border-bottom:3px solid #D85A30;border-left:3px solid #D85A30;border-radius:0 0 0 3px"></div>
-        <div style="position:absolute;bottom:0;right:0;width:20px;height:20px;border-bottom:3px solid #D85A30;border-right:3px solid #D85A30;border-radius:0 0 3px 0"></div>
+      <div id="scanGuide" style="position:absolute">
+        <div style="position:absolute;top:0;left:0;width:22px;height:22px;border-top:3px solid #D85A30;border-left:3px solid #D85A30;border-radius:3px 0 0 0"></div>
+        <div style="position:absolute;top:0;right:0;width:22px;height:22px;border-top:3px solid #D85A30;border-right:3px solid #D85A30;border-radius:0 3px 0 0"></div>
+        <div style="position:absolute;bottom:0;left:0;width:22px;height:22px;border-bottom:3px solid #D85A30;border-left:3px solid #D85A30;border-radius:0 0 0 3px"></div>
+        <div style="position:absolute;bottom:0;right:0;width:22px;height:22px;border-bottom:3px solid #D85A30;border-right:3px solid #D85A30;border-radius:0 0 3px 0"></div>
       </div>
+      <!-- 자동촬영 카운트다운 -->
+      <div id="scanCountdown" style="display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:72px;font-weight:700;color:#fff;text-shadow:0 2px 8px rgba(0,0,0,0.8)"></div>
     </div>
     <!-- 상태 메시지 -->
     <div id="scanStatus" style="position:absolute;bottom:20px;left:0;right:0;text-align:center;font-size:13px;color:#fff;font-weight:500;text-shadow:0 1px 3px rgba(0,0,0,0.8)">카드를 가이드 안에 맞춰주세요</div>
