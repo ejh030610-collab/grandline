@@ -743,17 +743,16 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-01" onclick="selectCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-02" onclick="selectCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
       </div>
-      <!-- 등급 싱글 - 추후 오픈 예정
+      <!-- 등급 싱글 -->
       <div class="s-grade-hd" onclick="toggleGrp('kr-grade')">
         <span>🏆</span> 등급 싱글 <span class="s-arrow" id="arr-kr-grade" style="margin-left:auto">▶</span>
       </div>
       <div id="grp-kr-grade" style="display:none">
-        <div style="font-size:10px;color:var(--muted);padding:4px 14px">SEC · SR · R 등급만 등록</div>
+        <div style="font-size:10px;color:var(--muted);padding:4px 14px">PSA · CCG · BRG 등급 카드</div>
         <div class="s-series" data-ver="한글판" data-grade="PSA" data-set="all" onclick="selectCat(this)">🥇 PSA<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="CCG" data-set="all" onclick="selectCat(this)">🥈 CCG<span class="s-cnt">-</span></div>
         <div class="s-series" data-ver="한글판" data-grade="BRG" data-set="all" onclick="selectCat(this)">🥉 BRG<span class="s-cnt">-</span></div>
       </div>
-      -->
     </div>
     <div class="s-divider"></div>
 
@@ -1163,12 +1162,25 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
   ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeSell()">
   <div class="modal sell-modal">
-    <div class="head" style="position:relative">
+    <div class="head" style="position:relative;padding-bottom:0">
       <h3>카드 판매 등록</h3>
       <p>카드 사진을 올리고 상태를 등록해주세요</p>
       <button class="modal-close-btn" onclick="closeSell()">✕</button>
     </div>
+    <!-- 판매 유형 탭 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)">
+      <button id="sell-tab-ungr" onclick="switchSellTab('ungr')"
+        style="padding:11px;border:none;border-bottom:2.5px solid var(--red);background:var(--red-light);color:var(--red);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
+        📋 미등급
+      </button>
+      <button id="sell-tab-grade" onclick="switchSellTab('grade')"
+        style="padding:11px;border:none;border-bottom:2.5px solid transparent;background:#fff;color:var(--muted);font-size:13px;font-weight:500;font-family:inherit;cursor:pointer">
+        🏆 등급 카드
+      </button>
+    </div>
     <div class="sell-body">
+      <!-- 미등급 섹션 -->
+      <div id="sec-ungr">
       <div class="fg-2" style="margin-bottom:10px">
         <div class="fg" style="margin-bottom:0"><label>버전</label><select id="s_ver" onchange="filterSellCards()"><option>한글판</option><!-- <option>일판</option> --></select></div>
         <div class="fg" style="margin-bottom:0"><label>시리즈</label>
@@ -1275,6 +1287,97 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <button class="mbtn-cancel" onclick="closeSell()">취소</button>
         <button class="mbtn-ok" onclick="submitSell()">등록하기</button>
       </div>
+      </div><!-- /sec-ungr -->
+
+      <!-- 등급 카드 섹션 -->
+      <div id="sec-grade" style="display:none">
+        <!-- 카드 정보 -->
+        <div class="fg">
+          <label>카드명 <span style="color:var(--red)">*</span></label>
+          <input type="text" id="g_card_name" placeholder="예: 몽키 D. 루피 OP01-024"
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
+            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <!-- 등급사 + 등급 -->
+        <div class="fg-2" style="margin-top:10px">
+          <div class="fg" style="margin-bottom:0">
+            <label>등급사 <span style="color:var(--red)">*</span></label>
+            <select id="g_grader" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff">
+              <option value="">선택</option>
+              <option value="PSA">🥇 PSA</option>
+              <option value="CCG">🥈 CCG</option>
+              <option value="BRG">🥉 BRG</option>
+            </select>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label>등급 번호 <span style="color:var(--red)">*</span></label>
+            <select id="g_grade_num" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff">
+              <option value="">선택</option>
+              <option value="10">10 (Gem Mint)</option>
+              <option value="9.5">9.5</option>
+              <option value="9">9 (Mint)</option>
+              <option value="8.5">8.5</option>
+              <option value="8">8 (NM-MT)</option>
+              <option value="7.5">7.5</option>
+              <option value="7">7 (NM)</option>
+              <option value="6">6 (EX-MT)</option>
+              <option value="5">5 (EX)</option>
+              <option value="4">4 (VG-EX)</option>
+              <option value="3">3 이하</option>
+            </select>
+          </div>
+        </div>
+        <!-- 슬랩 인증번호 -->
+        <div class="fg" style="margin-top:10px">
+          <label>슬랩 인증번호 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
+          <input type="text" id="g_cert_num" placeholder="예: 12345678"
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
+            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        </div>
+        <!-- 슬랩 사진 -->
+        <div class="fg" style="margin-top:10px">
+          <label>슬랩 사진 <span style="color:var(--red)">*</span></label>
+          <div style="font-size:11px;color:var(--muted);margin-bottom:8px">슬랩 앞면과 뒷면 사진을 올려주세요</div>
+          <div class="photo-row">
+            <div class="photo-slot" onclick="document.getElementById('g_photo_front').click()" style="position:relative">
+              <input type="file" id="g_photo_front" accept="image/*" capture="environment" onchange="previewGradePhoto('front',event)" style="display:none">
+              <div id="g_front_preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">슬랩 정면</div></div>
+              <div style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none" id="g_front_guide"></div>
+            </div>
+            <div class="photo-slot" onclick="document.getElementById('g_photo_back').click()" style="position:relative">
+              <input type="file" id="g_photo_back" accept="image/*" capture="environment" onchange="previewGradePhoto('back',event)" style="display:none">
+              <div id="g_back_preview"><div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">슬랩 후면</div></div>
+              <div style="position:absolute;inset:8px;border:2px dashed rgba(220,38,38,0.5);border-radius:6px;pointer-events:none" id="g_back_guide"></div>
+            </div>
+          </div>
+        </div>
+        <!-- 가격 + 배송 -->
+        <div class="fg-2" style="margin-top:10px">
+          <div class="fg" style="margin-bottom:0"><label>판매가 (원) <span style="color:var(--red)">*</span></label><input type="number" id="g_price" placeholder="0"></div>
+          <div class="fg" style="margin-bottom:0">
+            <label>배송 방법</label>
+            <select id="g_ship" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff">
+              <option value="">선택</option>
+              <option value="등기">📮 등기</option>
+              <option value="일반택배">📦 일반택배</option>
+              <option value="반값택배">💸 반값택배</option>
+            </select>
+          </div>
+        </div>
+        <div class="fg" style="margin-top:8px">
+          <label>배송비 (원)</label>
+          <input type="number" id="g_ship_price" placeholder="0" min="0"
+            style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box">
+        </div>
+        <div class="fg" style="margin-top:10px">
+          <label>추가 설명 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
+          <textarea id="g_desc" placeholder="구매 경로, 특이사항 등..." style="resize:none;height:64px"></textarea>
+        </div>
+        <div class="mbtns">
+          <button class="mbtn-cancel" onclick="closeSell()">취소</button>
+          <button class="mbtn-ok" onclick="submitGradeSell()">등록하기</button>
+        </div>
+      </div><!-- /sec-grade -->
     </div>
   </div>
 </div>
@@ -2264,7 +2367,11 @@ function selectCat(el) {
   document.getElementById('listTitle').textContent = el.dataset.set === 'all' ? el.dataset.grade : `${el.dataset.set}`;
   hideHome();
   showCardView();
-  renderCards();
+  if (['PSA','CCG','BRG'].includes(curFilter.grade)) {
+    renderGradeListings();
+  } else {
+    renderCards();
+  }
   if (window.innerWidth <= 700) toggleMob();
 }
 function toggleFilterDrop(wrapId) {
@@ -3605,6 +3712,20 @@ function openSell(prefill) {
 }
 function closeSell() {
   document.getElementById('sellOv').classList.remove('on');
+  // 탭 초기화 (미등급으로)
+  switchSellTab('ungr');
+  // 등급 카드 입력 초기화
+  ['g_card_name','g_cert_num','g_price','g_ship_price','g_desc'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  ['g_grader','g_grade_num','g_ship'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('g_front_preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">슬랩 정면</div>';
+  document.getElementById('g_back_preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">슬랩 후면</div>';
+  const gfg = document.getElementById('g_front_guide'); if(gfg) gfg.style.display='';
+  const gbg = document.getElementById('g_back_guide'); if(gbg) gbg.style.display='';
+  gradeFront = null; gradeBack = null;
   // 카드 상태 초기화 (양호로 리셋)
   document.querySelectorAll('#cond-grid .cond-opt').forEach(o => {
     const isGood = o.dataset.cond === '양호';
@@ -3613,9 +3734,178 @@ function closeSell() {
     o.style.background = isGood ? 'var(--green-light)' : '#fff';
   });
   if (document.getElementById('s_cond')) document.getElementById('s_cond').value = '양호';
-  // 배송방법 초기화
   if (document.getElementById('s_ship')) document.getElementById('s_ship').value = '';
   if (document.getElementById('s_ship_price')) document.getElementById('s_ship_price').value = '';
+}
+
+function switchSellTab(tab) {
+  const isUngr = tab === 'ungr';
+  document.getElementById('sec-ungr').style.display = isUngr ? 'block' : 'none';
+  document.getElementById('sec-grade').style.display = isUngr ? 'none' : 'block';
+  const tUngr = document.getElementById('sell-tab-ungr');
+  const tGrade = document.getElementById('sell-tab-grade');
+  tUngr.style.borderBottomColor = isUngr ? 'var(--red)' : 'transparent';
+  tUngr.style.background = isUngr ? 'var(--red-light)' : '#fff';
+  tUngr.style.color = isUngr ? 'var(--red)' : 'var(--muted)';
+  tUngr.style.fontWeight = isUngr ? '600' : '500';
+  tGrade.style.borderBottomColor = isUngr ? 'transparent' : 'var(--red)';
+  tGrade.style.background = isUngr ? '#fff' : 'var(--red-light)';
+  tGrade.style.color = isUngr ? 'var(--muted)' : 'var(--red)';
+  tGrade.style.fontWeight = isUngr ? '500' : '600';
+}
+
+let gradeFront = null, gradeBack = null;
+function previewGradePhoto(side, e) {
+  const file = e.target.files[0]; if (!file) return;
+  if (side === 'front') gradeFront = file; else gradeBack = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const id = side === 'front' ? 'g_front_preview' : 'g_back_preview';
+    const guideId = side === 'front' ? 'g_front_guide' : 'g_back_guide';
+    document.getElementById(id).innerHTML = `<img src="${ev.target.result}" class="photo-preview">`;
+    const guide = document.getElementById(guideId);
+    if (guide) guide.style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
+
+async function submitGradeSell() {
+  if (!curUser) { toast('로그인이 필요해요'); return; }
+  const cardName = document.getElementById('g_card_name').value.trim();
+  const grader = document.getElementById('g_grader').value;
+  const gradeNum = document.getElementById('g_grade_num').value;
+  const certNum = document.getElementById('g_cert_num').value.trim();
+  const price = parseInt(document.getElementById('g_price').value);
+  const ship = document.getElementById('g_ship').value;
+  const shipPrice = parseInt(document.getElementById('g_ship_price').value) || 0;
+  const desc = document.getElementById('g_desc').value.trim();
+
+  if (!cardName) { toast('카드명을 입력해주세요'); return; }
+  if (!grader) { toast('등급사를 선택해주세요'); return; }
+  if (!gradeNum) { toast('등급 번호를 선택해주세요'); return; }
+  if (!price || price < 100) { toast('판매가를 입력해주세요'); return; }
+  if (!gradeFront) { toast('슬랩 앞면 사진을 올려주세요'); return; }
+
+  const btn = document.querySelector('#sec-grade .mbtn-ok');
+  btn.disabled = true; btn.textContent = '등록 중...';
+
+  try {
+    // 사진 업로드
+    let frontUrl = null, backUrl = null;
+    if (gradeFront) {
+      const resized = await resizeImage(gradeFront);
+      const fname = `${curUser.username}_GRADE_${Date.now()}_front.jpg`;
+      const { data: ud } = await sb.storage.from('card-images').upload(`listings/${fname}`, resized, {contentType:'image/jpeg', upsert:true});
+      if (ud) frontUrl = sb.storage.from('card-images').getPublicUrl(`listings/${fname}`).data.publicUrl;
+    }
+    if (gradeBack) {
+      const resized = await resizeImage(gradeBack);
+      const fname = `${curUser.username}_GRADE_${Date.now()}_back.jpg`;
+      const { data: ud } = await sb.storage.from('card-images').upload(`listings/${fname}`, resized, {contentType:'image/jpeg', upsert:true});
+      if (ud) backUrl = sb.storage.from('card-images').getPublicUrl(`listings/${fname}`).data.publicUrl;
+    }
+
+    const shipping_prices = ship ? { [ship]: shipPrice } : null;
+    const { error } = await sb.from('listings').insert({
+      card_id: 'GRADE-CUSTOM',
+      seller_username: curUser.username,
+      seller_name: curUser.nickname || curUser.username,
+      grade_type: `${grader} ${gradeNum}`,
+      listing_type: 'single',
+      price,
+      shipping_method: ship,
+      shipping_prices,
+      image_front: frontUrl,
+      image_back: backUrl,
+      description: `[${grader} ${gradeNum}] ${cardName}${certNum ? ` | 인증번호: ${certNum}` : ''}${desc ? `\n${desc}` : ''}`,
+      card_condition: '등급완료',
+      status: 'active',
+      version: '한글판',
+      series: cardName,
+    });
+
+    if (error) { toast('등록 실패: ' + error.message); btn.disabled=false; btn.textContent='등록하기'; return; }
+    toast('등급 카드 등록됐어요 ✅');
+    closeSell();
+    renderCards();
+    gradeFront = null; gradeBack = null;
+  } catch(e) {
+    toast('오류: ' + e.message);
+    btn.disabled = false; btn.textContent = '등록하기';
+  }
+}
+
+async function renderGradeListings() {
+  const grid = document.getElementById('cardGrid');
+  if (!grid) return;
+  grid.innerHTML = '<div class="empty-grid"><div class="spinner"></div><div style="margin-top:10px;color:var(--muted)">등급 카드 불러오는 중...</div></div>';
+
+  const grader = curFilter.grade;
+  const { data: ls } = await sb.from('listings')
+    .select('*')
+    .eq('status','active')
+    .ilike('grade_type', grader + '%')
+    .order('created_at',{ascending:false});
+
+  if (!ls?.length) {
+    grid.innerHTML = `<div class="empty-grid">아직 등록된 ${grader} 등급 카드가 없어요<br><small style="color:var(--dim)">첫 번째 판매자가 되어보세요!</small></div>`;
+    return;
+  }
+
+  grid.innerHTML = ls.map(l => {
+    const imgSrc = l.image_front || '';
+    const gradeLabel = l.grade_type || '';
+    const [graderName, gradeNum] = gradeLabel.split(' ');
+    const graderColor = graderName==='PSA'?'#f59e0b':graderName==='CCG'?'#94a3b8':'#c2410c';
+    return `<div class="card-item" onclick="openGradeListing('${l.id}')" style="cursor:pointer">
+      <div class="card-thumb" style="position:relative;overflow:hidden">
+        ${imgSrc ? `<img src="${imgSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:6px 6px 0 0" onerror="this.style.display='none'">` : '<div style="font-size:36px;display:flex;align-items:center;justify-content:center;height:100%">🏆</div>'}
+        <span style="position:absolute;top:5px;left:5px;background:${graderColor};color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:6px">${gradeLabel}</span>
+        <button class="wish-btn" onclick="event.stopPropagation();toggleWish('${l.id}')" style="position:absolute;top:4px;right:4px">♡</button>
+      </div>
+      <div class="card-info">
+        <div class="card-name" style="font-size:12px">${l.description?.split('\n')[0].replace(/\[.*?\]\s*/,'') || l.series || '등급 카드'}</div>
+        <div class="card-feat" style="font-size:10px;color:var(--muted)">${l.seller_name} · ${l.shipping_method||''}</div>
+        <div class="card-price">${l.price.toLocaleString()}원</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function openGradeListing(lid) {
+  const { data: l } = await sb.from('listings').select('*').eq('id', lid).single();
+  if (!l) return;
+  const shipPrice = l.shipping_prices ? Object.values(l.shipping_prices)[0] : 0;
+  document.getElementById('listingDetailOv').classList.add('on');
+  const imgs = [l.image_front, l.image_back].filter(Boolean);
+  document.getElementById('listingDetailBody').innerHTML = `
+    ${imgs.length ? `<div style="display:flex;gap:8px;margin-bottom:14px;overflow-x:auto">
+      ${imgs.map(src=>`<img src="${src}" style="height:180px;border-radius:8px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`).join('')}
+    </div>` : ''}
+    <div style="display:inline-block;padding:4px 10px;border-radius:8px;background:#fff7ed;border:1px solid #fed7aa;font-size:13px;font-weight:700;color:#c2410c;margin-bottom:10px">${l.grade_type}</div>
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">${l.description?.split('\n')[0].replace(/\[.*?\]\s*/,'') || '등급 카드'}</div>
+    <div style="font-size:22px;font-weight:700;color:var(--red);margin-bottom:14px">${l.price.toLocaleString()}원</div>
+    <div style="display:grid;gap:8px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">배송 방법</span>
+        <span style="font-weight:600">${l.shipping_method||'-'} ${shipPrice>0?`+${shipPrice.toLocaleString()}원`:''}</span>
+      </div>
+      ${l.description ? `<div style="font-size:13px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="color:var(--muted);margin-bottom:5px">설명</div>
+        <div style="font-weight:500;line-height:1.6;white-space:pre-wrap">${l.description}</div>
+      </div>` : ''}
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0">
+        <span style="color:var(--muted)">등록일</span>
+        <span>${l.created_at?.slice(0,10)||'-'}</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px">
+      <button onclick="closeListingDetail();openPhotoReq('${l.id}','${l.seller_username}')"
+        style="padding:12px;background:#fff;border:1px solid var(--border);border-radius:var(--r2);font-size:13px;font-weight:600;color:var(--text);font-family:inherit;cursor:pointer">📷 사진 요청</button>
+      <button onclick="closeListingDetail();openContact('${l.id}','${l.card_id}')"
+        style="padding:12px;background:var(--red);border:none;border-radius:var(--r2);font-size:13px;font-weight:700;color:#fff;font-family:inherit;cursor:pointer">🛒 구매 요청</button>
+    </div>`;
 }
 
 function switchGrade(type, btn) {
