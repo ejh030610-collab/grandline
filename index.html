@@ -1273,7 +1273,19 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       </div>
       <!-- 등급: 점수 입력 -->
       <div class="fg-2">
-        <div class="fg" style="margin-bottom:0"><label>판매가 (원)</label><input type="number" id="s_price" placeholder="0"></div>
+        <div class="fg-2" style="margin-top:10px">
+          <div class="fg" style="margin-bottom:0"><label>판매가 (원)</label><input type="number" id="s_price" placeholder="0"></div>
+          <div class="fg" style="margin-bottom:0">
+            <label>수량 <span style="font-size:11px;color:var(--muted);font-weight:400">(최대 5장)</span></label>
+            <select id="s_qty" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff">
+              <option value="1">1장</option>
+              <option value="2">2장</option>
+              <option value="3">3장</option>
+              <option value="4">4장</option>
+              <option value="5">5장</option>
+            </select>
+          </div>
+        </div>
       </div>
       <!-- 카드 상태 선택 -->
       <div class="fg" style="margin-top:10px">
@@ -1307,9 +1319,17 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <label>추가 설명 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label>
         <textarea id="s_desc" placeholder="슬리브 포함 여부, 구매 경로, 특이사항 등..." style="resize:none;height:64px"></textarea>
       </div>
-      <div class="mbtns">
-        <button class="mbtn-cancel" onclick="closeSell()">취소</button>
-        <button class="mbtn-ok" onclick="submitSell()">등록하기</button>
+      <!-- 카트 목록 -->
+      <div id="sell-cart" style="display:none;margin-bottom:10px">
+        <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">📋 등록 목록</div>
+        <div id="sell-cart-list" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+      <div class="mbtns" style="flex-direction:column;gap:7px">
+        <button class="mbtn-ok" style="background:var(--bg2);color:var(--text);border:1px solid var(--border)" onclick="addToSellCart()">+ 카드 추가</button>
+        <div style="display:grid;grid-template-columns:1fr 2fr;gap:7px">
+          <button class="mbtn-cancel" onclick="closeSell()">취소</button>
+          <button class="mbtn-ok" id="sell-submit-btn" onclick="submitSell()">등록하기</button>
+        </div>
       </div>
       </div><!-- /sec-ungr -->
 
@@ -3787,8 +3807,8 @@ function closeSell() {
     o.style.background = isGood ? 'var(--green-light)' : '#fff';
   });
   if (document.getElementById('s_cond')) document.getElementById('s_cond').value = '양호';
-  if (document.getElementById('s_ship')) document.getElementById('s_ship').value = '';
-  if (document.getElementById('s_ship_price')) document.getElementById('s_ship_price').value = '';
+  if (document.getElementById('s_qty')) document.getElementById('s_qty').value = '1';
+  sellCart = []; renderSellCart();
 }
 
 function switchSellTab(tab) {
@@ -4306,7 +4326,9 @@ async function submitSell() {
     // 카드 상태 수집 (클릭 선택 방식)
     const conditionDesc = document.getElementById('s_cond')?.value || '양호';
 
-    const { data, error } = await sb.from('listings').insert({
+  const qty = parseInt(document.getElementById('s_qty')?.value || '1');
+
+    const listingData = {
       card_id,
       seller_username: curUser.username,
       seller_name: curUser.nickname || curUser.username,
@@ -4324,19 +4346,65 @@ async function submitSell() {
       auto_grade: aiData?.psa_grade || null,
       description: document.getElementById('s_desc')?.value.trim() || null,
       status: 'active'
-    }).select().single();
+    };
+
+    // 수량만큼 반복 등록
+    const insertArr = Array.from({length: qty}, () => ({...listingData}));
+    const { data, error } = await sb.from('listings').insert(insertArr).select();
 
     if (error) throw new Error(error.message);
 
+    // 카트 항목도 등록
+    if (sellCart.length) {
+      for (const item of sellCart) {
+        let fUrl = null, bUrl = null;
+        const ts2 = Date.now();
+        if (item.frontFile) {
+          const r = await resizeImage(item.frontFile);
+          const path = `listings/${curUser.username}_${item.card_id}_${ts2}_front.jpg`;
+          await sb.storage.from('card-images').upload(path, r, {upsert:true, contentType:'image/jpeg'});
+          fUrl = sb.storage.from('card-images').getPublicUrl(path).data.publicUrl;
+        }
+        if (item.backFile) {
+          const r = await resizeImage(item.backFile);
+          const path = `listings/${curUser.username}_${item.card_id}_${ts2}_back.jpg`;
+          await sb.storage.from('card-images').upload(path, r, {upsert:true, contentType:'image/jpeg'});
+          bUrl = sb.storage.from('card-images').getPublicUrl(path).data.publicUrl;
+        }
+        await sb.from('listings').insert({
+          card_id: item.card_id,
+          seller_username: curUser.username,
+          seller_name: curUser.nickname || curUser.username,
+          price: item.price,
+          condition: '미등급',
+          grade_type: '미등급',
+          card_condition: item.conditionDesc,
+          shipping_method: item.shipMethod,
+          shipping_prices: item.shipPrice ? { [item.shipMethod]: item.shipPrice } : null,
+          image_front: fUrl,
+          image_back: bUrl,
+          description: item.desc || null,
+          status: 'active',
+          version: document.getElementById('s_ver').value,
+          series: document.getElementById('s_set').value,
+        });
+      }
+      const totalQty = (data?.length || 1) + sellCart.length;
+      sellCart = [];
+      renderSellCart();
+      closeSell(); renderCards(); loadHome();
+      toast(`${totalQty}장 판매 등록 완료! 🎉`);
+      return;
+    }
+
     if (!listings[card_id]) listings[card_id] = [];
-    listings[card_id].push(data);
+    if (data) listings[card_id].push(...data);
     closeSell(); renderCards(); loadHome();
-    // 해당 카드 상세가 열려있으면 즉시 갱신
     const detailOv = document.getElementById('detailOv');
     if (detailOv?.classList.contains('on') && detailOv.dataset.cid === card_id) {
       openDetail(card_id);
     }
-    toast('판매 등록 완료! 🎉');
+    toast(qty > 1 ? `${qty}장 판매 등록 완료! 🎉` : '판매 등록 완료! 🎉');
 
     // 찜한 사용자들에게 알림 발송
     try {
@@ -4743,17 +4811,104 @@ async function openCardScan(side) {
   await startScanCamera();
 }
 
+let sellCart = []; // 등록 대기 카드 목록
+
+function addToSellCart() {
+  const cardId = document.getElementById('s_card').value;
+  const price = parseInt(document.getElementById('s_price').value);
+  const shipMethod = document.getElementById('s_ship')?.value;
+  const shipPrice = parseInt(document.getElementById('s_ship_price')?.value) || 0;
+  const conditionDesc = document.getElementById('s_cond')?.value || '양호';
+  const desc = document.getElementById('s_desc')?.value.trim() || '';
+
+  if (!cardId) { toast('카드를 선택해주세요'); return; }
+  if (!price || price < 100) { toast('판매가를 입력해주세요'); return; }
+  if (!shipMethod) { toast('배송 방법을 선택해주세요'); return; }
+
+  const card = allCards.find(c => c.id === cardId);
+  const cartItem = {
+    card_id: cardId,
+    card_name: card?.name || cardId,
+    rarity: card?.rarity || '',
+    price,
+    shipMethod,
+    shipPrice,
+    conditionDesc,
+    desc,
+    frontFile: sellFront,
+    backFile: sellBack,
+    frontPreview: document.getElementById('front-preview')?.querySelector('img')?.src || null,
+    backPreview: document.getElementById('back-preview')?.querySelector('img')?.src || null,
+  };
+
+  sellCart.push(cartItem);
+  renderSellCart();
+
+  // 입력 초기화
+  document.getElementById('s_card').value = '';
+  document.getElementById('s_price').value = '';
+  document.getElementById('s_ship').value = '';
+  document.getElementById('s_ship_price').value = '';
+  document.getElementById('s_desc').value = '';
+  document.getElementById('s_cond').value = '양호';
+  document.getElementById('front-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div>';
+  document.getElementById('back-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div>';
+  const fg = document.getElementById('front-guide'); if(fg) fg.style.display='';
+  const bg = document.getElementById('back-guide'); if(bg) bg.style.display='';
+  sellFront = null; sellBack = null;
+
+  toast(`📋 ${card?.name || cardId} 추가됨 (${sellCart.length}장)`);
+}
+
+function renderSellCart() {
+  const cartEl = document.getElementById('sell-cart');
+  const listEl = document.getElementById('sell-cart-list');
+  const btn = document.getElementById('sell-submit-btn');
+  if (!sellCart.length) {
+    cartEl.style.display = 'none';
+    btn.textContent = '등록하기';
+    return;
+  }
+  cartEl.style.display = 'block';
+  btn.textContent = `${sellCart.length + 1}장 전체 등록`;
+  listEl.innerHTML = sellCart.map((item, i) => `
+    <div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:var(--bg2);border-radius:var(--r3);font-size:12px">
+      ${item.frontPreview ? `<img src="${item.frontPreview}" style="width:28px;height:40px;object-fit:cover;border-radius:3px;flex-shrink:0">` : '<div style="width:28px;height:40px;background:var(--bg3);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px">🃏</div>'}
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${item.card_name}</div>
+        <div style="color:var(--muted)">${item.price.toLocaleString()}원 · ${item.shipMethod}</div>
+      </div>
+      <button onclick="removeSellCart(${i})" style="background:none;border:none;color:var(--dim);font-size:16px;cursor:pointer;padding:2px 5px">✕</button>
+    </div>
+  `).join('');
+}
+
+function removeSellCart(i) {
+  sellCart.splice(i, 1);
+  renderSellCart();
+}
+
+let scanStarting = false;
 async function startScanCamera() {
+  if (scanStarting) return;
+  scanStarting = true;
   try {
-    if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); }
+    if (scanStream) { scanStream.getTracks().forEach(t => t.stop()); scanStream = null; }
+    const video = document.getElementById('scanVideo');
+    video.srcObject = null;
     scanStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: scanFacingMode, width: { ideal: 1920 }, height: { ideal: 1080 } }
+      video: { facingMode: { ideal: scanFacingMode }, width:{ideal:1920}, height:{ideal:1080} }
     });
-    document.getElementById('scanVideo').srcObject = scanStream;
+    video.srcObject = scanStream;
+    await video.play().catch(()=>{});
     document.getElementById('scanStatus').textContent = '카드를 가이드 안에 맞춰주세요';
+    document.getElementById('scanStatus').style.color = '#fff';
+    setTimeout(() => startAutoDetect(), 600);
   } catch(e) {
-    document.getElementById('scanStatus').textContent = '카메라 접근 권한이 필요해요';
+    document.getElementById('scanStatus').textContent = '카메라 권한이 필요해요';
     document.getElementById('scanStatus').style.color = '#ef4444';
+  } finally {
+    scanStarting = false;
   }
 }
 
