@@ -4314,14 +4314,14 @@ async function submitListingEdit() {
   if (error) { toast('수정 실패: ' + error.message); return; }
   toast('수정됐어요 ✅'); closeListingEdit(); loadMyListings(); renderCards();
 }
-async function closeWelcomeNotice() {
+function closeWelcomeNotice() {
   document.getElementById('welcomeNoticeOv').classList.remove('on');
   if (document.getElementById('dontShowToday')?.checked) {
     const today = new Date().toISOString().slice(0,10);
     localStorage.setItem('nexo_notice_shown', today);
   }
 }
-function openListingDetail(lid, cid) {
+async function openListingDetail(lid, cid) {
   const { data: l } = await sb.from('listings').select('*,cards(name,rarity,image_url,emoji)').eq('id', lid).single();
   if (!l) return;
   const shipPrice = l.shipping_prices ? Object.values(l.shipping_prices)[0] : 0;
