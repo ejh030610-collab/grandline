@@ -3286,16 +3286,45 @@ function closeNotice() { document.getElementById('noticeOv')?.classList.remove('
 async function aLoadNotices() {
   const { data } = await sb.from('notices').select('*').order('is_pinned',{ascending:false}).order('created_at',{ascending:false});
   const el = document.getElementById('a-notices-list');
-  if (!data?.length) { el.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:14px">등록된 공지가 없어요</td></tr>'; return; }
-  el.innerHTML = data.map(n => `<tr>
+  if (!data?.length) { el.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px">등록된 공지가 없어요</td></tr>'; return; }
+  el.innerHTML = data.map(n => `<tr id="notice-row-${n.id}">
     <td style="text-align:center">${n.is_pinned ? '<span style="font-size:10px;padding:2px 6px;background:var(--red);color:#fff;border-radius:4px;white-space:nowrap">고정</span>' : '<span style="color:var(--dim)">-</span>'}</td>
-    <td>
-      <div style="font-weight:500;font-size:13px;margin-bottom:2px">${n.title}</div>
-      <div style="font-size:11px;color:var(--muted);white-space:pre-wrap;max-height:48px;overflow:hidden;line-height:1.5">${n.content}</div>
-    </td>
+    <td style="font-weight:500;font-size:13px">${n.title}</td>
     <td style="color:var(--muted);font-size:11px;white-space:nowrap">${n.created_at?.slice(0,10)}</td>
-    <td><button class="aact del" onclick="aDelNotice(${n.id})">삭제</button></td>
+    <td style="display:flex;gap:4px">
+      <button class="aact" onclick="aEditNotice(${n.id},'${encodeURIComponent(n.title)}','${encodeURIComponent(n.content)}',${n.is_pinned})">수정</button>
+      <button class="aact del" onclick="aDelNotice(${n.id})">삭제</button>
+    </td>
   </tr>`).join('');
+}
+async function aEditNotice(id, title, content, isPinned) {
+  const row = document.getElementById('notice-row-'+id);
+  row.innerHTML = `
+    <td colspan="4" style="padding:10px 0">
+      <div style="display:grid;gap:8px">
+        <input type="text" id="edit-notice-title-${id}" value="${decodeURIComponent(title)}"
+          style="width:100%;padding:8px 11px;border:1.5px solid var(--red);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;box-sizing:border-box">
+        <textarea id="edit-notice-content-${id}" style="width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;resize:vertical;height:100px;box-sizing:border-box;line-height:1.6" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">${decodeURIComponent(content)}</textarea>
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer">
+            <input type="checkbox" id="edit-notice-pinned-${id}" ${isPinned?'checked':''} style="accent-color:var(--red)"> 📌 상단 고정
+          </label>
+          <div style="display:flex;gap:6px">
+            <button class="aact" onclick="aLoadNotices()">취소</button>
+            <button class="aact" style="background:var(--red);color:#fff;border-color:var(--red)" onclick="aSubmitEditNotice(${id})">저장</button>
+          </div>
+        </div>
+      </div>
+    </td>`;
+}
+async function aSubmitEditNotice(id) {
+  const title = document.getElementById('edit-notice-title-'+id).value.trim();
+  const content = document.getElementById('edit-notice-content-'+id).value.trim();
+  const is_pinned = document.getElementById('edit-notice-pinned-'+id).checked;
+  if (!title || !content) { toast('제목과 내용을 입력해주세요'); return; }
+  const { error } = await sb.from('notices').update({ title, content, is_pinned }).eq('id', id);
+  if (error) { toast('수정 실패: ' + error.message); return; }
+  toast('수정됐어요 ✅'); aLoadNotices();
 }
 async function submitAdminNotice() {
   const title = document.getElementById('notice-title-input').value.trim();
