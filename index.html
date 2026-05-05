@@ -851,8 +851,12 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <input type="number" id="priceMax" placeholder="최고가" oninput="renderCards()">
         <span style="font-size:11px;color:var(--muted)">원</span>
       </div>
+      <button id="sale-only-btn" onclick="toggleSaleFilter(this)"
+        style="flex-shrink:0;padding:6px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer;white-space:nowrap;transition:all .15s">
+        판매중만
+      </button>
       <select class="sort-sel" id="sortSel" onchange="renderCards()">
-        <option value="popular">인기순</option>
+        <option value="popular">희귀도순</option>
         <option value="priceUp">낮은가격</option>
         <option value="priceDown">높은가격</option>
         <option value="new">최신순</option>
@@ -2430,6 +2434,10 @@ function setRarity(el) {
 function toggleSaleFilter(el) {
   curFilter.onlyForSale = !curFilter.onlyForSale;
   el.classList.toggle('active', curFilter.onlyForSale);
+  el.style.background = curFilter.onlyForSale ? 'var(--red)' : '#fff';
+  el.style.color = curFilter.onlyForSale ? '#fff' : 'var(--muted)';
+  el.style.borderColor = curFilter.onlyForSale ? 'var(--red)' : 'var(--border)';
+  el.style.fontWeight = curFilter.onlyForSale ? '600' : '500';
   renderCards();
 }
 function setType(el) {
@@ -2507,7 +2515,10 @@ function renderCards() {
   else if (sort==='priceDown') cards.sort((a,b)=>(getLP(b.id)||0)-(getLP(a.id)||0));
   else if (sort==='numAsc') cards.sort((a,b)=>a.id.localeCompare(b.id,undefined,{numeric:true}));
   else if (sort==='nameAsc') cards.sort((a,b)=>a.name.localeCompare(b.name,'ko'));
-  else if (sort==='popular') { const ro={SEC:0,SR:1,R:2,L:3,UC:4,C:5}; cards.sort((a,b)=>(ro[a.rarity]||9)-(ro[b.rarity]||9)); }
+  else if (sort==='popular') {
+    const ro={'★':0,'SP':1,'SEC★':2,'L★':3,'SR★':4,'R★':5,'SEC':6,'SR':7,'R':8,'L':9,'P':10,'UC':11,'C':12};
+    cards.sort((a,b)=>(ro[a.rarity]??13)-(ro[b.rarity]??13));
+  }
 
   document.getElementById('listCnt').textContent = '총 '+cards.length+'종';
 
