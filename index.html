@@ -3288,9 +3288,12 @@ async function aLoadNotices() {
   const el = document.getElementById('a-notices-list');
   if (!data?.length) { el.innerHTML = '<tr><td colspan="4" style="text-align:center;color:var(--muted);padding:14px">등록된 공지가 없어요</td></tr>'; return; }
   el.innerHTML = data.map(n => `<tr>
-    <td style="text-align:center">${n.is_pinned ? '<span style="font-size:10px;padding:1px 6px;background:var(--red);color:#fff;border-radius:4px">고정</span>' : '-'}</td>
-    <td style="font-weight:500">${n.title}</td>
-    <td style="color:var(--muted);font-size:11px">${n.created_at?.slice(0,10)}</td>
+    <td style="text-align:center">${n.is_pinned ? '<span style="font-size:10px;padding:2px 6px;background:var(--red);color:#fff;border-radius:4px;white-space:nowrap">고정</span>' : '<span style="color:var(--dim)">-</span>'}</td>
+    <td>
+      <div style="font-weight:500;font-size:13px;margin-bottom:2px">${n.title}</div>
+      <div style="font-size:11px;color:var(--muted);white-space:pre-wrap;max-height:48px;overflow:hidden;line-height:1.5">${n.content}</div>
+    </td>
+    <td style="color:var(--muted);font-size:11px;white-space:nowrap">${n.created_at?.slice(0,10)}</td>
     <td><button class="aact del" onclick="aDelNotice(${n.id})">삭제</button></td>
   </tr>`).join('');
 }
