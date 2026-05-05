@@ -1298,6 +1298,25 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <button class="search-tab" id="stab-price" onclick="switchSearchTab('price')"
       style="padding:10px 14px;border:none;border-bottom:2px solid transparent;background:none;font-size:13px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer">가격범위</button>
   </div>
+  <!-- 희귀도 필터 칩 -->
+  <div id="search-rarity-bar" style="padding:8px 14px;border-bottom:1px solid var(--border);background:#fff;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;display:flex;gap:5px;align-items:center">
+    <style>#search-rarity-bar::-webkit-scrollbar{display:none}</style>
+    <span style="font-size:11px;font-weight:600;color:var(--muted);flex-shrink:0;margin-right:2px">희귀도</span>
+    <button class="srarity-chip" data-r="all" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--red);background:var(--red);color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">전체</button>
+    <button class="srarity-chip" data-r="SEC" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">SEC</button>
+    <button class="srarity-chip" data-r="SEC★" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">SEC★</button>
+    <button class="srarity-chip" data-r="SR" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">SR</button>
+    <button class="srarity-chip" data-r="SR★" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">SR★</button>
+    <button class="srarity-chip" data-r="R" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">R</button>
+    <button class="srarity-chip" data-r="R★" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">R★</button>
+    <button class="srarity-chip" data-r="UC" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">UC</button>
+    <button class="srarity-chip" data-r="C" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">C</button>
+    <button class="srarity-chip" data-r="L" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">L</button>
+    <button class="srarity-chip" data-r="L★" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">L★</button>
+    <button class="srarity-chip" data-r="SP" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">SP</button>
+    <button class="srarity-chip" data-r="★" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">★</button>
+    <button class="srarity-chip" data-r="P" onclick="setSearchRarity(this)" style="flex-shrink:0;padding:5px 12px;border-radius:14px;border:1px solid var(--border);background:#fff;color:var(--muted);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">P</button>
+  </div>
   <!-- 가격범위 패널 -->
   <div id="search-price-panel" style="display:none;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--bg2)">
     <div style="display:flex;align-items:center;gap:8px">
@@ -2432,6 +2451,14 @@ function openSearchOv() {
   document.getElementById('searchOv').classList.add('on');
   document.getElementById('searchResults').style.display = 'none';
   document.getElementById('searchHistory').style.display = 'block';
+  // 희귀도 필터 초기화
+  searchRarity = 'all';
+  document.querySelectorAll('.srarity-chip').forEach(c => {
+    c.style.background = '#fff'; c.style.color = 'var(--muted)';
+    c.style.borderColor = 'var(--border)'; c.style.fontWeight = '500';
+  });
+  const allChip = document.querySelector('.srarity-chip[data-r="all"]');
+  if (allChip) { allChip.style.background='var(--red)'; allChip.style.color='#fff'; allChip.style.borderColor='var(--red)'; allChip.style.fontWeight='600'; }
   renderSearchHistory();
   setTimeout(()=>document.getElementById('searchOvInput').focus(), 100);
 }
@@ -2448,6 +2475,23 @@ function selectHistory(q) {
 
 let searchTimer = null;
 let searchTab = 'card';
+let searchRarity = 'all';
+function setSearchRarity(el) {
+  document.querySelectorAll('.srarity-chip').forEach(c => {
+    c.style.background = '#fff';
+    c.style.color = 'var(--muted)';
+    c.style.borderColor = 'var(--border)';
+    c.style.fontWeight = '500';
+    c.style.opacity = '1';
+    c.style.transform = '';
+  });
+  el.style.background = 'var(--red)';
+  el.style.color = '#fff';
+  el.style.borderColor = 'var(--red)';
+  el.style.fontWeight = '600';
+  searchRarity = el.dataset.r;
+  onSearchInput();
+}
 function switchSearchTab(tab) {
   searchTab = tab;
   ['card','seller','price'].forEach(t => {
@@ -2528,7 +2572,7 @@ function renderCardGrid(cards) {
 function onSearchInput() {
   const q = document.getElementById('searchOvInput').value.trim();
   clearTimeout(searchTimer);
-  if (!q) {
+  if (!q && searchRarity === 'all') {
     document.getElementById('searchResults').style.display = 'none';
     document.getElementById('searchHistory').style.display = 'block';
     renderSearchHistory();
@@ -2568,9 +2612,12 @@ function renderSearchResults(q) {
   }
 
   // 카드 검색 (기본)
-  const results = allCards.filter(c =>
-    (c.name||'').toLowerCase().includes(ql) || c.id.toLowerCase().includes(ql)
-  ).slice(0, 20);
+  let results = allCards.filter(c =>
+    !q || (c.name||'').toLowerCase().includes(q.toLowerCase()) || c.id.toLowerCase().includes(q.toLowerCase())
+  );
+  // 희귀도 필터 적용
+  if (searchRarity !== 'all') results = results.filter(c => c.rarity === searchRarity);
+  results = results.slice(0, 30);
   if (!results.length) {
     el.innerHTML = `<div style="text-align:center;padding:40px 0;color:var(--muted)"><div style="font-size:32px;margin-bottom:8px">🔍</div>"${q}" 검색 결과가 없어요</div>`;
     return;
@@ -2767,7 +2814,7 @@ async function openDetail(cid) {
     const ratingTag = avgRating
       ? `<span style="font-size:10px;color:var(--gold);font-weight:600;margin-left:5px">⭐ ${avgRating} (${ratings.length})</span>`
       : '';
-    return `<div class="l-item">
+    return `<div class="l-item" style="cursor:pointer" onclick="openListingDetail('${l.id}','${cid}')">
       <div class="l-imgs">${fi}${bi}</div>
       <div class="l-avatar" style="background:${AVA[i%5]};cursor:pointer" onclick="event.stopPropagation();openProfile('${l.seller_username}')">${(l.seller_name||'?')[0]}</div>
       <div class="l-info">
@@ -2778,15 +2825,15 @@ async function openDetail(cid) {
         <div class="l-meta" style="margin-top:2px">
           ${l.card_condition && l.card_condition!=='양호' ? `<span style="color:var(--red)">${l.card_condition}</span> · ` : ''}${l.shipping_method ? l.shipping_method : ''}${l.shipping_prices ? ` +${Object.values(l.shipping_prices)[0]?.toLocaleString()||0}원` : ''}
         </div>
-        ${l.description ? `<div class="l-meta" style="color:var(--muted);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px">"${l.description}"</div>` : ''}
+        ${l.description ? `<div class="l-meta" style="color:var(--muted);font-style:italic;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px">"${l.description}"</div>` : ''}
       </div>
-      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0">
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0" onclick="event.stopPropagation()">
         <span class="l-price">${l.price.toLocaleString()}원</span>
         <div style="display:flex;gap:4px">
           <button class="l-contact-btn" onclick="openContact('${l.id}','${cid}')">🛒 구매</button>
-          <button onclick="event.stopPropagation();openPhotoReq('${l.id}','${l.seller_username}')"
+          <button onclick="openPhotoReq('${l.id}','${l.seller_username}')"
             style="padding:5px 7px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);font-size:11px;color:var(--muted);font-family:inherit;cursor:pointer">📷</button>
-          <button onclick="event.stopPropagation();openReport('listing','${l.id}','${l.seller_username}')"
+          <button onclick="openReport('listing','${l.id}','${l.seller_username}')"
             style="padding:5px 7px;background:#fff;border:1px solid var(--border);border-radius:var(--r3);font-size:11px;color:var(--dim);font-family:inherit;cursor:pointer">🚨</button>
         </div>
       </div>
@@ -4248,6 +4295,45 @@ async function submitListingEdit() {
   if (error) { toast('수정 실패: ' + error.message); return; }
   toast('수정됐어요 ✅'); closeListingEdit(); loadMyListings(); renderCards();
 }
+async function openListingDetail(lid, cid) {
+  const { data: l } = await sb.from('listings').select('*,cards(name,rarity,image_url,emoji)').eq('id', lid).single();
+  if (!l) return;
+  const shipPrice = l.shipping_prices ? Object.values(l.shipping_prices)[0] : 0;
+  const imgs = [l.image_front, l.image_back].filter(Boolean);
+  document.getElementById('listingDetailOv').classList.add('on');
+  document.getElementById('listingDetailBody').innerHTML = `
+    ${imgs.length ? `<div style="display:flex;gap:8px;margin-bottom:14px;overflow-x:auto">
+      ${imgs.map(src=>`<img src="${src}" style="height:160px;border-radius:8px;object-fit:cover;flex-shrink:0" onerror="this.style.display='none'">`).join('')}
+    </div>` : ''}
+    <div style="font-size:16px;font-weight:700;margin-bottom:4px">${l.cards?.name||l.card_id}</div>
+    <div style="font-size:22px;font-weight:700;color:var(--red);margin-bottom:14px">${l.price.toLocaleString()}원</div>
+    <div style="display:grid;gap:8px;margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">카드 상태</span>
+        <span style="font-weight:600;color:${l.card_condition&&l.card_condition!=='양호'?'var(--red)':'var(--text)'}">${l.card_condition||'양호'}</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <span style="color:var(--muted)">배송 방법</span>
+        <span style="font-weight:600">${l.shipping_method||'-'} ${shipPrice>0?`+${shipPrice.toLocaleString()}원`:''}</span>
+      </div>
+      ${l.description ? `<div style="font-size:13px;padding:10px 0;border-bottom:1px solid var(--border)">
+        <div style="color:var(--muted);margin-bottom:5px">판매자 한줄 설명</div>
+        <div style="font-weight:500;line-height:1.6">${l.description}</div>
+      </div>` : ''}
+      <div style="display:flex;justify-content:space-between;font-size:13px;padding:10px 0">
+        <span style="color:var(--muted)">등록일</span>
+        <span>${l.created_at?.slice(0,10)||'-'}</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 2fr;gap:8px">
+      <button onclick="closeListingDetail();openPhotoReq('${l.id}','${l.seller_username}')"
+        style="padding:12px;background:#fff;border:1px solid var(--border);border-radius:var(--r2);font-size:13px;font-weight:600;color:var(--text);font-family:inherit;cursor:pointer">📷 사진 요청</button>
+      <button onclick="closeListingDetail();openContact('${l.id}','${cid||l.card_id}')"
+        style="padding:12px;background:var(--red);border:none;border-radius:var(--r2);font-size:13px;font-weight:700;color:#fff;font-family:inherit;cursor:pointer">🛒 구매 요청</button>
+    </div>`;
+}
+function closeListingDetail() { document.getElementById('listingDetailOv').classList.remove('on'); }
+
 async function cancelListing(id) {
   if (!confirm('판매를 취소할까요?')) return;
   await sb.from('listings').update({status:'cancelled'}).eq('id',id);
@@ -5816,6 +5902,22 @@ async function submitEditCard() {
 init();
 </script>
 <!-- ── 이용약관 오버레이 ── -->
+<!-- 판매글 상세 팝업 -->
+<div class="ov" id="listingDetailOv"
+  onmousedown="this._mx=event.clientX;this._my=event.clientY"
+  onmouseup="if(event.target===this&&Math.abs(event.clientX-this._mx)<8&&Math.abs(event.clientY-this._my)<8)closeListingDetail()"
+  ontouchstart="this._tx=event.touches[0].clientX;this._ty=event.touches[0].clientY"
+  ontouchend="if(event.target===this&&Math.abs(event.changedTouches[0].clientX-this._tx)<8&&Math.abs(event.changedTouches[0].clientY-this._ty)<8)closeListingDetail()"
+  style="z-index:510">
+  <div class="modal" style="max-width:440px;padding:0;overflow:hidden">
+    <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1">
+      <div style="font-size:15px;font-weight:700">판매글 상세</div>
+      <button onclick="closeListingDetail()" style="background:rgba(0,0,0,.07);border:none;border-radius:50%;width:28px;height:28px;font-size:14px;cursor:pointer">✕</button>
+    </div>
+    <div id="listingDetailBody" style="padding:16px 18px;overflow-y:auto;max-height:75vh"></div>
+  </div>
+</div>
+
 <!-- 회원 상세 팝업 -->
 <div class="ov" id="memberDetailOv"
   onmousedown="this._mx=event.clientX;this._my=event.clientY"
