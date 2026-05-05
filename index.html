@@ -4885,6 +4885,8 @@ function closeCardScan() {
   const btn = document.getElementById('scanCaptureBtn');
   btn.style.background = '#D85A30'; btn.textContent = '⊙';
 }
+
+async function openGradeScan(side) {
   scanSide = 'grade_' + side;
   const ov = document.getElementById('cardScanOv');
   document.getElementById('scanTitle').textContent = side === 'front' ? '슬랩 앞면 스캔' : '슬랩 뒷면 스캔';
