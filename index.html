@@ -4799,7 +4799,7 @@ function closeCardScan() {
   btn.textContent = '⊙';
 }
 
-function openListingDetail(lid, cid) {
+async function openListingDetail(lid, cid) {
   const { data: l } = await sb.from('listings').select('*,cards(name,rarity,image_url,emoji)').eq('id', lid).single();
   if (!l) return;
   const shipPrice = l.shipping_prices ? Object.values(l.shipping_prices)[0] : 0;
