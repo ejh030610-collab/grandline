@@ -1292,11 +1292,23 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       <!-- 등급 카드 섹션 -->
       <div id="sec-grade" style="display:none">
         <!-- 카드 정보 -->
-        <div class="fg">
-          <label>카드명 <span style="color:var(--red)">*</span></label>
-          <input type="text" id="g_card_name" placeholder="예: 몽키 D. 루피 OP01-024"
-            style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
-            onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+        <div class="fg-2">
+          <div class="fg" style="margin-bottom:0">
+            <label>시리즈 <span style="color:var(--red)">*</span></label>
+            <select id="g_series" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff">
+              <option value="">선택</option>
+              <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
+              <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
+              <option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option>
+              <option>EBK-01</option><option>EBK-02</option>
+            </select>
+          </div>
+          <div class="fg" style="margin-bottom:0">
+            <label>카드명 <span style="color:var(--red)">*</span></label>
+            <input type="text" id="g_card_name" placeholder="예: 몽키 D. 루피 OP01-024"
+              style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;box-sizing:border-box"
+              onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
+          </div>
         </div>
         <!-- 등급사 + 등급 -->
         <div class="fg-2" style="margin-top:10px">
@@ -3718,7 +3730,7 @@ function closeSell() {
   ['g_card_name','g_cert_num','g_price','g_ship_price','g_desc'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value='';
   });
-  ['g_grader','g_grade_num','g_ship'].forEach(id => {
+  ['g_series','g_grader','g_grade_num','g_ship'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value='';
   });
   document.getElementById('g_front_preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">슬랩 정면</div>';
@@ -3773,6 +3785,7 @@ function previewGradePhoto(side, e) {
 async function submitGradeSell() {
   if (!curUser) { toast('로그인이 필요해요'); return; }
   const cardName = document.getElementById('g_card_name').value.trim();
+  const series = document.getElementById('g_series').value;
   const grader = document.getElementById('g_grader').value;
   const gradeNum = document.getElementById('g_grade_num').value;
   const certNum = document.getElementById('g_cert_num').value.trim();
@@ -3781,6 +3794,7 @@ async function submitGradeSell() {
   const shipPrice = parseInt(document.getElementById('g_ship_price').value) || 0;
   const desc = document.getElementById('g_desc').value.trim();
 
+  if (!series) { toast('시리즈를 선택해주세요'); return; }
   if (!cardName) { toast('카드명을 입력해주세요'); return; }
   if (!grader) { toast('등급사를 선택해주세요'); return; }
   if (!gradeNum) { toast('등급 번호를 선택해주세요'); return; }
@@ -3822,7 +3836,7 @@ async function submitGradeSell() {
       card_condition: '등급완료',
       status: 'active',
       version: '한글판',
-      series: cardName,
+      series: series,
     });
 
     if (error) { toast('등록 실패: ' + error.message); btn.disabled=false; btn.textContent='등록하기'; return; }
