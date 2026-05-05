@@ -1688,22 +1688,33 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 
       <!-- 공지사항 관리 -->
       <div class="ap" id="ap-notices">
-        <div class="add-form" style="margin-bottom:16px">
-          <h4>새 공지 작성</h4>
-          <div style="display:flex;gap:8px;margin-bottom:8px;align-items:center">
-            <input type="text" id="notice-title-input" placeholder="제목을 입력하세요"
-              style="flex:1;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none">
-            <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);white-space:nowrap;cursor:pointer">
-              <input type="checkbox" id="notice-pinned"> 상단 고정
-            </label>
+        <!-- 새 공지 작성 폼 -->
+        <div style="background:var(--bg2);border-radius:var(--r2);padding:16px;margin-bottom:16px;border:1px solid var(--border)">
+          <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text)">📢 새 공지 작성</div>
+          <div style="margin-bottom:8px">
+            <input type="text" id="notice-title-input" placeholder="제목 (예: [팝업] 베타 안내)"
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;box-sizing:border-box;background:#fff"
+              onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'">
           </div>
-          <textarea id="notice-content-input" placeholder="공지 내용을 입력하세요..."
-            style="width:100%;padding:8px 11px;border:1px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;resize:none;height:90px;margin-bottom:8px"></textarea>
-          <button onclick="submitAdminNotice()"
-            style="padding:8px 20px;background:var(--red);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
-            등록
-          </button>
+          <div style="margin-bottom:8px">
+            <textarea id="notice-content-input" placeholder="공지 내용을 입력하세요..."
+              style="width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;resize:vertical;height:100px;box-sizing:border-box;background:#fff;line-height:1.6"
+              onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></textarea>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer">
+              <input type="checkbox" id="notice-pinned" style="accent-color:var(--red)"> 📌 상단 고정
+            </label>
+            <button onclick="submitAdminNotice()"
+              style="padding:9px 20px;background:var(--red);color:#fff;border:none;border-radius:var(--r3);font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">
+              등록
+            </button>
+          </div>
+          <div style="margin-top:10px;padding:8px 10px;background:#eff6ff;border-radius:var(--r3);font-size:11px;color:#2563eb;line-height:1.6">
+            💡 제목을 <b>[팝업]</b>으로 시작하면 로그인 시 팝업으로 표시돼요
+          </div>
         </div>
+        <!-- 공지 목록 -->
         <div class="atbl"><table>
           <thead><tr><th style="width:50px">고정</th><th>제목</th><th style="width:100px">작성일</th><th style="width:60px">관리</th></tr></thead>
           <tbody id="a-notices-list"></tbody>
