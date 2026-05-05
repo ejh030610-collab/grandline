@@ -4271,9 +4271,56 @@ async function submitSell() {
   if (!curUser) { openAuth('login'); return; }
   const card_id = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
-  const contact_info = curUser.phone || curUser.username;
-  // 배송방법 수집
   const shipMethod = document.getElementById('s_ship')?.value;
+
+  // 현재 입력창이 비어있고 카트에 내용이 있으면 카트만 등록
+  if (!card_id && sellCart.length > 0) {
+    const btn = document.getElementById('sell-submit-btn');
+    if (btn) { btn.disabled = true; btn.textContent = '등록 중...'; }
+    try {
+      for (const item of sellCart) {
+        let fUrl = null, bUrl = null;
+        const ts = Date.now() + Math.random();
+        if (item.frontFile) {
+          const r = await resizeImage(item.frontFile);
+          const path = `listings/${curUser.username}_${item.card_id}_${ts}_front.jpg`;
+          await sb.storage.from('card-images').upload(path, r, {upsert:true, contentType:'image/jpeg'});
+          fUrl = sb.storage.from('card-images').getPublicUrl(path).data.publicUrl;
+        }
+        if (item.backFile) {
+          const r = await resizeImage(item.backFile);
+          const path = `listings/${curUser.username}_${item.card_id}_${ts}_back.jpg`;
+          await sb.storage.from('card-images').upload(path, r, {upsert:true, contentType:'image/jpeg'});
+          bUrl = sb.storage.from('card-images').getPublicUrl(path).data.publicUrl;
+        }
+        await sb.from('listings').insert({
+          card_id: item.card_id,
+          seller_username: curUser.username,
+          seller_name: curUser.nickname || curUser.username,
+          price: item.price,
+          condition: '미등급', grade_type: '미등급',
+          card_condition: item.conditionDesc,
+          shipping_method: item.shipMethod,
+          shipping_prices: item.shipPrice ? { [item.shipMethod]: item.shipPrice } : null,
+          image_front: fUrl, image_back: bUrl,
+          description: item.desc || null,
+          status: 'active',
+          version: document.getElementById('s_ver').value,
+          series: document.getElementById('s_set').value,
+        });
+      }
+      const total = sellCart.length;
+      sellCart = []; renderSellCart();
+      closeSell(); renderCards(); loadHome();
+      toast(`${total}장 판매 등록 완료! 🎉`);
+    } catch(e) {
+      toast('등록 실패: ' + e.message);
+      if (btn) { btn.disabled = false; btn.textContent = `${sellCart.length}장 전체 등록`; }
+    }
+    return;
+  }
+
+  const contact_info = curUser.phone || curUser.username;
   const shipPrice = document.getElementById('s_ship_price')?.value;
   if (!shipMethod) { toast('배송 방법을 선택해주세요'); return; }
   const shipPrices = shipPrice ? { [shipMethod]: parseInt(shipPrice) } : null;
