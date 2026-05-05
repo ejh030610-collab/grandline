@@ -304,7 +304,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
   /* 모달 바텀시트 */
   .ov{align-items:flex-end!important;padding:0!important;}
   .modal{border-radius:22px 22px 0 0!important;max-width:100%!important;max-height:93vh;overflow-y:auto;}
-  .sell-modal{max-width:100%!important;border-radius:22px 22px 0 0!important;}
+  .sell-modal{max-width:100%!important;border-radius:22px 22px 0 0!important;max-height:calc(100dvh - env(safe-area-inset-top, 20px) - 10px)!important;overflow-y:auto;}
   .my-modal{border-radius:22px 22px 0 0!important;max-height:93vh;}
 
   /* 마이페이지 탭 */
@@ -1169,7 +1169,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     <div class="head" style="position:relative;padding-bottom:0">
       <h3>카드 판매 등록</h3>
       <p>카드 사진을 올리고 상태를 등록해주세요</p>
-      <button class="modal-close-btn" onclick="closeSell()">✕</button>
+      <button onclick="closeSell()" style="position:absolute;top:12px;right:14px;background:#e5e7eb;border:none;border-radius:50%;width:30px;height:30px;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#374151;z-index:10;font-weight:700">✕</button>
     </div>
     <!-- 판매 유형 탭 -->
     <div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border)">
@@ -3787,6 +3787,18 @@ function closeSell() {
   document.getElementById('sellOv').classList.remove('on');
   // 탭 초기화 (미등급으로)
   switchSellTab('ungr');
+  // 미등급 입력 초기화
+  sellFront = null; sellBack = null;
+  document.getElementById('front-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">앞면</div><div class="photo-slot-sub">카드 정면</div>';
+  document.getElementById('back-preview').innerHTML = '<div style="font-size:22px">📸</div><div class="photo-slot-lbl">뒷면</div><div class="photo-slot-sub">카드 후면</div>';
+  const fg = document.getElementById('front-guide'); if(fg) fg.style.display='';
+  const bg = document.getElementById('back-guide'); if(bg) bg.style.display='';
+  if (document.getElementById('s_card')) document.getElementById('s_card').value = '';
+  if (document.getElementById('s_price')) document.getElementById('s_price').value = '';
+  if (document.getElementById('s_search')) document.getElementById('s_search').value = '';
+  if (document.getElementById('s_ship')) document.getElementById('s_ship').value = '';
+  if (document.getElementById('s_ship_price')) document.getElementById('s_ship_price').value = '';
+  if (document.getElementById('s_desc')) document.getElementById('s_desc').value = '';
   // 등급 카드 입력 초기화
   ['g_card_name','g_cert_num','g_price','g_ship_price','g_desc'].forEach(id => {
     const el = document.getElementById(id); if(el) el.value='';
