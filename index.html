@@ -1301,12 +1301,19 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
       </div>
       <!-- 배송 방법 -->
       <div class="fg" style="margin-top:10px">
-        <label>배송 방법 <span style="color:var(--red)">*</span></label>
-        <select id="s_ship" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;margin-top:8px;background:#fff">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px">
+          <label>배송 방법 <span style="color:var(--red)">*</span></label>
+          <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);cursor:pointer">
+            <input type="checkbox" id="s_ship_remember" style="accent-color:var(--red)" onchange="toggleShipRemember()">
+            다음 카드에도 적용
+          </label>
+        </div>
+        <select id="s_ship" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;margin-top:4px;background:#fff">
           <option value="">배송 방법 선택</option>
           <option value="등기">📮 등기 (우체국 등기)</option>
           <option value="일반택배">📦 일반택배 (CJ/한진/롯데)</option>
-          <option value="반값택배">💸 반값택배 (편의점 접수)</option>
+          <option value="반값택배_GS">💸 반값택배 (GS25)</option>
+          <option value="반값택배_CU">💸 반값택배 (CU)</option>
         </select>
         <div style="display:flex;align-items:center;gap:8px;margin-top:8px">
           <input type="number" id="s_ship_price" placeholder="배송비 (원)" min="0"
@@ -1426,7 +1433,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
               <option value="">선택</option>
               <option value="등기">📮 등기</option>
               <option value="일반택배">📦 일반택배</option>
-              <option value="반값택배">💸 반값택배</option>
+              <option value="반값택배_GS">💸 반값택배 (GS25)</option>
+              <option value="반값택배_CU">💸 반값택배 (CU)</option>
             </select>
           </div>
         </div>
@@ -2080,7 +2088,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <option value="">배송 방법 선택</option>
           <option value="등기">📮 등기 (우체국 등기)</option>
           <option value="일반택배">📦 일반택배 (CJ/한진/롯데)</option>
-          <option value="반값택배">💸 반값택배 (편의점 접수)</option>
+          <option value="반값택배_GS">💸 반값택배 (GS25)</option>
+          <option value="반값택배_CU">💸 반값택배 (CU)</option>
         </select>
       </div>
       <div>
@@ -4484,7 +4493,7 @@ function openContact(lid, cid) {
   // 배송 방법 선택 UI 렌더링
   const shipSection = document.getElementById('contact-ship-section');
   const shipList = document.getElementById('contact-ship-list');
-  const shipIcon = {'등기':'📮','일반택배':'📦','반값택배':'💸'};
+  const shipIcon = {'등기':'📮','일반택배':'📦','반값택배_GS':'💸','반값택배_CU':'💸','반값택배':'💸'};
   // shipping_prices: {등기:3000, 일반택배:5000} 형태
   const prices = l.shipping_prices || {};
   // shipping_method: "등기(3,000원)/일반택배" 형태에서 방법명 파싱
@@ -4847,6 +4856,18 @@ async function openCardScan(side) {
 
 let sellCart = []; // 등록 대기 카드 목록
 
+let rememberedShip = { method: '', price: 0 };
+
+function toggleShipRemember() {
+  const checked = document.getElementById('s_ship_remember').checked;
+  if (checked) {
+    rememberedShip.method = document.getElementById('s_ship').value;
+    rememberedShip.price = parseInt(document.getElementById('s_ship_price').value) || 0;
+  } else {
+    rememberedShip = { method: '', price: 0 };
+  }
+}
+
 function addToSellCart() {
   const cardId = document.getElementById('s_card').value;
   const price = parseInt(document.getElementById('s_price').value);
@@ -4892,6 +4913,14 @@ function addToSellCart() {
   sellFront = null; sellBack = null;
 
   toast(`📋 ${card?.name || cardId} 추가됨 (${sellCart.length}장)`);
+
+  // 배송 기억 체크되어 있으면 자동 채우기
+  if (document.getElementById('s_ship_remember')?.checked && rememberedShip.method) {
+    setTimeout(() => {
+      document.getElementById('s_ship').value = rememberedShip.method;
+      document.getElementById('s_ship_price').value = rememberedShip.price || '';
+    }, 50);
+  }
 }
 
 function renderSellCart() {
