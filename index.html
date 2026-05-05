@@ -4721,13 +4721,12 @@ function getScanGuideRect() {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const cardRatio = 63 / 88;
-  const padding = 28;
-  let gw = vw - padding * 2;
+  let gw = vw * 0.78;
   let gh = gw / cardRatio;
-  if (gh > vh * 0.62) { gh = vh * 0.62; gw = gh * cardRatio; }
-  const gx = (vw - gw) / 2;
-  const gy = (vh - gh) / 2 - 20;
-  return { x: Math.round(gx), y: Math.round(gy), w: Math.round(gw), h: Math.round(gh) };
+  if (gh > vh * 0.60) { gh = vh * 0.60; gw = gh * cardRatio; }
+  const gx = Math.round((vw - gw) / 2);
+  const gy = Math.round((vh - gh) / 2 - 30);
+  return { x: gx, y: gy, w: Math.round(gw), h: Math.round(gh) };
 }
 
 function updateScanGuide() {
@@ -4735,23 +4734,23 @@ function updateScanGuide() {
   const vh = window.innerHeight;
   const r = getScanGuideRect();
 
-  // 4분할 오버레이
   const top    = document.getElementById('scanTop');
   const bottom = document.getElementById('scanBottom');
   const left   = document.getElementById('scanLeft');
   const right  = document.getElementById('scanRight');
   const guide  = document.getElementById('scanGuide');
-
   if (!top || !guide) return;
 
   top.style.height    = r.y + 'px';
+  bottom.style.top    = (r.y + r.h) + 'px';
   bottom.style.height = (vh - r.y - r.h) + 'px';
-  left.style.width    = r.x + 'px';
   left.style.top      = r.y + 'px';
   left.style.height   = r.h + 'px';
-  right.style.width   = (vw - r.x - r.w) + 'px';
+  left.style.width    = r.x + 'px';
   right.style.top     = r.y + 'px';
   right.style.height  = r.h + 'px';
+  right.style.left    = (r.x + r.w) + 'px';
+  right.style.width   = (vw - r.x - r.w) + 'px';
 
   guide.style.left   = r.x + 'px';
   guide.style.top    = r.y + 'px';
@@ -6506,16 +6505,16 @@ init();
   <div style="flex:1;position:relative;overflow:hidden">
     <video id="scanVideo" autoplay playsinline muted style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></video>
     <!-- 어두운 오버레이 4분할 (CSS만 사용) -->
-    <div id="scanTop"    style="position:absolute;left:0;right:0;top:0;background:rgba(0,0,0,0.6);pointer-events:none"></div>
-    <div id="scanBottom" style="position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,0.6);pointer-events:none"></div>
-    <div id="scanLeft"   style="position:absolute;top:0;bottom:0;left:0;background:rgba(0,0,0,0.6);pointer-events:none"></div>
-    <div id="scanRight"  style="position:absolute;top:0;bottom:0;right:0;background:rgba(0,0,0,0.6);pointer-events:none"></div>
+    <div id="scanTop"    style="position:absolute;left:0;right:0;top:0;height:0;background:rgba(0,0,0,0.65);pointer-events:none;z-index:2"></div>
+    <div id="scanBottom" style="position:absolute;left:0;right:0;bottom:0;height:0;background:rgba(0,0,0,0.65);pointer-events:none;z-index:2"></div>
+    <div id="scanLeft"   style="position:absolute;left:0;width:0;background:rgba(0,0,0,0.65);pointer-events:none;z-index:2"></div>
+    <div id="scanRight"  style="position:absolute;right:0;width:0;background:rgba(0,0,0,0.65);pointer-events:none;z-index:2"></div>
     <!-- 가이드 코너 -->
-    <div id="scanGuide" style="position:absolute;pointer-events:none">
-      <div style="position:absolute;top:-1px;left:-1px;width:24px;height:24px;border-top:3px solid #D85A30;border-left:3px solid #D85A30"></div>
-      <div style="position:absolute;top:-1px;right:-1px;width:24px;height:24px;border-top:3px solid #D85A30;border-right:3px solid #D85A30"></div>
-      <div style="position:absolute;bottom:-1px;left:-1px;width:24px;height:24px;border-bottom:3px solid #D85A30;border-left:3px solid #D85A30"></div>
-      <div style="position:absolute;bottom:-1px;right:-1px;width:24px;height:24px;border-bottom:3px solid #D85A30;border-right:3px solid #D85A30"></div>
+    <div id="scanGuide" style="position:absolute;pointer-events:none;z-index:3">
+      <div style="position:absolute;top:-1px;left:-1px;width:28px;height:28px;border-top:3px solid #D85A30;border-left:3px solid #D85A30"></div>
+      <div style="position:absolute;top:-1px;right:-1px;width:28px;height:28px;border-top:3px solid #D85A30;border-right:3px solid #D85A30"></div>
+      <div style="position:absolute;bottom:-1px;left:-1px;width:28px;height:28px;border-bottom:3px solid #D85A30;border-left:3px solid #D85A30"></div>
+      <div style="position:absolute;bottom:-1px;right:-1px;width:28px;height:28px;border-bottom:3px solid #D85A30;border-right:3px solid #D85A30"></div>
     </div>
     <!-- 자동촬영 카운트다운 -->
     <div id="scanCountdown" style="display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:80px;font-weight:700;color:#D85A30;text-shadow:0 2px 12px rgba(0,0,0,0.9)"></div>
