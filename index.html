@@ -3283,7 +3283,7 @@ async function submitBoxSell() {
       }
     }
     const { error } = await sb.from('listings').insert({
-      card_id: `BOX-${series}`,
+      card_id: null,
       seller_username: curUser.username,
       seller_name: curUser.nickname || curUser.username,
       price, series, unit_type, quantity,
@@ -6666,7 +6666,7 @@ init();
 ⚠️ NEXO는 개인 간 직거래 플랫폼이에요.
 입금 전 판매자 등급과 거래 이력을 꼭 확인해주세요.
 
-📌 현재 1인당 최대 10장까지만 등록해주세요.
+📌 판매 등록 시 정확한 카드 정보와 사진을 올려주세요.
 
 💬 고가 카드는 네이버 카페 등 검증된 플랫폼을 이용하시는 걸 권장해요.
       </div>
