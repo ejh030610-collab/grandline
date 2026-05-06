@@ -429,10 +429,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
 .ts-line.partial{background:linear-gradient(90deg,#22c55e 50%,rgba(255,255,255,.15) 50%);background-size:8px 2px;animation:dashMove 1s linear infinite;}
 @keyframes dashMove{to{background-position:8px 0}}
 @keyframes dashMove{to{background-position:8px 0;}}
-.modal-close-btn{position:absolute;top:12px;right:14px;background:rgba(0,0,0,.08);border:none;border-radius:50%;width:30px;height:30px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);transition:background .15s;z-index:10;}
-.modal-close-btn:hover{background:rgba(0,0,0,.15);}
-.modal-close-btn.white{background:rgba(255,255,255,.2);color:#fff;}
-.modal-close-btn.white:hover{background:rgba(255,255,255,.35);}
+.modal-close-btn{position:absolute;top:12px;right:14px;background:#e5e7eb;border:none;border-radius:50%;width:30px;height:30px;font-size:14px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#374151;transition:background .15s;z-index:10;}
+.modal-close-btn:hover{background:#d1d5db;}
+.modal-close-btn.white{background:rgba(255,255,255,.25);color:#fff;}
+.modal-close-btn.white:hover{background:rgba(255,255,255,.4);}
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;height:62px;background:#fff;border-top:1px solid var(--border);z-index:150;box-shadow:0 -2px 12px rgba(0,0,0,.08);}
 .mob-nav-inner{display:flex;height:100%;width:100%;padding-bottom:env(safe-area-inset-bottom,0px);}
 .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;font-family:inherit;cursor:pointer;color:var(--muted);transition:color .15s;padding:0;-webkit-tap-highlight-color:transparent;}
@@ -3078,9 +3078,10 @@ async function openDetail(cid) {
   }).join('') : '<div class="no-listings">현재 판매 중인 카드가 없어요<br><small style="color:var(--dim)">첫 번째 판매자가 되어보세요!</small></div>';
 
   document.getElementById('detailWrap').innerHTML = `
-    <button onclick="closeDetail()" style="position:sticky;top:0;left:0;z-index:10;display:flex;align-items:center;gap:5px;padding:10px 14px;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);border:none;border-bottom:1px solid var(--border);width:100%;font-size:13px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer;text-align:left">
-      ← 닫기
-    </button>
+    <div style="position:sticky;top:0;left:0;z-index:10;background:rgba(255,255,255,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between">
+      <div style="font-size:12px;color:var(--muted);font-weight:500">${curFilter.ver} · ${c?.series||''}</div>
+      <button onclick="closeDetail()" style="background:#e5e7eb;border:none;border-radius:50%;width:28px;height:28px;font-size:14px;font-weight:700;color:#374151;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">✕</button>
+    </div>
     <div class="detail-top">
       <div class="detail-img-col">
         ${img ? `<img class="detail-main-img" src="${img}" onclick="openLB('${img}')">` : `<div style="font-size:64px">${c.emoji||'🃏'}</div>`}
