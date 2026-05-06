@@ -774,40 +774,69 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <span>📦</span> 박스 <span class="s-arrow" id="arr-kr-box" style="margin-left:auto">▶</span>
       </div>
       <div id="grp-kr-box" style="display:none">
-        <div class="s-series" data-type="box" data-set="OP-01" onclick="selectBoxCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-02" onclick="selectBoxCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-03" onclick="selectBoxCat(this)">OP-03 강대한 적<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-04" onclick="selectBoxCat(this)">OP-04 모략의 왕국<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-05" onclick="selectBoxCat(this)">OP-05 신시대의 주역<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-06" onclick="selectBoxCat(this)">OP-06 쌍벽의 패자<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-07" onclick="selectBoxCat(this)">OP-07 500년 후의 미래<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-08" onclick="selectBoxCat(this)">OP-08 두 전설<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-09" onclick="selectBoxCat(this)">OP-09 악인의 시대<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-10" onclick="selectBoxCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-11" onclick="selectBoxCat(this)">OP-11 신속의 권<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="OP-12" onclick="selectBoxCat(this)">OP-12 사제의 연<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="EBK-01" onclick="selectBoxCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
-        <div class="s-series" data-type="box" data-set="EBK-02" onclick="selectBoxCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('box-booster')">
+          📦 부스터팩 <span class="s-arrow open" id="arr-box-booster" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-box-booster">
+          <div class="s-series" data-type="box" data-set="OPK-01" onclick="selectBoxCat(this)">OPK-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-02" onclick="selectBoxCat(this)">OPK-02 정상결전<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-03" onclick="selectBoxCat(this)">OPK-03 강대한 적<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-04" onclick="selectBoxCat(this)">OPK-04 모략의 왕국<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-05" onclick="selectBoxCat(this)">OPK-05 신시대의 주역<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-06" onclick="selectBoxCat(this)">OPK-06 쌍벽의 패자<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-07" onclick="selectBoxCat(this)">OPK-07 500년 후의 미래<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-08" onclick="selectBoxCat(this)">OPK-08 두 전설<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-09" onclick="selectBoxCat(this)">OPK-09 악인의 시대<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-10" onclick="selectBoxCat(this)">OPK-10 왕에게 도전<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-11" onclick="selectBoxCat(this)">OPK-11 신속의 권<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="OPK-12" onclick="selectBoxCat(this)">OPK-12 사제의 연<span class="s-cnt">-</span></div>
+        </div>
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('box-extra')">
+          ✨ 엑스트라 부스터팩 <span class="s-arrow open" id="arr-box-extra" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-box-extra">
+          <div class="s-series" data-type="box" data-set="EBK-01" onclick="selectBoxCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
+          <div class="s-series" data-type="box" data-set="EBK-02" onclick="selectBoxCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
+        </div>
       </div>
       <!-- 미등급 싱글 -->
       <div class="s-grade-hd" onclick="toggleGrp('kr-free')">
         <span>📋</span> 미등급 싱글 <span class="s-arrow open" id="arr-kr-free" style="margin-left:auto">▶</span>
       </div>
       <div id="grp-kr-free">
-        <div class="s-series active" data-ver="한글판" data-grade="미등급" data-set="OP-01" onclick="selectCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt" id="cnt-op01">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-02" onclick="selectCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-03" onclick="selectCat(this)">OP-03 강대한 적<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-04" onclick="selectCat(this)">OP-04 모략의 왕국<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-05" onclick="selectCat(this)">OP-05 신시대의 주역<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-06" onclick="selectCat(this)">OP-06 쌍벽의 패자<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-07" onclick="selectCat(this)">OP-07 500년 후의 미래<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-08" onclick="selectCat(this)">OP-08 두 전설<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-09" onclick="selectCat(this)">OP-09 악인의 시대<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-10" onclick="selectCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-11" onclick="selectCat(this)">OP-11 신속의 권<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OP-12" onclick="selectCat(this)">OP-12 사제의 연<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-01" onclick="selectCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-02" onclick="selectCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
+        <!-- 부스터팩 -->
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('kr-booster')">
+          📦 부스터팩 <span class="s-arrow open" id="arr-kr-booster" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-kr-booster">
+          <div class="s-series active" data-ver="한글판" data-grade="미등급" data-set="OPK-01" onclick="selectCat(this)">OPK-01 ROMANCE DAWN<span class="s-cnt" id="cnt-op01">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-02" onclick="selectCat(this)">OPK-02 정상결전<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-03" onclick="selectCat(this)">OPK-03 강대한 적<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-04" onclick="selectCat(this)">OPK-04 모략의 왕국<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-05" onclick="selectCat(this)">OPK-05 신시대의 주역<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-06" onclick="selectCat(this)">OPK-06 쌍벽의 패자<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-07" onclick="selectCat(this)">OPK-07 500년 후의 미래<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-08" onclick="selectCat(this)">OPK-08 두 전설<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-09" onclick="selectCat(this)">OPK-09 악인의 시대<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-10" onclick="selectCat(this)">OPK-10 왕에게 도전<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-11" onclick="selectCat(this)">OPK-11 신속의 권<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="OPK-12" onclick="selectCat(this)">OPK-12 사제의 연<span class="s-cnt">-</span></div>
+        </div>
+        <!-- 엑스트라 부스터팩 -->
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('kr-extra')">
+          ✨ 엑스트라 부스터팩 <span class="s-arrow open" id="arr-kr-extra" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-kr-extra">
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-01" onclick="selectCat(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="EBK-02" onclick="selectCat(this)">EBK-02 Anime 25th<span class="s-cnt">-</span></div>
+        </div>
+        <!-- 프로모션 -->
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('kr-promo')">
+          🎁 프로모션 <span class="s-arrow" id="arr-kr-promo" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-kr-promo" style="display:none">
+          <div class="s-series" data-ver="한글판" data-grade="미등급" data-set="PROMO" onclick="selectCat(this)">프로모션 카드<span class="s-cnt">-</span></div>
+        </div>
       </div>
       <!-- 등급 싱글 -->
       <div class="s-grade-hd" onclick="toggleGrp('kr-grade')">
@@ -833,8 +862,8 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <span>📋</span> 미등급 <span class="s-arrow open" id="arr-jp-free" style="margin-left:auto">▶</span>
       </div>
       <div id="grp-jp-free">
-        <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-01" onclick="selectCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-02" onclick="selectCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OPK-01" onclick="selectCat(this)">OPK-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OPK-02" onclick="selectCat(this)">OPK-02 정상결전<span class="s-cnt">-</span></div>
       </div>
     </div>
     <div class="s-divider"></div>
@@ -932,7 +961,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
 
     <div class="list-hd">
-      <div class="list-title" id="listTitle">OP-01 ROMANCE DAWN</div>
+      <div class="list-title" id="listTitle">OPK-01 ROMANCE DAWN</div>
       <div class="list-cnt" id="listCnt"></div>
     </div>
     <!-- 카드 그리드 -->
@@ -1151,9 +1180,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div>
           <div style="font-size:11px;font-weight:600;color:var(--muted);margin-bottom:6px">시리즈</div>
           <select id="box_set" style="width:100%;padding:9px 11px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:13px;font-family:inherit;outline:none;background:#fff;color:var(--text)">
-            <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
-            <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
-            <option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option>
+            <option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option>
+            <option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option>
+            <option>OPK-09</option><option>OPK-10</option><option>OPK-11</option><option>OPK-12</option>
             <option>EBK-01</option><option>EBK-02</option>
           </select>
         </div>
@@ -1255,10 +1284,10 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div class="fg" style="margin-bottom:0"><label>버전</label><select id="s_ver" onchange="filterSellCards()"><option>한글판</option><!-- <option>일판</option> --></select></div>
         <div class="fg" style="margin-bottom:0"><label>시리즈</label>
           <select id="s_set" onchange="filterSellCards()">
-            <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
-            <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
-            <option>OP-09</option><option>OP-10</option><option>OP-11</option>
-            <option>OP-12</option>
+            <option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option>
+            <option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option>
+            <option>OPK-09</option><option>OPK-10</option><option>OPK-11</option>
+            <option>OPK-12</option>
             <option>EBK-01</option>
             <option>EBK-02</option>
           </select>
@@ -1414,9 +1443,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <label>시리즈 <span style="color:var(--red)">*</span></label>
             <select id="g_series" style="width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--r3);font-size:14px;font-family:inherit;outline:none;background:#fff">
               <option value="">선택</option>
-              <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
-              <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
-              <option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option>
+              <option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option>
+              <option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option>
+              <option>OPK-09</option><option>OPK-10</option><option>OPK-11</option><option>OPK-12</option>
               <option>EBK-01</option><option>EBK-02</option>
             </select>
           </div>
@@ -1892,7 +1921,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
             <div class="afg"><label>카드 번호 *</label><input type="text" id="af-id" placeholder="OP01-024"></div>
             <div class="afg"><label>카드명 *</label><input type="text" id="af-name" placeholder="몽키 D. 루피"></div>
             <div class="afg"><label>버전</label><select id="af-ver"><option>한글판</option><option>일판</option></select></div>
-            <div class="afg"><label>시리즈</label><select id="af-series"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
+            <div class="afg"><label>시리즈</label><select id="af-series"><option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option><option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option><option>OPK-09</option><option>OPK-10</option><option>OPK-11</option><option>OPK-12</option><option>EBK-01</option><option>EBK-02</option><option>PROMO</option></select></div>
             <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select></div>
             <div class="afg"><label>타입</label><select id="af-type"><option>캐릭터</option><option>리더</option><option>이벤트</option><option>스테이지</option></select></div>
             <div class="afg"><label>색깔</label><select id="af-color"><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
@@ -1911,9 +1940,9 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
           <input type="text" id="a-q" placeholder="카드명, 번호..." oninput="aFilterCards()" style="width:150px">
           <select id="a-series" onchange="aFilterCards()" style="min-width:130px">
             <option value="">전체 시리즈</option>
-            <option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option>
-            <option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option>
-            <option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option>
+            <option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option>
+            <option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option>
+            <option>OPK-09</option><option>OPK-10</option><option>OPK-11</option><option>OPK-12</option>
             <option>EBK-01</option><option>EBK-02</option>
           </select>
           <select id="a-rarity" onchange="aFilterCards()"><option value="">전체 희귀도</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select>
@@ -2215,7 +2244,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">카드 번호</label><input type="text" id="edit-id-show" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></div>
         <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">카드명 *</label><input type="text" id="edit-name" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box" onfocus="this.style.borderColor='var(--red)'" onblur="this.style.borderColor='var(--border)'"></div>
         <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">버전</label><select id="edit-ver" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option>한글판</option><option>일판</option></select></div>
-        <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option>OP-01</option><option>OP-02</option><option>OP-03</option><option>OP-04</option><option>OP-05</option><option>OP-06</option><option>OP-07</option><option>OP-08</option><option>OP-09</option><option>OP-10</option><option>OP-11</option><option>OP-12</option><option>EBK-01</option><option>EBK-02</option></select></div>
+        <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">시리즈</label><select id="edit-series" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option><option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option><option>OPK-09</option><option>OPK-10</option><option>OPK-11</option><option>OPK-12</option><option>EBK-01</option><option>EBK-02</option><option>PROMO</option></select></div>
         <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">희귀도</label><select id="edit-rarity" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option value="">미입력</option><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select></div>
         <div><label style="font-size:11px;color:var(--muted);display:block;margin-bottom:4px;font-weight:600">색깔</label><select id="edit-color" style="width:100%;background:#fff;border:1.5px solid var(--border);border-radius:var(--r3);padding:9px 10px;font-size:13px;font-family:inherit;outline:none;color:var(--text);box-sizing:border-box"><option value="">미입력</option><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
       </div>
@@ -2253,7 +2282,7 @@ const CDN = 'https://limitlesstcg.nyc3.cdn.digitaloceanspaces.com/one-piece';
 
 let allCards = [], listings = {}, trades = {}, wishSet = new Set();
 let curUser = null, curProfile = null, priceChart = null;
-let curFilter = { ver:'한글판', grade:'미등급', set:'OP-01', rarity:'all', type:'all', color:'all' };
+let curFilter = { ver:'한글판', grade:'미등급', set:'OPK-01', rarity:'all', type:'all', color:'all' };
 let sellFront = null, sellBack = null, sellGrade = '미등급';
 let aiData = {};
 let adminCards = [];
@@ -3419,7 +3448,7 @@ function showCardView() {
 
 function filterSellCards() {
   const ver = document.getElementById('s_ver')?.value || '한글판';
-  const set = document.getElementById('s_set')?.value || 'OP-01';
+  const set = document.getElementById('s_set')?.value || 'OPK-01';
   const q   = (document.getElementById('s_search')?.value || '').trim().toLowerCase();
   const sel = document.getElementById('s_card');
   if (!sel) return;
@@ -6555,18 +6584,18 @@ const PARALLELS = {
 };
 
 const SETS = [
-  {id:'OP01',series:'OP-01',name:'ROMANCE DAWN',total:121},
-  {id:'OP02',series:'OP-02',name:'정상결전',total:121},
-  {id:'OP03',series:'OP-03',name:'강대한 적',total:122},
-  {id:'OP04',series:'OP-04',name:'모략의 왕국',total:122},
-  {id:'OP05',series:'OP-05',name:'신시대의 주역',total:122},
-  {id:'OP06',series:'OP-06',name:'쌍벽의 패자',total:122},
-  {id:'OP07',series:'OP-07',name:'500년 후의 미래',total:120},
-  {id:'OP08',series:'OP-08',name:'두 전설',total:120},
-  {id:'OP09',series:'OP-09',name:'새로운 황제',total:119},
-  {id:'OP10',series:'OP-10',name:'왕족의 혈통',total:119},
-  {id:'OP11',series:'OP-11',name:'신속의 권',total:121},
-  {id:'OP12',series:'OP-12',name:'사제의 연',total:120},
+  {id:'OP01',series:'OPK-01',name:'ROMANCE DAWN',total:121},
+  {id:'OP02',series:'OPK-02',name:'정상결전',total:121},
+  {id:'OP03',series:'OPK-03',name:'강대한 적',total:122},
+  {id:'OP04',series:'OPK-04',name:'모략의 왕국',total:122},
+  {id:'OP05',series:'OPK-05',name:'신시대의 주역',total:122},
+  {id:'OP06',series:'OPK-06',name:'쌍벽의 패자',total:122},
+  {id:'OP07',series:'OPK-07',name:'500년 후의 미래',total:120},
+  {id:'OP08',series:'OPK-08',name:'두 전설',total:120},
+  {id:'OP09',series:'OPK-09',name:'새로운 황제',total:119},
+  {id:'OP10',series:'OPK-10',name:'왕족의 혈통',total:119},
+  {id:'OP11',series:'OPK-11',name:'신속의 권',total:121},
+  {id:'OP12',series:'OPK-12',name:'사제의 연',total:120},
 ];
 
 function getCardRarity(setId, n, total) {
@@ -6781,7 +6810,7 @@ function openEditCard(cid) {
   document.getElementById('edit-id-show').value = c.id;
   document.getElementById('edit-name').value = c.name || '';
   document.getElementById('edit-ver').value = c.version || '한글판';
-  document.getElementById('edit-series').value = c.series || 'OP-01';
+  document.getElementById('edit-series').value = c.series || 'OPK-01';
   document.getElementById('edit-rarity').value = c.rarity || '';
   document.getElementById('edit-color').value = c.color || '';
   document.getElementById('edit-imgurl').value = c.image_url || '';
