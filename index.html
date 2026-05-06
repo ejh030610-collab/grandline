@@ -1663,6 +1663,15 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
         <div id="contact-ship-list" style="display:flex;flex-direction:column;gap:6px"></div>
       </div>
       <div class="fg"><label>메시지 <span style="font-size:11px;color:var(--muted);font-weight:400">(선택)</span></label><textarea id="c_msg" placeholder="문의사항이나 가격 제안을 남겨주세요..."></textarea></div>
+
+      <!-- 합배송 섹션 -->
+      <div id="contact-bundle-section" style="display:none;margin-bottom:12px">
+        <div style="font-size:12px;font-weight:700;color:var(--text);margin-bottom:8px;display:flex;align-items:center;gap:5px">
+          📦 이 판매자의 다른 카드 <span style="font-size:10px;color:var(--muted);font-weight:400">추가하면 합배송 가능</span>
+        </div>
+        <div id="contact-bundle-list" style="display:flex;flex-direction:column;gap:6px"></div>
+        <div id="bundle-summary" style="display:none;margin-top:8px;padding:10px 12px;background:var(--red-light);border-radius:var(--r3);border:1px solid #fca5a5"></div>
+      </div>
       <div class="contact-sent" id="contact-sent">
         <div style="font-size:18px;margin-bottom:3px">✅</div>
         <div style="font-size:13px;font-weight:600;color:var(--green)">연락 요청이 전달됐어요!</div>
@@ -2938,12 +2947,21 @@ async function loadHome() {
   const rEl = document.getElementById('recentHome');
   if (rEl) {
     if (recent?.length) {
-      rEl.innerHTML = recent.map(l => `
-        <div class="recent-item" onclick="openDetail('${l.card_id}')">
-          ${l.cards?.image_url ? `<img src="${l.cards.image_url}" class="ri-img" onerror="this.style.display='none'">` : `<div class="ri-img" style="background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:18px">${l.cards?.emoji||'🃏'}</div>`}
-          <div style="flex:1"><div class="ri-name">${l.cards?.name||l.card_id}</div><div class="ri-meta">${l.version||'한글판'} · ${l.grade_type||'미등급'}${l.auto_grade?' · '+l.auto_grade+'등급':''} · ${l.seller_name}</div></div>
+      rEl.innerHTML = recent.map(l => {
+        const isBox = l.listing_type === 'box';
+        const name = isBox ? `📦 ${l.series} 박스` : (l.cards?.name || l.card_id || '-');
+        const thumb = l.image_front
+          ? `<img src="${l.image_front}" class="ri-img" onerror="this.style.display='none'">`
+          : l.cards?.image_url
+            ? `<img src="${l.cards.image_url}" class="ri-img" onerror="this.style.display='none'">`
+            : `<div class="ri-img" style="background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:18px">${isBox?'📦':l.cards?.emoji||'🃏'}</div>`;
+        const onclick = isBox ? `selectCat(document.querySelector('.s-series[data-set="${l.series}"]')||document.body)` : `openDetail('${l.card_id}')`;
+        return `<div class="recent-item" onclick="${onclick}">
+          ${thumb}
+          <div style="flex:1"><div class="ri-name">${name}</div><div class="ri-meta">${l.version||'한글판'} · ${l.grade_type||'미등급'} · ${l.seller_name}</div></div>
           <div class="ri-price">${l.price.toLocaleString()}원</div>
-        </div>`).join('');
+        </div>`;
+      }).join('');
     } else {
       rEl.innerHTML = '<div style="text-align:center;padding:18px;color:var(--muted);font-size:13px">아직 판매 등록이 없어요. 첫 번째로 등록해보세요!</div>';
     }
@@ -4522,8 +4540,74 @@ function openContact(lid, cid) {
   document.getElementById('contact-sent').classList.remove('on');
   document.getElementById('contact-btns').style.display='flex';
   document.getElementById('c_msg').value='';
+
+  // 합배송 — 같은 판매자 다른 판매글 로드
+  document.getElementById('contact-bundle-section').style.display = 'none';
+  document.getElementById('contact-bundle-list').innerHTML = '';
+  contactBundleItems = [];
+  loadContactBundleListings(l.seller_username, l.id);
+
   document.getElementById('contactOv').classList.add('on');
 }
+let contactBundleItems = []; // 합배송 추가 항목
+
+async function loadContactBundleListings(sellerUsername, excludeListingId) {
+  const { data } = await sb.from('listings')
+    .select('*,cards(name,image_url,emoji)')
+    .eq('seller_username', sellerUsername)
+    .eq('status', 'active')
+    .neq('id', excludeListingId)
+    .limit(10);
+  if (!data?.length) return;
+  const section = document.getElementById('contact-bundle-section');
+  const list = document.getElementById('contact-bundle-list');
+  section.style.display = 'block';
+  list.innerHTML = data.map(l => {
+    const name = l.listing_type==='box' ? `📦 ${l.series} 박스` : (l.cards?.name || l.card_id || '-');
+    const imgSrc = l.image_front || l.cards?.image_url || '';
+    return `<div id="bundle-item-${l.id}" style="display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:var(--r3);border:1px solid var(--border);background:#fff;cursor:pointer" onclick="toggleBundleItem('${l.id}','${name.replace(/'/g,'').replace(/"/g,'')}',${l.price})">
+      ${imgSrc ? `<img src="${imgSrc}" style="width:32px;height:46px;object-fit:cover;border-radius:3px;flex-shrink:0" onerror="this.style.display='none'">` : `<div style="width:32px;height:46px;background:var(--bg3);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px">${l.listing_type==='box'?'📦':'🃏'}</div>`}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${name}</div>
+        <div style="font-size:11px;color:var(--muted)">${l.grade_type||'미등급'}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+        <span style="font-size:13px;font-weight:700;color:var(--red)">${l.price.toLocaleString()}원</span>
+        <div id="bundle-btn-${l.id}" style="width:24px;height:24px;border-radius:50%;background:var(--bg3);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--muted);transition:all .15s">+</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleBundleItem(lid, name, price) {
+  const idx = contactBundleItems.findIndex(x => x.id === lid);
+  const btn = document.getElementById('bundle-btn-'+lid);
+  const item = document.getElementById('bundle-item-'+lid);
+  if (idx >= 0) {
+    contactBundleItems.splice(idx, 1);
+    if (btn) { btn.textContent='+'; btn.style.background='var(--bg3)'; btn.style.borderColor='var(--border)'; btn.style.color='var(--muted)'; }
+    if (item) item.style.background='#fff';
+  } else {
+    contactBundleItems.push({ id: lid, name, price });
+    if (btn) { btn.textContent='✓'; btn.style.background='var(--red)'; btn.style.borderColor='var(--red)'; btn.style.color='#fff'; }
+    if (item) item.style.background='var(--red-light)';
+  }
+  updateBundleSummary();
+}
+
+function updateBundleSummary() {
+  const summary = document.getElementById('bundle-summary');
+  if (!summary) return;
+  if (!contactBundleItems.length) {
+    summary.style.display = 'none';
+    return;
+  }
+  const total = (contactData?.l?.price || 0) + contactBundleItems.reduce((s,x)=>s+x.price, 0);
+  summary.style.display = 'block';
+  summary.innerHTML = `<div style="font-size:11px;color:var(--muted);margin-bottom:4px">합배송 선택 ${contactBundleItems.length}건 추가</div>
+    <div style="font-size:14px;font-weight:700;color:var(--red)">총 ${total.toLocaleString()}원</div>`;
+}
+
 function getTrackingUrl(carrier, trackingNum) {
   // 네이버 택배조회로 통일 (택배사 무관하게 바로 조회)
   const query = carrier ? `${carrier} ${trackingNum} 배송조회` : `${trackingNum} 택배조회`;
@@ -4553,21 +4637,43 @@ async function sendContact() {
     const chosenShip = selectedShip?.dataset.ship || null;
     const chosenShipPrice = selectedShip?.querySelector('.cship-price')?.textContent || null;
 
-    // 연락처는 계정 전화번호 사용
     const contact = curUser.phone || curUser.username;
+    const baseMsg = document.getElementById('c_msg').value.trim() || null;
+    const bundleMsg = contactBundleItems.length
+      ? `[합배송 요청: ${contactBundleItems.map(x=>x.name).join(', ')} 포함]${baseMsg ? '\n'+baseMsg : ''}`
+      : baseMsg;
+
     const { error } = await sb.from('trades').insert({
       listing_id: l.id,
       card_id: l.card_id,
       seller_username: l.seller_username,
       buyer_username: curUser.username,
       buyer_contact: contact,
-      message: document.getElementById('c_msg').value.trim() || null,
+      message: bundleMsg,
       price: l.price,
       status: 'pending',
       buyer_shipping_method: chosenShip,
       buyer_shipping_price: chosenShipPrice,
     });
     if (error) throw new Error(error.message);
+
+    // 합배송 항목도 각각 거래 생성
+    for (const item of contactBundleItems) {
+      await sb.from('trades').insert({
+        listing_id: item.id,
+        card_id: null,
+        seller_username: l.seller_username,
+        buyer_username: curUser.username,
+        buyer_contact: contact,
+        message: `[합배송] ${l.cards?.name || l.card_id || ''}와 합배송 요청`,
+        price: item.price,
+        status: 'pending',
+        buyer_shipping_method: chosenShip,
+        buyer_shipping_price: chosenShipPrice,
+      }).catch(()=>{});
+    }
+
+    contactBundleItems = [];
     document.getElementById('contact-sent').classList.add('on');
     document.getElementById('contact-btns').style.display = 'none';
     toast('구매 요청이 전달됐어요! 📨');
@@ -6154,7 +6260,7 @@ async function aLoadOrders() {
     .order('created_at',{ascending:false}).limit(100);
   document.getElementById('a-orders').innerHTML = data?.length
     ? data.map(l=>`<tr style="cursor:pointer" onclick="aOpenListingDetail('${l.id}')">
-        <td><b style="font-size:12px">${l.listing_type==='box'?'📦 '+l.series:(l.cards?.name||'-')}</b></td>
+        <td><b style="font-size:12px">${l.listing_type==='box'?`📦 ${l.series} 박스`:(l.cards?.name||l.series||'-')}</b></td>
         <td style="font-size:12px">${l.seller_name||'-'}</td>
         <td style="font-size:11px;color:var(--muted)">${l.grade_type||'미등급'}</td>
         <td style="color:var(--red);font-weight:600;font-size:12px">${l.price.toLocaleString()}원</td>
