@@ -851,7 +851,7 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div class="s-divider"></div>
 
-    <!-- 일판 - 추후 오픈 예정
+    <!-- 일판 -->
     <div class="s-ver" onclick="toggleVer('jp')">
       <span class="s-ver-icon" style="background:#FFF0F0">🇯🇵</span>
       일판
@@ -859,15 +859,60 @@ header{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid
     </div>
     <div id="vg-jp" style="display:none">
       <div class="s-grade-hd" onclick="toggleGrp('jp-free')">
-        <span>📋</span> 미등급 <span class="s-arrow open" id="arr-jp-free" style="margin-left:auto">▶</span>
+        <span>📋</span> 미등급 싱글 <span class="s-arrow open" id="arr-jp-free" style="margin-left:auto">▶</span>
       </div>
       <div id="grp-jp-free">
-        <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OPK-01" onclick="selectCat(this)">OPK-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
-        <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OPK-02" onclick="selectCat(this)">OPK-02 정상결전<span class="s-cnt">-</span></div>
+        <!-- 부스터팩 -->
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('jp-booster')">
+          📦 부스터팩 <span class="s-arrow open" id="arr-jp-booster" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-jp-booster">
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-01" onclick="selectCat(this)">OP-01 ROMANCE DAWN<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-02" onclick="selectCat(this)">OP-02 정상결전<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-03" onclick="selectCat(this)">OP-03 강대한 적<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-04" onclick="selectCat(this)">OP-04 모략의 왕국<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-05" onclick="selectCat(this)">OP-05 신시대의 주역<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-06" onclick="selectCat(this)">OP-06 쌍벽의 패자<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-07" onclick="selectCat(this)">OP-07 500년 후의 미래<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-08" onclick="selectCat(this)">OP-08 두 전설<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-09" onclick="selectCat(this)">OP-09 악인의 시대<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="OP-10" onclick="selectCat(this)">OP-10 왕에게 도전<span class="s-cnt">-</span></div>
+        </div>
+        <!-- 엑스트라 부스터팩 -->
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('jp-extra')">
+          ✨ 엑스트라 부스터팩 <span class="s-arrow open" id="arr-jp-extra" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-jp-extra">
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="EB-01" onclick="selectCat(this)">EB-01 메모리얼 컬렉션<span class="s-cnt">-</span></div>
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="EB-02" onclick="selectCat(this)">EB-02 Anime 25th<span class="s-cnt">-</span></div>
+        </div>
+        <!-- 프리미엄 부스터 -->
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('jp-prb')">
+          💎 프리미엄 부스터 <span class="s-arrow open" id="arr-jp-prb" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-jp-prb">
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="PRB-01" onclick="selectCat(this)">PRB-01 프리미엄 부스터<span class="s-cnt">-</span></div>
+        </div>
+        <!-- 프로모션 -->
+        <div class="s-grade-hd" style="padding-left:20px;font-size:11px" onclick="toggleGrp('jp-promo')">
+          🎁 프로모션 <span class="s-arrow" id="arr-jp-promo" style="margin-left:auto">▶</span>
+        </div>
+        <div id="grp-jp-promo" style="display:none">
+          <div class="s-series" data-ver="일판" data-grade="미등급" data-set="PROMO-JP" onclick="selectCat(this)">프로모션 카드<span class="s-cnt">-</span></div>
+        </div>
+      </div>
+      <!-- 등급 싱글 -->
+      <div class="s-grade-hd" onclick="toggleGrp('jp-grade')">
+        <span>🏆</span> 등급 싱글 <span class="s-arrow" id="arr-jp-grade" style="margin-left:auto">▶</span>
+      </div>
+      <div id="grp-jp-grade" style="display:none">
+        <div style="font-size:10px;color:var(--muted);padding:4px 14px">PSA · CCG · BRG 등급 카드</div>
+        <div class="s-series" data-ver="일판" data-grade="PSA" data-set="all" onclick="selectCat(this)">🥇 PSA<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="일판" data-grade="CCG" data-set="all" onclick="selectCat(this)">🥈 CCG<span class="s-cnt">-</span></div>
+        <div class="s-series" data-ver="일판" data-grade="BRG" data-set="all" onclick="selectCat(this)">🥉 BRG<span class="s-cnt">-</span></div>
       </div>
     </div>
     <div class="s-divider"></div>
-    -->
 
   </aside>
 
