@@ -807,11 +807,13 @@ async function init() {
   let from = 0;
   for (let i = 0; i < 10; i++) {
     const { data, error } = await sb.from('cards').select('*').order('id').range(from, from + 999);
-    if (error || !data?.length) break;
+    if (error) { console.error('카드 로드 오류:', error); break; }
+    if (!data?.length) break;
     allCards = allCards.concat(data);
     if (data.length < 1000) break;
     from += 1000;
   }
+  console.log('로드된 카드 수:', allCards.length);
 
   // 사이드바 카운트
   document.querySelectorAll('.s-series[data-ser]').forEach(el => {
