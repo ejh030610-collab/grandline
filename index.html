@@ -419,6 +419,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
         <option value="popular">희귀도순</option>
         <option value="name">이름순</option>
       </select>
+      <button class="ftag" onclick="toggleCheckAll()" id="checkAllBtn" style="margin-left:auto;flex-shrink:0">✓ 전체 체크</button>
     </div>
 
     <div class="list-hd">
@@ -732,7 +733,36 @@ const RC = r => ({'SEC':'rt-sec','SR':'rt-sr','R':'rt-r','UC':'rt-uc','C':'rt-c'
 function loadLocalOwned() { try { return JSON.parse(localStorage.getItem(OWNED_KEY)||'{}'); } catch { return {}; } }
 function saveLocalOwned() { try { localStorage.setItem(OWNED_KEY, JSON.stringify(owned)); } catch {} }
 
-// ── TOAST ──
+// ── 전체 체크/해제 ──
+async function toggleCheckAll() {
+  const seriesCards = allCards.filter(c => c.series === curSeries);
+  const allOwned = seriesCards.every(c => owned[c.id]);
+  const btn = document.getElementById('checkAllBtn');
+
+  if (allOwned) {
+    // 전체 해제
+    seriesCards.forEach(c => { delete owned[c.id]; });
+    saveLocalOwned();
+    btn.textContent = '✓ 전체 체크';
+    btn.classList.remove('active');
+    toast('전체 해제됐어요');
+    if (curUser) {
+      await sb.from('collections').delete().eq('user_id', curUser.id).in('card_id', seriesCards.map(c => c.id)).catch(()=>{});
+    }
+  } else {
+    // 전체 체크
+    seriesCards.forEach(c => { owned[c.id] = true; });
+    saveLocalOwned();
+    btn.textContent = '✓ 전체 해제';
+    btn.classList.add('active');
+    toast(`${seriesCards.length}장 전체 체크됐어요 ✓`);
+    if (curUser) {
+      const rows = seriesCards.map(c => ({ user_id: curUser.id, card_id: c.id, quantity: 1 }));
+      await sb.from('collections').upsert(rows).catch(()=>{});
+    }
+  }
+  renderCards();
+}
 function toast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg; t.classList.add('on');
@@ -809,6 +839,15 @@ function renderCards() {
   document.getElementById('progFill').style.width = pct + '%';
 
   document.getElementById('listCnt').textContent = '총 ' + cards.length + '종';
+
+  // 전체체크 버튼 상태
+  const btn = document.getElementById('checkAllBtn');
+  if (btn) {
+    const seriesCards = allCards.filter(c => c.series === curSeries);
+    const allOwned = seriesCards.length > 0 && seriesCards.every(c => owned[c.id]);
+    btn.textContent = allOwned ? '✓ 전체 해제' : '✓ 전체 체크';
+    btn.classList.toggle('active', allOwned);
+  }
 
   if (!cards.length) {
     document.getElementById('cardGrid').innerHTML = '<div class="empty-grid">카드가 없어요</div>';
