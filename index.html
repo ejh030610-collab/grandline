@@ -806,7 +806,7 @@ async function init() {
   // 카드 전체 로드 (페이지네이션)
   let from = 0;
   for (let i = 0; i < 10; i++) {
-    const { data, error } = await sb.from('cards').select('*').eq('version','한글판').order('id').range(from, from + 999);
+    const { data, error } = await sb.from('cards').select('*').order('id').range(from, from + 999);
     if (error || !data?.length) break;
     allCards = allCards.concat(data);
     if (data.length < 1000) break;
