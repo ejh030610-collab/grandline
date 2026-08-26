@@ -344,11 +344,11 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
     <!-- 한글판 -->
     <div class="s-ver" onclick="toggleVer('kr')">
       <span class="s-ver-icon" style="background:#EEF2FF">🇰🇷</span>한글판
-      <span class="s-arrow open" id="arr-kr">▶</span>
+      <span class="s-arrow" id="arr-kr">▶</span>
     </div>
-    <div id="vg-kr">
-      <div class="s-grade-hd" onclick="toggleGrp('kr-b')">📦 부스터팩 <span class="s-arrow open" id="arr-kr-b" style="margin-left:auto">▶</span></div>
-      <div id="grp-kr-b">
+    <div id="vg-kr" style="display:none">
+      <div class="s-grade-hd" onclick="toggleGrp('kr-b')">📦 부스터팩 <span class="s-arrow" id="arr-kr-b" style="margin-left:auto">▶</span></div>
+      <div id="grp-kr-b" style="display:none">
         <div class="s-series active" data-ser="OPK-01" onclick="selectSeries(this)">OPK-01 ROMANCE DAWN<span class="s-cnt" id="cnt-OPK-01">-</span></div>
         <div class="s-series" data-ser="OPK-02" onclick="selectSeries(this)">OPK-02 정상결전<span class="s-cnt" id="cnt-OPK-02">-</span></div>
         <div class="s-series" data-ser="OPK-03" onclick="selectSeries(this)">OPK-03 강대한 적<span class="s-cnt" id="cnt-OPK-03">-</span></div>
@@ -364,8 +364,8 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
         <div class="s-series" data-ser="OPK-13" onclick="selectSeries(this)">OPK-13 계승되는 의지<span class="s-cnt" id="cnt-OPK-13">-</span></div>
         <div class="s-series" data-ser="OPK-14" onclick="selectSeries(this)">OPK-14 창해의칠걸<span class="s-cnt" id="cnt-OPK-14">-</span></div>
       </div>
-      <div class="s-grade-hd" onclick="toggleGrp('kr-e')">✨ 엑스트라 부스터 <span class="s-arrow open" id="arr-kr-e" style="margin-left:auto">▶</span></div>
-      <div id="grp-kr-e">
+      <div class="s-grade-hd" onclick="toggleGrp('kr-e')">✨ 엑스트라 부스터 <span class="s-arrow" id="arr-kr-e" style="margin-left:auto">▶</span></div>
+      <div id="grp-kr-e" style="display:none">
         <div class="s-series" data-ser="EBK-01" onclick="selectSeries(this)">EBK-01 메모리얼 컬렉션<span class="s-cnt" id="cnt-EBK-01">-</span></div>
         <div class="s-series" data-ser="EBK-02" onclick="selectSeries(this)">EBK-02 Anime 25th<span class="s-cnt" id="cnt-EBK-02">-</span></div>
         <div class="s-series" data-ser="EBK-03" onclick="selectSeries(this)">EBK-03 히로인즈 에디션<span class="s-cnt" id="cnt-EBK-03">-</span></div>
@@ -588,7 +588,8 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
               <option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option>
               <option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option>
               <option>OPK-09</option><option>OPK-10</option><option>OPK-11</option><option>OPK-12</option>
-              <option>EBK-01</option><option>EBK-02</option><option>PROMO</option>
+              <option>OPK-13</option><option>OPK-14</option>
+              <option>EBK-01</option><option>EBK-02</option><option>EBK-03</option><option>PROMO</option>
             </select></div>
             <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option></select></div>
             <div class="afg"><label>타입</label><select id="af-type"><option>캐릭터</option><option>리더</option><option>이벤트</option><option>스테이지</option></select></div>
@@ -610,7 +611,8 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
             <option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option>
             <option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option>
             <option>OPK-09</option><option>OPK-10</option><option>OPK-11</option><option>OPK-12</option>
-            <option>EBK-01</option><option>EBK-02</option>
+            <option>OPK-13</option><option>OPK-14</option>
+            <option>EBK-01</option><option>EBK-02</option><option>EBK-03</option>
           </select>
           <select id="a-rarity" onchange="aFilterCards()">
             <option value="">전체 희귀도</option>
@@ -823,7 +825,10 @@ async function init() {
     if (el2) el2.textContent = cnt || '-';
   });
 
-  await loadCards(curSeries);
+  // 초기 시리즈 로드 - 사이드바 펼치고 OPK-01 선택
+  toggleVer('kr');
+  toggleGrp('kr-b');
+  await loadCards('OPK-01');
 }
 
 // ── 카드 로드 ──
