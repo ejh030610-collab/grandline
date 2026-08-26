@@ -132,11 +132,12 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
   .list-cnt{font-size:11px;}
   .progress-section{border-radius:14px;padding:12px 14px;margin-bottom:10px;}
   .prog-owned{font-size:26px;}
-  .filter-bar{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;border-radius:14px;margin-bottom:10px;padding:8px 12px;gap:6px;}
+  .filter-bar{flex-wrap:nowrap;overflow-x:auto;overflow-y:visible;scrollbar-width:none;border-radius:14px;margin-bottom:10px;padding:8px 12px;gap:6px;}
   .filter-bar::-webkit-scrollbar{display:none;}
   .ftag{flex-shrink:0;font-size:12px;padding:6px 14px;border-radius:20px;}
   .sort-sel{flex-shrink:0;font-size:11px;}
   .list-hd{margin-bottom:8px;}
+  .rarity-drop{position:fixed;top:auto;left:12px;right:12px;bottom:80px;max-height:250px;overflow-y:auto;}
 }
 .card{background:#fff;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;cursor:pointer;transition:all .18s;box-shadow:var(--sh);}
 .card:hover{border-color:var(--red);box-shadow:var(--sh2);transform:translateY(-2px);}
