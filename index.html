@@ -1394,6 +1394,7 @@ function aRenderCards(cards) {
         <td><div style="display:flex;gap:4px">
           <button class="aact" onclick="aSetImg('${c.id}')">🖼 이미지</button>
           <button class="aact" onclick="aEditName('${c.id}','${(c.name||'').replace(/'/g,'\\\'').replace(/"/g,'&quot;')}')">✏️ 이름</button>
+          <button class="aact" onclick="aEditRarity('${c.id}','${c.rarity||''}')">⭐ 희귀도</button>
           <button class="aact del" onclick="aDelCard('${c.id}')">삭제</button>
         </div></td>
       </tr>`).join('')
