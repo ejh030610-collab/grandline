@@ -1431,6 +1431,56 @@ async function saveImg(cid) {
   // 로컬 카드 업데이트
   const c = allCards.find(x=>x.id===cid); if(c) c.image_url=url;
 }
+async function aEditRarity(cid, currentRarity) {
+  const row = document.querySelector(`[data-cid="${cid}"]`);
+  if (!row) return;
+  const rarities = ['SEC★','SEC','SR★','SR','R★','R','L★','L','SP','UC','C','P'];
+  const RARITY_COLOR = {'SEC★':'#D85A30','SEC':'#D85A30','SR★':'#7C3AED','SR':'#7C3AED','R★':'#4B6CF7','R':'#4B6CF7','L★':'#059669','L':'#059669','SP':'#e879f9','UC':'#6B7280','C':'#6B7280','P':'#e879f9'};
+  row.innerHTML = `<td colspan="6" style="padding:10px 14px">
+    <div style="margin-bottom:8px;font-size:12px;font-weight:600;color:var(--muted)">희귀도 선택 — 현재: <span style="color:var(--red);font-weight:700">${currentRarity||'없음'}</span></div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
+      ${rarities.map((r,i) => `<button id="rbtn-${cid}-${i}"
+        style="padding:5px 12px;border-radius:8px;border:2px solid ${r===currentRarity?'var(--red)':'var(--border)'};
+        background:${r===currentRarity?'var(--red-light)':'#fff'};color:${r===currentRarity?'var(--red)':(RARITY_COLOR[r]||'var(--muted)')};
+        font-size:12px;font-weight:700;font-family:inherit;cursor:pointer" 
+        data-rarity="${r}" data-cid="${cid}">${r}</button>`).join('')}
+    </div>
+    <div style="display:flex;gap:6px">
+      <button onclick="confirmSaveRarity('${cid}')" style="padding:6px 16px;background:var(--red);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">저장</button>
+      <button onclick="aLoadCards()" style="padding:6px 12px;background:#fff;border:1px solid var(--border);border-radius:6px;font-size:12px;font-family:inherit;color:var(--muted);cursor:pointer">취소</button>
+    </div>
+  </td>`;
+
+  // 버튼 클릭 이벤트 직접 등록
+  rarities.forEach((r, i) => {
+    const btn = document.getElementById(`rbtn-${cid}-${i}`);
+    if (!btn) return;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll(`[data-cid="${cid}"]`).forEach(b => {
+        if (b.dataset.rarity) {
+          const isSelected = b.dataset.rarity === r;
+          b.style.border = `2px solid ${isSelected ? 'var(--red)' : 'var(--border)'}`;
+          b.style.background = isSelected ? 'var(--red-light)' : '#fff';
+          b.style.color = isSelected ? 'var(--red)' : (RARITY_COLOR[b.dataset.rarity] || 'var(--muted)');
+        }
+      });
+      row._selectedRarity = r;
+    });
+  });
+  row._selectedRarity = currentRarity;
+}
+
+async function confirmSaveRarity(cid) {
+  const row = document.querySelector(`[data-cid="${cid}"]`);
+  const rarity = row?._selectedRarity;
+  if (!rarity) { toast('희귀도를 선택해주세요'); return; }
+  const { error } = await sb.from('cards').update({ rarity }).eq('id', cid);
+  if (error) { toast('저장 실패: ' + error.message); return; }
+  toast('희귀도 저장됐어요 ✅');
+  const c = allCards.find(x => x.id === cid); if (c) c.rarity = rarity;
+  aLoadCards();
+  renderCards();
+}
 async function aEditName(cid, currentName) {
   const newName = prompt('카드명 수정:', currentName);
   if (!newName || newName === currentName) return;
