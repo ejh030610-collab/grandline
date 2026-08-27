@@ -283,7 +283,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 .mob-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);z-index:200;box-shadow:0 -2px 12px rgba(75,108,247,.1);padding-bottom:env(safe-area-inset-bottom,0px);}
 .mob-nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;font-size:11px;color:var(--muted);cursor:pointer;padding:10px 0 8px;}
 .mob-nav-btn.active{color:var(--red);}
-.mob-nav-btn .nav-icon{font-size:22px;line-height:1;}
+.mob-nav-btn .nav-icon{width:22px;height:22px;display:flex;align-items:center;justify-content:center;line-height:1;}
 @media(max-width:700px){.mob-nav{display:flex;}}
 @media(min-width:701px){.mob-nav{display:none!important;}}
 
@@ -320,12 +320,12 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
     <img src="/logo.png" alt="NEXO" style="height:36px;width:auto;object-fit:contain">
   </div>
   <div class="h-search mob-hide" onclick="openSearchOv()" style="cursor:pointer">
-    <span class="h-search-icon">🔍</span>
+    <span class="h-search-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg></span>
     <input type="text" placeholder="카드명, 번호 검색..." readonly style="cursor:pointer;pointer-events:none">
   </div>
   <div class="h-right" id="hRight">
-    <button class="hbtn mob-hide" onclick="openNotice()">📢 공지</button>
-    <button class="hbtn mob-hide" onclick="openInquiry()">💬 문의</button>
+    <button class="hbtn mob-hide" onclick="openNotice()" style="display:flex;align-items:center;gap:5px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> 공지</button>
+    <button class="hbtn mob-hide" onclick="openInquiry()" style="display:flex;align-items:center;gap:5px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 문의</button>
     <button class="hbtn primary" onclick="openAuth('login')">로그인</button>
   </div>
   <!-- 알림 드롭다운 -->
@@ -376,13 +376,6 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
     <div class="s-divider"></div>
     <div class="s-ver" onclick="openDeckBuilder()" style="color:var(--red);font-weight:700">
       <span class="s-ver-icon" style="background:#FEF0EB">🗂️</span>덱 빌더
-    </div>
-    <div class="s-ver" onclick="openCommunity()" style="color:#059669;font-weight:700">
-      <span class="s-ver-icon" style="background:#F0FDF4">💬</span>커뮤니티
-    </div>
-    <div class="s-divider"></div>
-    <div class="s-ver" onclick="openMyPage2()" style="color:var(--muted)">
-      <span class="s-ver-icon" style="background:#F0F2FA">👤</span>마이페이지
     </div>
     <div class="s-divider"></div>
   </aside>
@@ -748,86 +741,6 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
   <img id="lb-img" src="" alt="">
 </div>
 
-<!-- ── 커뮤니티 ── -->
-<div class="ov" id="communityOv" style="align-items:flex-start;padding:0">
-  <div style="width:100%;max-width:800px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:#F8F9FF">
-    <!-- 헤더 -->
-    <div style="background:linear-gradient(135deg,#059669,#10b981);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-      <button onclick="closeCommunity()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer">←</button>
-      <div><div style="color:#fff;font-size:17px;font-weight:800">💬 커뮤니티</div><div style="color:rgba(255,255,255,.7);font-size:11px">원피스 카드 이야기</div></div>
-      <button onclick="openPostWrite()" style="margin-left:auto;padding:7px 14px;background:#fff;border:none;border-radius:8px;color:#059669;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">+ 글쓰기</button>
-    </div>
-    <!-- 카테고리 탭 -->
-    <div style="display:flex;background:#fff;border-bottom:1px solid var(--border);overflow-x:auto;scrollbar-width:none">
-      <button class="comm-tab active" data-cat="all" onclick="switchCommTab('all',this)" style="padding:11px 16px;border:none;border-bottom:2.5px solid #059669;background:none;font-size:12px;font-weight:700;color:#059669;font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0">전체</button>
-      <button class="comm-tab" data-cat="free" onclick="switchCommTab('free',this)" style="padding:11px 16px;border:none;border-bottom:2.5px solid transparent;background:none;font-size:12px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0">자유게시판</button>
-      <button class="comm-tab" data-cat="showcase" onclick="switchCommTab('showcase',this)" style="padding:11px 16px;border:none;border-bottom:2.5px solid transparent;background:none;font-size:12px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0">카드 자랑</button>
-      <button class="comm-tab" data-cat="deck" onclick="switchCommTab('deck',this)" style="padding:11px 16px;border:none;border-bottom:2.5px solid transparent;background:none;font-size:12px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0">덱 공유</button>
-      <button class="comm-tab" data-cat="info" onclick="switchCommTab('info',this)" style="padding:11px 16px;border:none;border-bottom:2.5px solid transparent;background:none;font-size:12px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer;white-space:nowrap;flex-shrink:0">정보/질문</button>
-    </div>
-    <!-- 게시글 목록 -->
-    <div id="postList" style="flex:1;overflow-y:auto;padding:12px"></div>
-  </div>
-</div>
-
-<!-- 글쓰기 모달 -->
-<div class="ov" id="postWriteOv" style="z-index:600;align-items:flex-start;padding:0">
-  <div style="width:100%;max-width:600px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:#fff">
-    <div style="background:linear-gradient(135deg,#059669,#10b981);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-      <button onclick="closePostWrite()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer">←</button>
-      <div style="color:#fff;font-size:16px;font-weight:700">글쓰기</div>
-      <button onclick="submitPost()" style="margin-left:auto;padding:7px 16px;background:#fff;border:none;border-radius:8px;color:#059669;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">등록</button>
-    </div>
-    <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
-      <select id="postCat" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none">
-        <option value="free">자유게시판</option>
-        <option value="showcase">카드 자랑</option>
-        <option value="deck">덱 공유</option>
-        <option value="info">정보/질문</option>
-      </select>
-      <input id="postTitle" placeholder="제목을 입력해주세요" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none">
-      <textarea id="postContent" placeholder="내용을 입력해주세요..." style="flex:1;min-height:200px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none;resize:none;line-height:1.6"></textarea>
-      <input id="postImgUrl" placeholder="이미지 URL (선택사항)" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none">
-    </div>
-  </div>
-</div>
-
-<!-- 게시글 상세 -->
-<div class="ov" id="postDetailOv" style="z-index:600;align-items:flex-start;padding:0">
-  <div style="width:100%;max-width:700px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:#F8F9FF">
-    <div id="postDetailContent" style="flex:1;overflow-y:auto"></div>
-  </div>
-</div>
-
-<!-- ── 마이페이지 ── -->
-<div class="ov" id="myPage2Ov" style="align-items:flex-start;padding:0">
-  <div style="width:100%;max-width:600px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:#F8F9FF">
-    <!-- 헤더 -->
-    <div style="background:linear-gradient(135deg,#4B6CF7,#7C3AED);padding:0 0 0 0;flex-shrink:0">
-      <div style="display:flex;align-items:center;padding:14px 20px;gap:12px">
-        <button onclick="closeMyPage2()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer">←</button>
-        <div style="color:#fff;font-size:17px;font-weight:800">👤 마이페이지</div>
-      </div>
-      <!-- 프로필 영역 -->
-      <div id="myPage2Profile" style="padding:0 20px 20px;display:flex;align-items:center;gap:14px">
-        <div style="width:60px;height:60px;border-radius:50%;background:rgba(255,255,255,.25);border:2.5px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;flex-shrink:0" id="mp2Avatar">?</div>
-        <div>
-          <div style="color:#fff;font-size:18px;font-weight:700" id="mp2Name">-</div>
-          <div style="color:rgba(255,255,255,.7);font-size:12px;margin-top:2px" id="mp2Sub">-</div>
-        </div>
-      </div>
-      <!-- 탭 -->
-      <div style="display:flex;background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.15)">
-        <button class="mp2-tab active" onclick="switchMp2Tab('collection',this)" style="flex:1;padding:11px;border:none;border-bottom:2.5px solid #fff;background:none;color:#fff;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer">📚 컬렉션</button>
-        <button class="mp2-tab" onclick="switchMp2Tab('decks',this)" style="flex:1;padding:11px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">🗂️ 내 덱</button>
-        <button class="mp2-tab" onclick="switchMp2Tab('posts',this)" style="flex:1;padding:11px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">💬 게시글</button>
-        <button class="mp2-tab" onclick="switchMp2Tab('settings',this)" style="flex:1;padding:11px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:12px;font-weight:500;font-family:inherit;cursor:pointer">⚙️ 설정</button>
-      </div>
-    </div>
-    <div id="mp2Body" style="flex:1;overflow-y:auto;padding:14px"></div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 <div id="checkAllToast" style="
   position:fixed;bottom:76px;left:50%;transform:translateX(-50%);
@@ -842,16 +755,20 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 <!-- 모바일 하단 네비 -->
 <nav class="mob-nav">
   <button class="mob-nav-btn active" id="mob-home" onclick="showMain()">
-    <span class="nav-icon">🏠</span><span>홈</span>
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg></span>
+    <span>홈</span>
   </button>
-  <button class="mob-nav-btn" onclick="openCommunity()">
-    <span class="nav-icon">💬</span><span>커뮤니티</span>
+  <button class="mob-nav-btn" onclick="openCommunity ? openCommunity() : openSearchOv()">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+    <span>커뮤니티</span>
   </button>
   <button class="mob-nav-btn" onclick="openDeckBuilder()">
-    <span class="nav-icon">🗂️</span><span>덱</span>
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></span>
+    <span>덱</span>
   </button>
-  <button class="mob-nav-btn" id="mob-my" onclick="openMyPage2()">
-    <span class="nav-icon">👤</span><span>MY</span>
+  <button class="mob-nav-btn" id="mob-my" onclick="openMyPage2 ? openMyPage2() : mobNavMy()">
+    <span class="nav-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+    <span>MY</span>
   </button>
 </nav>
 
@@ -1269,12 +1186,12 @@ async function onLogin(user) {
   document.getElementById('hRight').innerHTML = `
     <button class="hbtn mob-hide" onclick="openNotice()">📢 공지</button>
     <button class="hbtn mob-hide" onclick="openInquiry()">💬 문의</button>
-    <button class="noti-btn" onclick="toggleNoti()">🔔<span class="noti-badge" id="notiBadge"></span></button>
+    <button class="noti-btn" onclick="toggleNoti()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="noti-badge" id="notiBadge"></span></button>
     <div class="user-chip" onclick="openMyPage()">
       <div class="avatar">${(user.nickname||'?')[0]}</div>
       <span class="mob-hide" style="font-size:13px;font-weight:500">${user.nickname||user.username}</span>
     </div>
-    ${isAdmin ? `<button class="hbtn mob-hide" style="background:var(--gold-light);border-color:#D4A017;color:var(--gold)" onclick="openAdmin()">⚙️ 관리</button>` : ''}
+    ${isAdmin ? `<button class="hbtn mob-hide" style="background:var(--gold-light);border-color:#D4A017;color:var(--gold)" onclick="openAdmin()">관리</button>` : ''}
     <button class="hbtn mob-hide" onclick="doLogout()">로그아웃</button>`;
   if (document.getElementById('mob-admin-wrap')) document.getElementById('mob-admin-wrap').style.display = isAdmin ? 'block' : 'none';
   loadNotifications();
@@ -1284,8 +1201,8 @@ async function doLogout() {
   localStorage.removeItem('gl_session');
   curUser = null;
   document.getElementById('hRight').innerHTML = `
-    <button class="hbtn mob-hide" onclick="openNotice()">📢 공지</button>
-    <button class="hbtn mob-hide" onclick="openInquiry()">💬 문의</button>
+    <button class="hbtn mob-hide" onclick="openNotice()" style="display:flex;align-items:center;gap:5px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg> 공지</button>
+    <button class="hbtn mob-hide" onclick="openInquiry()" style="display:flex;align-items:center;gap:5px"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> 문의</button>
     <button class="hbtn primary" onclick="openAuth('login')">로그인</button>`;
   toast('로그아웃 했어요');
   renderCards();
@@ -1987,330 +1904,7 @@ function exportDeck() {
     prompt('덱 목록 복사:', text);
   });
 }
-// ── 커뮤니티 ──
-let commTabVal = 'all';
-const CAT_LABEL = { all:'전체', free:'자유게시판', showcase:'카드 자랑', deck:'덱 공유', info:'정보/질문' };
-const CAT_COLOR = { free:'#4B6CF7', showcase:'#D97706', deck:'#7C3AED', info:'#059669' };
-
-function openCommunity() {
-  document.getElementById('communityOv').classList.add('on');
-  loadPosts();
-  if (window.innerWidth <= 700) toggleMob();
-}
-function closeCommunity() { document.getElementById('communityOv').classList.remove('on'); }
-
-function switchCommTab(cat, btn) {
-  commTabVal = cat;
-  document.querySelectorAll('.comm-tab').forEach(b => {
-    b.style.color = 'var(--muted)'; b.style.fontWeight = '500'; b.style.borderBottomColor = 'transparent';
-  });
-  btn.style.color = '#059669'; btn.style.fontWeight = '700'; btn.style.borderBottomColor = '#059669';
-  loadPosts();
-}
-
-async function loadPosts() {
-  const el = document.getElementById('postList');
-  el.innerHTML = '<div style="text-align:center;padding:40px"><div class="spinner"></div></div>';
-  let query = sb.from('posts').select('*').order('created_at', { ascending: false }).limit(30);
-  if (commTabVal !== 'all') query = query.eq('category', commTabVal);
-  const { data } = await query;
-  if (!data?.length) {
-    el.innerHTML = `<div style="text-align:center;padding:60px;color:var(--muted)">
-      <div style="font-size:40px;margin-bottom:12px">💬</div>
-      <div style="font-size:14px;font-weight:600">아직 게시글이 없어요</div>
-      <div style="font-size:12px;margin-top:6px">첫 글을 남겨보세요!</div>
-      <button onclick="openPostWrite()" style="margin-top:14px;padding:10px 24px;background:#059669;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">+ 글쓰기</button>
-    </div>`;
-    return;
-  }
-  const timeAgo = t => { const d=Math.floor((Date.now()-new Date(t))/1000); if(d<60)return '방금'; if(d<3600)return Math.floor(d/60)+'분 전'; if(d<86400)return Math.floor(d/3600)+'시간 전'; return Math.floor(d/86400)+'일 전'; };
-  el.innerHTML = data.map(p => {
-    const col = CAT_COLOR[p.category] || '#4B6CF7';
-    return `<div onclick="openPostDetail('${p.id}')" style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='#059669'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">
-        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${col}18;color:${col}">${CAT_LABEL[p.category]||p.category}</span>
-        <span style="font-size:11px;color:var(--muted);margin-left:auto">${timeAgo(p.created_at)}</span>
-      </div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div>
-      <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content}</div>
-      <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--muted)">
-        <span>👤 ${p.nickname||p.user_id||'익명'}</span>
-        <span>❤️ ${p.likes||0}</span>
-        <span>💬 ${p.comment_count||0}</span>
-        <span>👁 ${p.views||0}</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function openPostWrite() {
-  if (!curUser) { toast('로그인이 필요해요'); openAuth('login'); return; }
-  document.getElementById('postWriteOv').classList.add('on');
-}
-function closePostWrite() { document.getElementById('postWriteOv').classList.remove('on'); }
-
-async function submitPost() {
-  const title = document.getElementById('postTitle').value.trim();
-  const content = document.getElementById('postContent').value.trim();
-  const category = document.getElementById('postCat').value;
-  const image_url = document.getElementById('postImgUrl').value.trim() || null;
-  if (!title || !content) { toast('제목과 내용을 입력해주세요'); return; }
-  const { error } = await sb.from('posts').insert({
-    user_id: curUser.id || curUser.username,
-    nickname: curUser.nickname || curUser.username,
-    category, title, content, image_url, likes: 0, views: 0
-  });
-  if (error) { toast('등록 실패: ' + error.message); return; }
-  document.getElementById('postTitle').value = '';
-  document.getElementById('postContent').value = '';
-  document.getElementById('postImgUrl').value = '';
-  toast('게시글이 등록됐어요 ✅');
-  closePostWrite();
-  loadPosts();
-}
-
-async function openPostDetail(id) {
-  document.getElementById('postDetailOv').classList.add('on');
-  const el = document.getElementById('postDetailContent');
-  el.innerHTML = '<div style="text-align:center;padding:60px"><div class="spinner"></div></div>';
-
-  // 조회수 증가
-  await sb.from('posts').update({ views: sb.rpc('increment') }).eq('id', id).catch(() => {});
-  const { data: p } = await sb.from('posts').select('*').eq('id', id).single();
-  if (!p) return;
-  const { data: comments } = await sb.from('comments').select('*').eq('post_id', id).order('created_at', { ascending: true });
-  const timeAgo = t => { const d=Math.floor((Date.now()-new Date(t))/1000); if(d<60)return '방금'; if(d<3600)return Math.floor(d/60)+'분 전'; if(d<86400)return Math.floor(d/3600)+'시간 전'; return Math.floor(d/86400)+'일 전'; };
-  const col = CAT_COLOR[p.category] || '#4B6CF7';
-  const isOwner = curUser && (curUser.id === p.user_id || curUser.username === p.user_id);
-
-  el.innerHTML = `
-    <!-- 헤더 -->
-    <div style="background:linear-gradient(135deg,#059669,#10b981);padding:14px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10">
-      <button onclick="closePostDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer">←</button>
-      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.25);color:#fff">${CAT_LABEL[p.category]||p.category}</span>
-      ${isOwner ? `<button onclick="deletePost('${p.id}')" style="margin-left:auto;padding:5px 10px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:6px;color:#fff;font-size:11px;font-family:inherit;cursor:pointer">삭제</button>` : '<div style="margin-left:auto"></div>'}
-    </div>
-    <!-- 본문 -->
-    <div style="background:#fff;padding:18px 16px;border-bottom:1px solid var(--border)">
-      <h2 style="font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.4">${p.title}</h2>
-      <div style="display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:14px">
-        <span>👤 ${p.nickname||p.user_id||'익명'}</span>
-        <span>${timeAgo(p.created_at)}</span>
-        <span>👁 ${p.views||0}</span>
-        <span>❤️ <span id="postLikeCount">${p.likes||0}</span></span>
-      </div>
-      ${p.image_url ? `<img src="${p.image_url}" style="width:100%;border-radius:10px;margin-bottom:14px;max-height:400px;object-fit:cover" onclick="openLB('${p.image_url}')">` : ''}
-      <div style="font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap">${p.content}</div>
-    </div>
-    <!-- 좋아요 -->
-    <div style="padding:12px 16px;background:#fff;border-bottom:1px solid var(--border);display:flex;justify-content:center">
-      <button onclick="likePost('${p.id}')" id="postLikeBtn" style="padding:8px 24px;background:var(--bg2);border:1.5px solid var(--border);border-radius:20px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;gap:6px">
-        ❤️ 좋아요 <span id="postLikeCount2">${p.likes||0}</span>
-      </button>
-    </div>
-    <!-- 댓글 -->
-    <div style="padding:14px 16px">
-      <div style="font-size:13px;font-weight:700;margin-bottom:10px">댓글 ${comments?.length||0}개</div>
-      <div id="commentList">
-        ${(comments||[]).map(c => `
-          <div style="padding:10px 0;border-bottom:1px solid var(--border)">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <span style="font-size:12px;font-weight:600">${c.nickname||c.user_id||'익명'}</span>
-              <span style="font-size:10px;color:var(--muted)">${timeAgo(c.created_at)}</span>
-            </div>
-            <div style="font-size:13px;line-height:1.6;color:var(--text)">${c.content}</div>
-          </div>`).join('')}
-      </div>
-      <!-- 댓글 입력 -->
-      ${curUser ? `
-      <div style="margin-top:12px;display:flex;gap:8px">
-        <input id="commentInput" placeholder="댓글을 입력해주세요..." style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none" onkeydown="if(event.key==='Enter')submitComment('${p.id}')">
-        <button onclick="submitComment('${p.id}')" style="padding:9px 14px;background:#059669;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">등록</button>
-      </div>` : `<div style="text-align:center;padding:14px;font-size:13px;color:var(--muted)"><button onclick="openAuth('login')" style="color:#059669;background:none;border:none;cursor:pointer;font-weight:600;font-family:inherit">로그인</button>하면 댓글을 달 수 있어요</div>`}
-    </div>`;
-}
-
-function closePostDetail() { document.getElementById('postDetailOv').classList.remove('on'); }
-
-async function likePost(id) {
-  if (!curUser) { toast('로그인이 필요해요'); return; }
-  const uid = curUser.id || curUser.username;
-  const { data: existing } = await sb.from('post_likes').select('id').eq('post_id',id).eq('user_id',uid).single().catch(()=>({data:null}));
-  const { data: p } = await sb.from('posts').select('likes').eq('id',id).single();
-  const cur = p?.likes || 0;
-  if (existing) {
-    await sb.from('post_likes').delete().eq('post_id',id).eq('user_id',uid);
-    await sb.from('posts').update({likes:Math.max(0,cur-1)}).eq('id',id);
-    document.getElementById('postLikeCount').textContent = Math.max(0,cur-1);
-    document.getElementById('postLikeCount2').textContent = Math.max(0,cur-1);
-    toast('좋아요 취소');
-  } else {
-    await sb.from('post_likes').insert({post_id:id,user_id:uid});
-    await sb.from('posts').update({likes:cur+1}).eq('id',id);
-    document.getElementById('postLikeCount').textContent = cur+1;
-    document.getElementById('postLikeCount2').textContent = cur+1;
-    toast('좋아요! ❤️');
-  }
-}
-
-async function submitComment(postId) {
-  const input = document.getElementById('commentInput');
-  const content = input?.value.trim();
-  if (!content) return;
-  await sb.from('comments').insert({ post_id: postId, user_id: curUser.id||curUser.username, nickname: curUser.nickname||curUser.username, content });
-  input.value = '';
-  toast('댓글이 등록됐어요');
-  openPostDetail(postId);
-}
-
-async function deletePost(id) {
-  if (!confirm('게시글을 삭제할까요?')) return;
-  await sb.from('posts').delete().eq('id', id);
-  toast('삭제됐어요'); closePostDetail(); loadPosts();
-}
-
-// ── 마이페이지 ──
-let mp2TabVal = 'collection';
-
-function openMyPage2() {
-  if (!curUser) { openAuth('login'); return; }
-  document.getElementById('myPage2Ov').classList.add('on');
-  document.getElementById('mp2Avatar').textContent = (curUser.nickname||curUser.username||'?')[0].toUpperCase();
-  document.getElementById('mp2Name').textContent = curUser.nickname || curUser.username;
-  document.getElementById('mp2Sub').textContent = '@' + curUser.username;
-  switchMp2Tab('collection', document.querySelector('.mp2-tab.active'));
-  if (window.innerWidth <= 700) toggleMob();
-}
-function closeMyPage2() { document.getElementById('myPage2Ov').classList.remove('on'); }
-function mobNavMy() { openMyPage2(); }
-
-function switchMp2Tab(tab, btn) {
-  mp2TabVal = tab;
-  document.querySelectorAll('.mp2-tab').forEach(b => {
-    b.style.color = 'rgba(255,255,255,.6)'; b.style.fontWeight = '500'; b.style.borderBottomColor = 'transparent';
-  });
-  if (btn) { btn.style.color = '#fff'; btn.style.fontWeight = '700'; btn.style.borderBottomColor = '#fff'; }
-  loadMp2Tab();
-}
-
-async function loadMp2Tab() {
-  const el = document.getElementById('mp2Body');
-  el.innerHTML = '<div style="text-align:center;padding:40px"><div class="spinner"></div></div>';
-  const uid = curUser.id || curUser.username;
-
-  if (mp2TabVal === 'collection') {
-    // 시리즈별 진행률
-    const series = ['OPK-01','OPK-02','OPK-03','OPK-04','OPK-05','OPK-06','OPK-07','OPK-08','OPK-09','OPK-10','OPK-11','OPK-12','OPK-13','OPK-14','EBK-01','EBK-02','EBK-03'];
-    const totalOwned = Object.keys(owned).length;
-    const ownedCards = allCards.filter(c => owned[c.id]);
-    // 보유 카드 이미지 샘플
-    const sampleImgs = ownedCards.slice(0,5).map(c => c.image_url ? proxyUrl(c.image_url) : null).filter(Boolean);
-
-    el.innerHTML = `
-      <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:12px">
-        <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
-          <div style="text-align:center;flex:1">
-            <div style="font-size:28px;font-weight:800;color:var(--red)">${totalOwned}</div>
-            <div style="font-size:11px;color:var(--muted)">보유 카드</div>
-          </div>
-          <div style="width:1px;height:40px;background:var(--border)"></div>
-          <div style="text-align:center;flex:1">
-            <div style="font-size:28px;font-weight:800;color:#059669">${series.filter(s=>allCards.filter(c=>c.series===s).length>0&&allCards.filter(c=>c.series===s).every(c=>owned[c.id])).length}</div>
-            <div style="font-size:11px;color:var(--muted)">완성 시리즈</div>
-          </div>
-        </div>
-        ${sampleImgs.length ? `<div style="display:flex;gap:4px;margin-bottom:10px">${sampleImgs.map(img=>`<img src="${img}" style="width:44px;height:62px;object-fit:cover;border-radius:5px;border:1px solid var(--border)">`).join('')}<div style="width:44px;height:62px;border-radius:5px;background:var(--bg2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted)">+${Math.max(0,totalOwned-5)}</div></div>` : ''}
-      </div>
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px">시리즈별 진행률</div>
-      ${series.map(s => {
-        const total = allCards.filter(c=>c.series===s).length;
-        const own = allCards.filter(c=>c.series===s&&owned[c.id]).length;
-        const pct = total ? Math.round(own/total*100) : 0;
-        return `<div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:10px 14px;margin-bottom:6px">
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
-            <span style="font-weight:600">${s}</span>
-            <span style="color:${pct===100?'#059669':'var(--red)'};font-weight:700">${own}/${total} (${pct}%)</span>
-          </div>
-          <div style="height:4px;background:var(--bg3);border-radius:2px">
-            <div style="height:4px;background:${pct===100?'#059669':'var(--red)'};border-radius:2px;width:${pct}%;transition:width .3s"></div>
-          </div>
-        </div>`;
-      }).join('')}`;
-
-  } else if (mp2TabVal === 'decks') {
-    const { data } = await sb.from('decks').select('*').eq('user_id', uid).order('updated_at', { ascending: false });
-    if (!data?.length) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🗂️</div>아직 덱이 없어요<br><button onclick="openDeckBuilder();closeMyPage2()" style="margin-top:12px;padding:8px 18px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">+ 덱 만들기</button></div>'; return; }
-    const catLabel = { personal:'🔒 개인', public:'🌐 공개', tournament:'🏆 대회' };
-    el.innerHTML = data.map(d => {
-      const cards = Array.isArray(d.cards)?d.cards:[];
-      const total = cards.reduce((a,b)=>a+(b.count||1),0);
-      const leader = d.leader_id ? allCards.find(c=>c.id===d.leader_id) : null;
-      const leaderImg = leader?.image_url ? proxyUrl(leader.image_url) : null;
-      return `<div style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:12px;margin-bottom:8px;display:flex;gap:10px;box-shadow:var(--sh)">
-        <div style="width:42px;height:58px;border-radius:6px;overflow:hidden;background:var(--bg3);flex-shrink:0">
-          ${leaderImg?`<img src="${leaderImg}" style="width:100%;height:100%;object-fit:cover">`:`<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:18px">👑</div>`}
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:10px;color:var(--muted);margin-bottom:2px">${catLabel[d.category]||'🔒 개인'}</div>
-          <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${d.name}</div>
-          <div style="font-size:11px;color:var(--muted)">📦 ${total}장 · ❤️ ${d.likes||0}</div>
-        </div>
-        <button onclick="closeMyPage2();loadDeckToEditor('${d.id}')" style="align-self:center;padding:5px 10px;background:var(--red-light);border:1px solid var(--red);border-radius:6px;color:var(--red);font-size:11px;font-weight:600;font-family:inherit;cursor:pointer">편집</button>
-      </div>`;
-    }).join('');
-
-  } else if (mp2TabVal === 'posts') {
-    const { data } = await sb.from('posts').select('*').eq('user_id', uid).order('created_at', { ascending: false });
-    if (!data?.length) { el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">💬</div>아직 게시글이 없어요</div>'; return; }
-    const timeAgo = t => { const d=Math.floor((Date.now()-new Date(t))/1000); if(d<60)return '방금'; if(d<3600)return Math.floor(d/60)+'분 전'; if(d<86400)return Math.floor(d/3600)+'시간 전'; return Math.floor(d/86400)+'일 전'; };
-    el.innerHTML = data.map(p => `
-      <div onclick="closeMyPage2();openCommunity();openPostDetail('${p.id}')" style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh)">
-        <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px">${p.title}</div>
-        <div style="display:flex;gap:10px;font-size:11px;color:var(--muted)">
-          <span>${CAT_LABEL[p.category]||p.category}</span>
-          <span>${timeAgo(p.created_at)}</span>
-          <span>❤️ ${p.likes||0}</span>
-        </div>
-      </div>`).join('');
-
-  } else if (mp2TabVal === 'settings') {
-    el.innerHTML = `
-      <div style="background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px">
-        ${[
-          {label:'닉네임 변경', icon:'✏️', action:"promptChange('nickname')"},
-          {label:'비밀번호 변경', icon:'🔑', action:"promptChange('password')"},
-          {label:'전화번호 변경', icon:'📱', action:"promptChange('phone')"},
-        ].map((item,i,arr)=>`
-          <div onclick="${item.action}" style="display:flex;align-items:center;gap:12px;padding:14px 16px;${i<arr.length-1?'border-bottom:1px solid var(--border)':''};cursor:pointer">
-            <span style="font-size:18px">${item.icon}</span>
-            <span style="font-size:13px;font-weight:500">${item.label}</span>
-            <span style="margin-left:auto;color:var(--dim)">›</span>
-          </div>`).join('')}
-      </div>
-      <button onclick="doLogout();closeMyPage2()" style="width:100%;padding:12px;background:#fff;border:1.5px solid #fca5a5;border-radius:12px;color:#ef4444;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">🚪 로그아웃</button>`;
-  }
-}
-
-async function promptChange(type) {
-  const labels = { nickname:'닉네임', password:'새 비밀번호', phone:'전화번호' };
-  const val = prompt(`${labels[type]}을 입력해주세요:`);
-  if (!val?.trim()) return;
-  if (type === 'nickname') {
-    await sb.from('accounts').update({ nickname: val.trim() }).eq('username', curUser.username);
-    curUser.nickname = val.trim();
-    localStorage.setItem('gl_session', JSON.stringify(curUser));
-    document.getElementById('mp2Name').textContent = val.trim();
-    document.getElementById('mp2Avatar').textContent = val.trim()[0].toUpperCase();
-    toast('닉네임이 변경됐어요 ✅');
-  } else if (type === 'phone') {
-    await sb.from('accounts').update({ phone: val.trim() }).eq('username', curUser.username);
-    toast('전화번호가 변경됐어요 ✅');
-  } else if (type === 'password') {
-    await sb.rpc('change_password', { p_username: curUser.username, p_new_password: val.trim() }).catch(()=>{});
-    toast('비밀번호가 변경됐어요 ✅');
-  }
-}
-
+function openLB(url) { document.getElementById('lb-img').src=url; document.getElementById('lightbox').classList.add('on'); }
 function closeLB() { document.getElementById('lightbox').classList.remove('on'); }
 
 // ── 약관 ──
