@@ -64,7 +64,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 .menu-btn{display:none;background:none;border:none;padding:5px;font-size:22px;color:#fff;}
 @media(max-width:700px){
   .menu-btn{display:flex;align-items:center;}
-  .sidebar{display:none;position:fixed;top:52px;left:0;bottom:0;z-index:100;width:230px;box-shadow:var(--sh2);}
+  .sidebar{display:none;position:fixed;top:52px;left:0;bottom:0;z-index:100;width:230px;box-shadow:var(--sh2);overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px;}
   .sidebar.mobile-open{display:block;}
 }
 .s-sec-label{font-size:10px;font-weight:700;color:var(--dim);text-transform:uppercase;letter-spacing:.7px;padding:10px 15px 4px;}
@@ -307,7 +307,16 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 .scroll-top.on{display:flex;}
 @media(min-width:701px){.scroll-top{bottom:24px;}}
 
-/* ── LIGHTBOX ── */
+@media(max-width:700px){
+  .deck-mob-tabs{display:flex!important;}
+  #deckCardsPanel{border-right:none!important;}
+  #deckDeckPanel{width:100%!important;display:none;}
+}
+@media(min-width:701px){
+  .deck-mob-tabs{display:none!important;}
+  #deckCardsPanel{display:flex!important;}
+  #deckDeckPanel{display:flex!important;}
+}
 .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:500;align-items:center;justify-content:center;}
 .lightbox.on{display:flex;}
 .lightbox img{max-width:90vw;max-height:90vh;border-radius:8px;}
@@ -726,41 +735,47 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 </div>
 
 <!-- ── 덱 빌더 ── -->
-<div class="ov" id="deckOv" style="align-items:flex-start;padding:0" onmouseup="if(event.target===this)closeDeckBuilder()">
+<div class="ov" id="deckOv" style="align-items:flex-start;padding:0">
   <div style="width:100%;max-width:1100px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:#F8F9FF">
-    <div style="background:linear-gradient(135deg,#4B6CF7,#7C3AED);padding:14px 20px;display:flex;align-items:center;gap:12px;flex-shrink:0">
-      <button onclick="closeDeckBuilder()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer">←</button>
-      <input id="deckNameInput" placeholder="덱 이름..." value="나의 덱" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 12px;color:#fff;font-size:15px;font-weight:700;font-family:inherit;outline:none;width:180px">
-      <div style="margin-left:auto;display:flex;gap:8px">
-        <button onclick="saveDeck()" style="padding:7px 16px;background:#fff;border:none;border-radius:8px;color:var(--red);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">💾 저장</button>
-        <button onclick="openMyDecks()" style="padding:7px 16px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#fff;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">📋 내 덱</button>
-      </div>
+    <!-- 헤더 -->
+    <div style="background:linear-gradient(135deg,#4B6CF7,#7C3AED);padding:12px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <button onclick="closeDeckBuilder()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0">←</button>
+      <input id="deckNameInput" placeholder="덱 이름..." value="나의 덱" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 10px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;outline:none;flex:1;min-width:0">
+      <button onclick="saveDeck()" style="padding:7px 14px;background:#fff;border:none;border-radius:8px;color:var(--red);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;flex-shrink:0">💾 저장</button>
     </div>
+
+    <!-- 모바일 탭 (카드목록 / 덱구성) -->
+    <div class="deck-mob-tabs" style="display:none;background:#fff;border-bottom:1px solid var(--border);flex-shrink:0">
+      <button id="dmt-cards" onclick="switchDeckMobTab('cards')" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid var(--red);background:none;font-size:13px;font-weight:700;color:var(--red);font-family:inherit;cursor:pointer">🃏 카드 목록</button>
+      <button id="dmt-deck" onclick="switchDeckMobTab('deck')" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid transparent;background:none;font-size:13px;font-weight:500;color:var(--muted);font-family:inherit;cursor:pointer">🗂️ 덱 구성 <span id="deckCountBadge" style="background:var(--red);color:#fff;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:700;margin-left:4px">0</span></button>
+    </div>
+
     <div style="flex:1;display:flex;overflow:hidden">
-      <!-- 왼쪽: 카드 검색 -->
-      <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)">
-        <div style="padding:10px;background:#fff;border-bottom:1px solid var(--border);display:flex;gap:6px;flex-wrap:wrap">
-          <input id="deckSearch" placeholder="🔍 카드명 검색..." oninput="renderDeckCardList()" style="flex:1;min-width:100px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none">
-          <select id="deckSeriesFilter" onchange="renderDeckCardList()" style="padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none">
+      <!-- 카드 검색 패널 -->
+      <div id="deckCardsPanel" style="flex:1;display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border)">
+        <div style="padding:8px;background:#fff;border-bottom:1px solid var(--border);display:flex;gap:5px;flex-wrap:wrap">
+          <input id="deckSearch" placeholder="🔍 카드명 검색..." oninput="renderDeckCardList()" style="flex:1;min-width:80px;padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:inherit;outline:none">
+          <select id="deckSeriesFilter" onchange="renderDeckCardList()" style="padding:6px 6px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;max-width:100px">
             <option value="">전체 시리즈</option>
             <option>OPK-01</option><option>OPK-02</option><option>OPK-03</option><option>OPK-04</option>
             <option>OPK-05</option><option>OPK-06</option><option>OPK-07</option><option>OPK-08</option>
             <option>OPK-09</option><option>OPK-10</option><option>OPK-11</option><option>OPK-12</option>
             <option>OPK-13</option><option>OPK-14</option><option>EBK-01</option><option>EBK-02</option><option>EBK-03</option>
           </select>
-          <select id="deckColorFilter" onchange="renderDeckCardList()" style="padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none">
+          <select id="deckColorFilter" onchange="renderDeckCardList()" style="padding:6px 6px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;max-width:80px">
             <option value="">전체 색상</option>
             <option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option>
           </select>
-          <select id="deckTypeFilter" onchange="renderDeckCardList()" style="padding:6px 8px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none">
+          <select id="deckTypeFilter" onchange="renderDeckCardList()" style="padding:6px 6px;border:1.5px solid var(--border);border-radius:8px;font-size:11px;font-family:inherit;outline:none;max-width:80px">
             <option value="">전체 타입</option>
             <option>리더</option><option>캐릭터</option><option>이벤트</option><option>스테이지</option>
           </select>
         </div>
-        <div id="deckCardList" style="flex:1;overflow-y:auto;padding:10px;display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:7px;align-content:start"></div>
+        <div id="deckCardList" style="flex:1;overflow-y:auto;padding:8px;display:grid;grid-template-columns:repeat(auto-fill,minmax(85px,1fr));gap:7px;align-content:start"></div>
       </div>
-      <!-- 오른쪽: 덱 구성 -->
-      <div style="width:300px;flex-shrink:0;display:flex;flex-direction:column;background:#fff;overflow:hidden">
+
+      <!-- 덱 구성 패널 -->
+      <div id="deckDeckPanel" style="width:300px;flex-shrink:0;display:flex;flex-direction:column;background:#fff;overflow:hidden">
         <div style="padding:12px 14px;border-bottom:1px solid var(--border);background:var(--bg2)">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
             <span style="font-size:14px;font-weight:700">덱 구성</span>
@@ -1897,9 +1912,12 @@ let curDeck = { id: null, name: '나의 덱', leader: null, cards: {} }; // card
 
 function openDeckBuilder() {
   document.getElementById('deckOv').classList.add('on');
+  if(window.innerWidth <= 700) {
+    switchDeckMobTab('cards');
+    toggleMob();
+  }
   renderDeckCardList();
   renderDeckPanel();
-  if (window.innerWidth <= 700) toggleMob();
 }
 function closeDeckBuilder() { document.getElementById('deckOv').classList.remove('on'); }
 
@@ -1976,6 +1994,8 @@ function renderDeckPanel() {
   const grandTotal = total + (curDeck.leader ? 1 : 0);
   document.getElementById('deckCount').textContent = `${total} / 50장`;
   document.getElementById('deckCount').style.color = total > 50 ? '#dc2626' : 'var(--red)';
+  const badge = document.getElementById('deckCountBadge');
+  if(badge) badge.textContent = grandTotal;
 
   // 리더
   const leaderEl = document.getElementById('deckLeader');
