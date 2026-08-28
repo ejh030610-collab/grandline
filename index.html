@@ -152,8 +152,8 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 .rt-p{background:linear-gradient(135deg,#e879f9,#a855f7);color:#fff;}
 .rt-sp{background:linear-gradient(135deg,#ff0080,#ff8c00,#40e0d0);color:#fff;}
 .rt-star{background:linear-gradient(135deg,#FFD700,#FFA500);color:#fff;}
-.rt-rh{background:linear-gradient(135deg,#ef4444,#ff6b6b);color:#fff;border:1.5px solid #ff9999;}
-.rt-sech{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#fff;border:1.5px solid #666;}
+.rt-rh{background:linear-gradient(135deg,#FFB800,#FF8C00);color:#fff;box-shadow:0 0 6px rgba(255,184,0,.5);}
+.rt-sech{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#FFD700;box-shadow:0 0 6px rgba(0,0,0,.5);}
 .rt-none{background:rgba(200,200,200,.5);color:#999;}
 /* 보유 체크 버튼 */
 .own-btn{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:none;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;z-index:2;}
@@ -472,10 +472,10 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
             <div class="rdrop-item" data-r="L" onclick="setRarity(this)">L</div>
             <div class="rdrop-item" data-r="P" onclick="setRarity(this)">P</div>
             <div style="height:1px;background:var(--border);margin:3px 0"></div>
-            <div class="rdrop-item" data-r="SEC★H" onclick="setRarity(this)">SEC★H (검정별홀로)</div>
+            <div class="rdrop-item" data-r="★BH" onclick="setRarity(this)">★BH (검정별홀로)</div>
             <div class="rdrop-item" data-r="SEC★" onclick="setRarity(this)">SEC★</div>
             <div class="rdrop-item" data-r="SR★" onclick="setRarity(this)">SR★</div>
-            <div class="rdrop-item" data-r="R★H" onclick="setRarity(this)">R★H (빨간별홀로)</div>
+            <div class="rdrop-item" data-r="★H" onclick="setRarity(this)">★H (황금별홀로)</div>
             <div class="rdrop-item" data-r="R★" onclick="setRarity(this)">R★</div>
             <div class="rdrop-item" data-r="L★" onclick="setRarity(this)">L★</div>
             <div class="rdrop-item" data-r="SP" onclick="setRarity(this)">SP</div>
@@ -655,7 +655,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
               <option>OPK-13</option><option>OPK-14</option>
               <option>EBK-01</option><option>EBK-02</option><option>EBK-03</option><option>PROMO</option>
             </select></div>
-            <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option><option>R★H</option><option>SEC★H</option></select></div>
+            <div class="afg"><label>희귀도</label><select id="af-rarity"><option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option><option>SEC★</option><option>SR★</option><option>R★</option><option>L★</option><option>SP</option><option>★</option><option>★H</option><option>★BH</option></select></div>
             <div class="afg"><label>타입</label><select id="af-type"><option>캐릭터</option><option>리더</option><option>이벤트</option><option>스테이지</option></select></div>
             <div class="afg"><label>색깔</label><select id="af-color"><option>적색</option><option>청색</option><option>녹색</option><option>자색</option><option>황색</option><option>흑색</option><option>다색</option></select></div>
             <div class="afg"><label>이모지</label><input type="text" id="af-emoji" placeholder="👒"></div>
@@ -681,7 +681,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
           <select id="a-rarity" onchange="aFilterCards()">
             <option value="">전체 희귀도</option>
             <option>SEC</option><option>SR</option><option>R</option><option>UC</option><option>C</option><option>L</option><option>P</option>
-            <option>R★H</option><option>SEC★H</option>
+            <option>★H</option><option>★BH</option>
           </select>
         </div>
         <div class="atbl"><table>
@@ -930,7 +930,7 @@ let curUser = null;
 let adminCards = [];
 
 const OWNED_KEY = 'nexo_owned_v2';
-const RC = r => ({'SEC':'rt-sec','SR':'rt-sr','R':'rt-r','UC':'rt-uc','C':'rt-c','L':'rt-l','P':'rt-p','SEC★':'rt-sec','SR★':'rt-sr','R★':'rt-r','L★':'rt-l','SP':'rt-sp','★':'rt-star','R★H':'rt-rh','SEC★H':'rt-sech'}[r]||'rt-none');
+const RC = r => ({'SEC':'rt-sec','SR':'rt-sr','R':'rt-r','UC':'rt-uc','C':'rt-c','L':'rt-l','P':'rt-p','SEC★':'rt-sec','SR★':'rt-sr','R★':'rt-r','L★':'rt-l','SP':'rt-sp','★':'rt-star','★H':'rt-rh','★BH':'rt-sech'}[r]||'rt-none');
 
 // ── 로컬 보유 ──
 function loadLocalOwned() { try { return JSON.parse(localStorage.getItem(OWNED_KEY)||'{}'); } catch { return {}; } }
@@ -1043,7 +1043,7 @@ async function loadCards(series) {
 // ── 카드 렌더 ──
 function renderCards() {
   const sort = document.getElementById('sortSel')?.value || 'num';
-  const RARITY_ORDER = ['SEC★H','SEC★','SEC','SR★','SR','R★H','R★','R','L★','L','SP','UC','C','P','★',''];
+  const RARITY_ORDER = ['★BH','SEC★','SEC','SR★','SR','★H','R★','R','L★','L','SP','UC','C','P','★',''];
 
   let cards = allCards.filter(c => c.series === curSeries);
 
@@ -1472,7 +1472,7 @@ function renderCollection() {
     return;
   }
 
-  const RARITY_ORDER = ['SEC★H','SEC★','SEC','SR★','SR','R★H','R★','R','L★','L','SP','UC','C','P','★',''];
+  const RARITY_ORDER = ['★BH','SEC★','SEC','SR★','SR','★H','R★','R','L★','L','SP','UC','C','P','★',''];
   filtered.sort((a,b) => (RARITY_ORDER.indexOf(a.rarity)??99) - (RARITY_ORDER.indexOf(b.rarity)??99));
 
   grid.innerHTML = filtered.map(c => {
@@ -1732,7 +1732,7 @@ async function saveImg(cid) {
 async function aEditRarity(cid, currentRarity) {
   const row = document.querySelector(`[data-cid="${cid}"]`);
   if (!row) return;
-  const rarities = ['SEC★H','SEC★','SEC','SR★','SR','R★H','R★','R','L★','L','SP','UC','C','P'];
+  const rarities = ['★BH','SEC★','SEC','SR★','SR','★H','R★','R','L★','L','SP','UC','C','P'];
   const RARITY_COLOR = {'SEC★':'#D85A30','SEC':'#D85A30','SR★':'#7C3AED','SR':'#7C3AED','R★':'#4B6CF7','R':'#4B6CF7','L★':'#059669','L':'#059669','SP':'#e879f9','UC':'#6B7280','C':'#6B7280','P':'#e879f9'};
   row.innerHTML = `<td colspan="6" style="padding:10px 14px">
     <div style="margin-bottom:8px;font-size:12px;font-weight:600;color:var(--muted)">희귀도 선택 — 현재: <span style="color:var(--red);font-weight:700">${currentRarity||'없음'}</span></div>
