@@ -2211,12 +2211,13 @@ async function submitPost() {
 }
 
 async function openPostDetail(id) {
+  if(!id || id==='undefined') return;
   document.getElementById('postDetailOv').classList.add('on');
   const el=document.getElementById('postDetailContent');
   el.innerHTML='<div style="text-align:center;padding:60px"><div class="spinner"></div></div>';
   const {data:p}=await sb.from('posts').select('*').eq('id',id).single();
   if(!p) return;
-  await sb.from('posts').update({views:(p.views||0)+1}).eq('id',id).catch(()=>{});
+  await sb.from('posts').update({views:(p.views||0)+1}).eq('id',id).then(()=>{}).catch(()=>{});
   const {data:comments}=await sb.from('comments').select('*').eq('post_id',id).order('created_at',{ascending:true});
   const isOwner=curUser&&(curUser.username===p.username||curUser.username===p.user_id);
 
