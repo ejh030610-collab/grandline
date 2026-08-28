@@ -152,8 +152,8 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 .rt-p{background:linear-gradient(135deg,#e879f9,#a855f7);color:#fff;}
 .rt-sp{background:linear-gradient(135deg,#ff0080,#ff8c00,#40e0d0);color:#fff;}
 .rt-star{background:linear-gradient(135deg,#FFD700,#FFA500);color:#fff;}
-.rt-rh{background:linear-gradient(135deg,#FFB800,#FF8C00);color:#fff;box-shadow:0 0 6px rgba(255,184,0,.5);}
-.rt-sech{background:linear-gradient(135deg,#1a1a2e,#16213e);color:#FFD700;box-shadow:0 0 6px rgba(0,0,0,.5);}
+.rt-rh{background:#ef4444;color:#fff;}
+.rt-sech{background:#1a1a1a;color:#fff;}
 .rt-none{background:rgba(200,200,200,.5);color:#999;}
 /* 보유 체크 버튼 */
 .own-btn{position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;border:none;font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s;z-index:2;}
@@ -472,10 +472,10 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
             <div class="rdrop-item" data-r="L" onclick="setRarity(this)">L</div>
             <div class="rdrop-item" data-r="P" onclick="setRarity(this)">P</div>
             <div style="height:1px;background:var(--border);margin:3px 0"></div>
-            <div class="rdrop-item" data-r="★BH" onclick="setRarity(this)">★BH (검정별홀로)</div>
+            <div class="rdrop-item" data-r="★BH" onclick="setRarity(this)">★ (망가)</div>
             <div class="rdrop-item" data-r="SEC★" onclick="setRarity(this)">SEC★</div>
             <div class="rdrop-item" data-r="SR★" onclick="setRarity(this)">SR★</div>
-            <div class="rdrop-item" data-r="★H" onclick="setRarity(this)">★H (황금별홀로)</div>
+            <div class="rdrop-item" data-r="★H" onclick="setRarity(this)">★ (레드망가)</div>
             <div class="rdrop-item" data-r="R★" onclick="setRarity(this)">R★</div>
             <div class="rdrop-item" data-r="L★" onclick="setRarity(this)">L★</div>
             <div class="rdrop-item" data-r="SP" onclick="setRarity(this)">SP</div>
@@ -931,7 +931,7 @@ let adminCards = [];
 
 const OWNED_KEY = 'nexo_owned_v2';
 const RC = r => ({'SEC':'rt-sec','SR':'rt-sr','R':'rt-r','UC':'rt-uc','C':'rt-c','L':'rt-l','P':'rt-p','SEC★':'rt-sec','SR★':'rt-sr','R★':'rt-r','L★':'rt-l','SP':'rt-sp','★':'rt-star','★H':'rt-rh','★BH':'rt-sech'}[r]||'rt-none');
-const RL = r => ({'★H':'★','★BH':'★'}[r]||r); // 뱃지 표시 텍스트
+const RL = r => ({'★H':'★','★BH':'★'}[r]||r);
 
 // ── 로컬 보유 ──
 function loadLocalOwned() { try { return JSON.parse(localStorage.getItem(OWNED_KEY)||'{}'); } catch { return {}; } }
@@ -1734,7 +1734,7 @@ async function aEditRarity(cid, currentRarity) {
   const row = document.querySelector(`[data-cid="${cid}"]`);
   if (!row) return;
   const rarities = ['★BH','SEC★','SEC','SR★','SR','★H','R★','R','L★','L','SP','UC','C','P'];
-  const RARITY_COLOR = {'SEC★':'#D85A30','SEC':'#D85A30','SR★':'#7C3AED','SR':'#7C3AED','R★':'#4B6CF7','R':'#4B6CF7','L★':'#059669','L':'#059669','SP':'#e879f9','UC':'#6B7280','C':'#6B7280','P':'#e879f9'};
+  const RARITY_COLOR = {'SEC★':'#D85A30','SEC':'#D85A30','SR★':'#7C3AED','SR':'#7C3AED','R★':'#4B6CF7','R':'#4B6CF7','L★':'#059669','L':'#059669','SP':'#e879f9','UC':'#6B7280','C':'#6B7280','P':'#e879f9','★H':'#FF8C00','★BH':'#FFD700'};
   row.innerHTML = `<td colspan="6" style="padding:10px 14px">
     <div style="margin-bottom:8px;font-size:12px;font-weight:600;color:var(--muted)">희귀도 선택 — 현재: <span style="color:var(--red);font-weight:700">${currentRarity||'없음'}</span></div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px">
@@ -1742,7 +1742,7 @@ async function aEditRarity(cid, currentRarity) {
         style="padding:5px 12px;border-radius:8px;border:2px solid ${r===currentRarity?'var(--red)':'var(--border)'};
         background:${r===currentRarity?'var(--red-light)':'#fff'};color:${r===currentRarity?'var(--red)':(RARITY_COLOR[r]||'var(--muted)')};
         font-size:12px;font-weight:700;font-family:inherit;cursor:pointer" 
-        data-rarity="${r}" data-cid="${cid}">${r}</button>`).join('')}
+        data-rarity="${r}" data-cid="${cid}">${RL(r)}</button>`).join('')}
     </div>
     <div style="display:flex;gap:6px">
       <button onclick="confirmSaveRarity('${cid}')" style="padding:6px 16px;background:var(--red);color:#fff;border:none;border-radius:6px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">저장</button>
