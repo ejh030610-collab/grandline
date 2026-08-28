@@ -2365,22 +2365,55 @@ async function loadMp2Tab() {
   if(mp2TabVal==='collection') {
     const totalOwned=Object.keys(owned).length;
     const completed=series.filter(s=>{const t=allCards.filter(c=>c.series===s).length;return t>0&&allCards.filter(c=>c.series===s).every(c=>owned[c.id]);}).length;
-    const sampleImgs=allCards.filter(c=>owned[c.id]&&c.image_url).slice(0,5).map(c=>proxyUrl(c.image_url));
-    el.innerHTML=`
-      <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:12px">
-        <div style="display:flex;gap:10px;margin-bottom:12px">
-          <div style="flex:1;text-align:center"><div style="font-size:28px;font-weight:800;color:var(--red)">${totalOwned}</div><div style="font-size:11px;color:var(--muted)">보유 카드</div></div>
-          <div style="width:1px;background:var(--border)"></div>
-          <div style="flex:1;text-align:center"><div style="font-size:28px;font-weight:800;color:#059669">${completed}</div><div style="font-size:11px;color:var(--muted)">완성 시리즈</div></div>
+
+    const opSeries  = series.filter(s=>s.startsWith('OPK'));
+    const ebSeries  = series.filter(s=>s.startsWith('EBK'));
+
+    function makeCollCard(s) {
+      const t=allCards.filter(c=>c.series===s).length;
+      const o=allCards.filter(c=>c.series===s&&owned[c.id]).length;
+      const pct=t?Math.round(o/t*100):0;
+      const info=SERIES_INFO[s]||{name:s,sub:s};
+      const col=s.startsWith('OPK')?'var(--red)':'#D97706';
+      const leaderCard=allCards.find(c=>c.series===s&&(c.card_type==='리더'||c.rarity==='L')&&c.image_url);
+      const img=leaderCard?.image_url?proxyUrl(leaderCard.image_url):null;
+      return `<div onclick="closeMyPage2();selectSeriesHome('${s}')" style="background:#fff;border-radius:12px;border:1px solid var(--border);overflow:hidden;cursor:pointer;box-shadow:var(--sh);transition:all .18s" onmouseover="this.style.transform='translateY(-2px)';this.style.borderColor='${col}'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+        <div style="height:80px;background:linear-gradient(135deg,${col}22,${col}08);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">
+          ${img?`<img src="${img}" style="height:90px;object-fit:cover;object-position:top;opacity:.85;margin-top:10px">`:`<div style="font-size:28px;opacity:.3">🃏</div>`}
+          <div style="position:absolute;top:6px;left:8px;font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:${col};color:#fff">${info.sub}</div>
+          ${pct===100?`<div style="position:absolute;top:6px;right:8px;font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;background:#059669;color:#fff">완성 ✓</div>`:''}
         </div>
-        ${sampleImgs.length?`<div style="display:flex;gap:4px">${sampleImgs.map(img=>`<img src="${img}" style="width:44px;height:62px;object-fit:cover;border-radius:5px;border:1px solid var(--border)">`).join('')}</div>`:''}
+        <div style="padding:8px 10px">
+          <div style="font-size:11px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px">${info.name}</div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:4px"><span>${o}/${t}장</span><span style="color:${col};font-weight:700">${pct}%</span></div>
+          <div style="height:3px;background:var(--bg3);border-radius:2px"><div style="height:3px;background:${col};border-radius:2px;width:${pct}%"></div></div>
+        </div>
+      </div>`;
+    }
+
+    el.innerHTML=`
+      <!-- 요약 -->
+      <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:14px;margin-bottom:14px;display:flex;gap:0">
+        <div style="flex:1;text-align:center"><div style="font-size:26px;font-weight:800;color:var(--red)">${totalOwned}</div><div style="font-size:11px;color:var(--muted)">보유 카드</div></div>
+        <div style="width:1px;background:var(--border)"></div>
+        <div style="flex:1;text-align:center"><div style="font-size:26px;font-weight:800;color:#059669">${completed}</div><div style="font-size:11px;color:var(--muted)">완성 시리즈</div></div>
       </div>
-      <div style="font-size:13px;font-weight:700;margin-bottom:8px">시리즈별 진행률</div>
-      ${series.map(s=>{const t=allCards.filter(c=>c.series===s).length;const o=allCards.filter(c=>c.series===s&&owned[c.id]).length;const pct=t?Math.round(o/t*100):0;
-        return `<div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:10px 14px;margin-bottom:6px">
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="font-weight:600">${s}</span><span style="color:${pct===100?'#059669':'var(--red)'};font-weight:700">${o}/${t} (${pct}%)</span></div>
-          <div style="height:4px;background:var(--bg3);border-radius:2px"><div style="height:4px;background:${pct===100?'#059669':'var(--red)'};border-radius:2px;width:${pct}%"></div></div>
-        </div>`;}).join('')}`;
+      <!-- OP 부스터팩 -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:3px;height:14px;background:var(--red);border-radius:2px"></div>
+        <span style="font-size:13px;font-weight:800">OP 부스터팩</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:16px">
+        ${opSeries.map(makeCollCard).join('')}
+      </div>
+      <!-- 엑스트라 부스터 -->
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:3px;height:14px;background:#D97706;border-radius:2px"></div>
+        <span style="font-size:13px;font-weight:800">엑스트라 부스터</span>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px">
+        ${ebSeries.map(makeCollCard).join('')}
+      </div>`;
 
   } else if(mp2TabVal==='decks') {
     const {data}=await sb.from('decks').select('*').eq('user_id',uid).order('updated_at',{ascending:false});
