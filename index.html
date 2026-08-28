@@ -390,6 +390,28 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
   <!-- MAIN -->
   <main class="main">
 
+    <!-- ── 마이페이지 뷰 ── -->
+    <div id="myView" style="display:none">
+      <!-- 헤더 -->
+      <div style="background:linear-gradient(135deg,#4B6CF7,#7C3AED);border-radius:14px;margin-bottom:12px;overflow:hidden">
+        <div style="display:flex;align-items:center;padding:14px 16px;gap:10px">
+          <button onclick="goHome()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:30px;height:30px;color:#fff;font-size:15px;cursor:pointer">←</button>
+          <div style="color:#fff;font-size:16px;font-weight:800">마이페이지</div>
+        </div>
+        <div style="padding:0 16px 14px;display:flex;align-items:center;gap:12px">
+          <div id="mp2Avatar" style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.25);border:2.5px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0">?</div>
+          <div><div id="mp2Name" style="color:#fff;font-size:16px;font-weight:700">-</div><div id="mp2Sub" style="color:rgba(255,255,255,.7);font-size:11px;margin-top:2px">-</div></div>
+        </div>
+        <div style="display:flex;background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.15)">
+          <button class="mp2-tab active" onclick="switchMp2Tab('collection',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid #fff;background:none;color:#fff;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">📚 컬렉션</button>
+          <button class="mp2-tab" onclick="switchMp2Tab('decks',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer">🗂️ 내 덱</button>
+          <button class="mp2-tab" onclick="switchMp2Tab('posts',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer">💬 게시글</button>
+          <button class="mp2-tab" onclick="switchMp2Tab('settings',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer">⚙️ 설정</button>
+        </div>
+      </div>
+      <div id="mp2Body"></div>
+    </div>
+
     <!-- ── 홈 화면: 시리즈 선택 ── -->
     <div id="homeView">
       <!-- OP 부스터팩 -->
@@ -821,27 +843,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 </div>
 
 <!-- ── 마이페이지 ── -->
-<div class="ov" id="myPage2Ov" style="align-items:flex-start;padding:0">
-  <div style="width:100%;max-width:600px;margin:0 auto;height:100dvh;display:flex;flex-direction:column;background:#F8F9FF">
-    <div style="background:linear-gradient(135deg,#4B6CF7,#7C3AED);flex-shrink:0">
-      <div style="display:flex;align-items:center;padding:14px 20px;gap:12px">
-        <button onclick="closeMyPage2()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer">←</button>
-        <div style="color:#fff;font-size:17px;font-weight:800">👤 마이페이지</div>
-      </div>
-      <div style="padding:0 20px 16px;display:flex;align-items:center;gap:14px">
-        <div id="mp2Avatar" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.25);border:2.5px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0">?</div>
-        <div><div id="mp2Name" style="color:#fff;font-size:17px;font-weight:700">-</div><div id="mp2Sub" style="color:rgba(255,255,255,.7);font-size:12px;margin-top:2px">-</div></div>
-      </div>
-      <div style="display:flex;background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.15)">
-        <button class="mp2-tab active" onclick="switchMp2Tab('collection',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid #fff;background:none;color:#fff;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">📚 컬렉션</button>
-        <button class="mp2-tab" onclick="switchMp2Tab('decks',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer">🗂️ 내 덱</button>
-        <button class="mp2-tab" onclick="switchMp2Tab('posts',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer">💬 게시글</button>
-        <button class="mp2-tab" onclick="switchMp2Tab('settings',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid transparent;background:none;color:rgba(255,255,255,.6);font-size:11px;font-weight:500;font-family:inherit;cursor:pointer">⚙️ 설정</button>
-      </div>
-    </div>
-    <div id="mp2Body" style="flex:1;overflow-y:auto;padding:14px"></div>
-  </div>
-</div>
+<div id="myPage2Ov" style="display:none"></div>
 
 <div class="toast" id="toast"></div>
 <div id="checkAllToast" style="
@@ -1295,10 +1297,11 @@ function goHome() {
 }
 
 function showMain() {
-  // 모든 오버레이 닫기
-  ['communityOv','myPage2Ov','deckHubOv','deckOv','myDeckPageOv'].forEach(id=>{
+  ['communityOv','deckHubOv','deckOv','myDeckPageOv'].forEach(id=>{
     document.getElementById(id)?.classList.remove('on');
   });
+  document.getElementById('myView').style.display = 'none';
+  document.getElementById('sidebar').style.display = '';
   goHome();
 }
 
@@ -2328,14 +2331,22 @@ async function shareDeckToCommunity() {
 let mp2TabVal='collection';
 function openMyPage2() {
   if(!curUser){openAuth('login');return;}
-  document.getElementById('myPage2Ov').classList.add('on');
+  // 사이드바 숨기고 마이뷰 표시
+  document.getElementById('sidebar').style.display = 'none';
+  document.getElementById('homeView').style.display = 'none';
+  document.getElementById('cardView').style.display = 'none';
+  document.getElementById('myView').style.display = 'block';
   document.getElementById('mp2Avatar').textContent=(curUser.nickname||curUser.username||'?')[0].toUpperCase();
   document.getElementById('mp2Name').textContent=curUser.nickname||curUser.username;
   document.getElementById('mp2Sub').textContent='@'+curUser.username;
   switchMp2Tab('collection',document.querySelector('.mp2-tab'));
   if(window.innerWidth<=700) toggleMob();
 }
-function closeMyPage2() { document.getElementById('myPage2Ov').classList.remove('on'); }
+function closeMyPage2() {
+  document.getElementById('myView').style.display = 'none';
+  document.getElementById('sidebar').style.display = '';
+  goHome();
+}
 function mobNavMy() { openMyPage2(); }
 
 function switchMp2Tab(tab,btn) {
