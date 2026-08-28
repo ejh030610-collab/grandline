@@ -778,7 +778,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
         </div>
         <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:6px">
           <button onclick="clearDeck()" style="flex:1;padding:9px;background:#fff;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer">🗑️ 초기화</button>
-          <button onclick="exportDeck()" style="flex:1;padding:9px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text);font-family:inherit;cursor:pointer">📤 공유</button>
+          <button onclick="shareDeckToCommunity()" style="flex:1;padding:9px;background:linear-gradient(135deg,#059669,#10b981);border:none;border-radius:8px;font-size:12px;font-weight:600;color:#fff;font-family:inherit;cursor:pointer">💬 커뮤니티 공유</button>
         </div>
       </div>
     </div>
@@ -1342,6 +1342,9 @@ function openDetail(cid) {
       <button id="detail-own-btn" class="d-own-btn ${isOwned ? 'on' : 'off'}" onclick="detailToggleOwned('${cid}')">
         ${isOwned ? '✓ 보유 중 (탭하면 해제)' : '+ 내 도감에 추가'}
       </button>
+      <button onclick="addCardToDeckFromDetail('${cid}')" style="width:100%;padding:12px;border-radius:var(--r2);font-size:14px;font-weight:700;border:none;background:linear-gradient(135deg,#4B6CF7,#7C3AED);color:#fff;margin-top:8px;cursor:pointer;font-family:inherit">
+        🗂️ 내 덱에 추가
+      </button>
     </div>`;
   document.getElementById('detailOv').classList.add('on');
 }
@@ -1353,6 +1356,18 @@ function detailToggleOwned(cid) {
     btn.className = 'd-own-btn ' + (isOwned ? 'on' : 'off');
     btn.textContent = isOwned ? '✓ 보유 중 (탭하면 해제)' : '+ 내 도감에 추가';
   }
+}
+
+function addCardToDeckFromDetail(cardId) {
+  if (!curUser) { toast('로그인이 필요해요'); openAuth('login'); return; }
+  const card = allCards.find(c => c.id === cardId);
+  if (!card) return;
+  closeDetail();
+  openDeckBuilder();
+  setTimeout(() => {
+    addToDeck(cardId);
+    toast(`"${card.name}" 덱에 추가됐어요 🗂️`);
+  }, 300);
 }
 function closeDetail() { document.getElementById('detailOv').classList.remove('on'); }
 
