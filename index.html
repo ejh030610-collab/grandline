@@ -389,58 +389,84 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 
   <!-- MAIN -->
   <main class="main">
-    <!-- 진행률 -->
-    <div class="progress-section" id="progressSection">
-      <div class="progress-row">
-        <div><span class="prog-owned" id="progOwned">0</span><span class="prog-total" id="progTotal"> / 0장</span></div>
-        <span class="prog-pct" id="progPct">0%</span>
-      </div>
-      <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
-    </div>
 
-    <!-- 필터바 -->
-    <div class="filter-bar">
-      <button class="ftag active" id="fAll" onclick="setOwnerFilter('전체',this)">전체</button>
-      <button class="ftag" onclick="setOwnerFilter('보유',this)">✓ 보유</button>
-      <button class="ftag" onclick="setOwnerFilter('미보유',this)">미보유</button>
-      <div class="s-divider" style="height:16px;width:1px;margin:0 2px;background:var(--border)"></div>
-      <!-- 레어도 -->
-      <div class="rarity-drop-wrap" id="rarityWrap">
-        <button class="ftag" id="rarityChip" onclick="toggleRarityDrop()" style="display:flex;align-items:center;gap:5px">
-          <span id="rarityLabel">희귀도</span><span id="rarityArrow" style="font-size:9px;color:var(--muted)">▼</span>
-        </button>
-        <div class="rarity-drop" id="rarityDrop">
-          <div class="rdrop-item active" data-r="all" onclick="setRarity(this)">전체</div>
-          <div class="rdrop-item" data-r="SEC" onclick="setRarity(this)">SEC</div>
-          <div class="rdrop-item" data-r="SR" onclick="setRarity(this)">SR</div>
-          <div class="rdrop-item" data-r="R" onclick="setRarity(this)">R</div>
-          <div class="rdrop-item" data-r="UC" onclick="setRarity(this)">UC</div>
-          <div class="rdrop-item" data-r="C" onclick="setRarity(this)">C</div>
-          <div class="rdrop-item" data-r="L" onclick="setRarity(this)">L</div>
-          <div class="rdrop-item" data-r="P" onclick="setRarity(this)">P</div>
-          <div style="height:1px;background:var(--border);margin:3px 0"></div>
-          <div class="rdrop-item" data-r="SEC★" onclick="setRarity(this)">SEC★</div>
-          <div class="rdrop-item" data-r="SR★" onclick="setRarity(this)">SR★</div>
-          <div class="rdrop-item" data-r="R★" onclick="setRarity(this)">R★</div>
-          <div class="rdrop-item" data-r="L★" onclick="setRarity(this)">L★</div>
-          <div class="rdrop-item" data-r="SP" onclick="setRarity(this)">SP</div>
-          <div class="rdrop-item" data-r="★" onclick="setRarity(this)">★</div>
+    <!-- ── 홈 화면: 시리즈 선택 ── -->
+    <div id="homeView">
+      <!-- OP 부스터팩 -->
+      <div style="margin-bottom:24px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <div style="width:4px;height:18px;background:var(--red);border-radius:2px"></div>
+          <span style="font-size:15px;font-weight:800;color:var(--text)">OP 부스터팩</span>
         </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px" id="homeOpGrid"></div>
       </div>
-      <select class="sort-sel" id="sortSel" onchange="renderCards()">
-        <option value="num">번호순</option>
-        <option value="popular">희귀도순</option>
-        <option value="name">이름순</option>
-      </select>
-      <button class="ftag" onclick="toggleCheckAll()" id="checkAllBtn" style="margin-left:auto;flex-shrink:0">✓ 전체 체크</button>
+      <!-- 엑스트라 부스터 -->
+      <div style="margin-bottom:24px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+          <div style="width:4px;height:18px;background:#D97706;border-radius:2px"></div>
+          <span style="font-size:15px;font-weight:800;color:var(--text)">엑스트라 부스터</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px" id="homeEbGrid"></div>
+      </div>
     </div>
 
-    <div class="list-hd">
-      <div class="list-title" id="listTitle">OPK-01 ROMANCE DAWN</div>
-      <div class="list-cnt" id="listCnt"></div>
-    </div>
-    <div class="grid" id="cardGrid">
-      <div class="empty-grid"><div class="spinner"></div>카드 불러오는 중...</div>
+    <!-- ── 카드 목록 뷰 ── -->
+    <div id="cardView" style="display:none">
+      <!-- 뒤로가기 + 제목 -->
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+        <button onclick="goHome()" style="display:flex;align-items:center;gap:5px;padding:7px 12px;background:#fff;border:1px solid var(--border);border-radius:20px;font-size:13px;color:var(--text);font-weight:500;cursor:pointer;font-family:inherit">← 시리즈</button>
+        <div class="list-title" id="listTitle" style="font-size:16px;font-weight:700"></div>
+        <div class="list-cnt" id="listCnt" style="font-size:12px;color:var(--muted);margin-left:auto"></div>
+      </div>
+
+      <!-- 진행률 -->
+      <div class="progress-section" id="progressSection" style="margin-bottom:12px">
+        <div class="progress-row">
+          <div><span class="prog-owned" id="progOwned">0</span><span class="prog-total" id="progTotal"> / 0장</span></div>
+          <span class="prog-pct" id="progPct">0%</span>
+        </div>
+        <div class="prog-bg"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+      </div>
+
+      <!-- 필터바 -->
+      <div class="filter-bar">
+        <button class="ftag active" id="fAll" onclick="setOwnerFilter('전체',this)">전체</button>
+        <button class="ftag" onclick="setOwnerFilter('보유',this)">✓ 보유</button>
+        <button class="ftag" onclick="setOwnerFilter('미보유',this)">미보유</button>
+        <div class="s-divider" style="height:16px;width:1px;margin:0 2px;background:var(--border)"></div>
+        <div class="rarity-drop-wrap" id="rarityWrap">
+          <button class="ftag" id="rarityChip" onclick="toggleRarityDrop()" style="display:flex;align-items:center;gap:5px">
+            <span id="rarityLabel">희귀도</span><span id="rarityArrow" style="font-size:9px;color:var(--muted)">▼</span>
+          </button>
+          <div class="rarity-drop" id="rarityDrop">
+            <div class="rdrop-item active" data-r="all" onclick="setRarity(this)">전체</div>
+            <div class="rdrop-item" data-r="SEC" onclick="setRarity(this)">SEC</div>
+            <div class="rdrop-item" data-r="SR" onclick="setRarity(this)">SR</div>
+            <div class="rdrop-item" data-r="R" onclick="setRarity(this)">R</div>
+            <div class="rdrop-item" data-r="UC" onclick="setRarity(this)">UC</div>
+            <div class="rdrop-item" data-r="C" onclick="setRarity(this)">C</div>
+            <div class="rdrop-item" data-r="L" onclick="setRarity(this)">L</div>
+            <div class="rdrop-item" data-r="P" onclick="setRarity(this)">P</div>
+            <div style="height:1px;background:var(--border);margin:3px 0"></div>
+            <div class="rdrop-item" data-r="SEC★" onclick="setRarity(this)">SEC★</div>
+            <div class="rdrop-item" data-r="SR★" onclick="setRarity(this)">SR★</div>
+            <div class="rdrop-item" data-r="R★" onclick="setRarity(this)">R★</div>
+            <div class="rdrop-item" data-r="L★" onclick="setRarity(this)">L★</div>
+            <div class="rdrop-item" data-r="SP" onclick="setRarity(this)">SP</div>
+            <div class="rdrop-item" data-r="★" onclick="setRarity(this)">★</div>
+          </div>
+        </div>
+        <select class="sort-sel" id="sortSel" onchange="renderCards()">
+          <option value="num">번호순</option>
+          <option value="popular">희귀도순</option>
+          <option value="name">이름순</option>
+        </select>
+        <button class="ftag" onclick="toggleCheckAll()" id="checkAllBtn" style="margin-left:auto;flex-shrink:0">✓ 전체 체크</button>
+      </div>
+
+      <div class="grid" id="cardGrid">
+        <div class="empty-grid"><div class="spinner"></div>카드 불러오는 중...</div>
+      </div>
     </div>
   </main>
 </div>
@@ -721,7 +747,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
         </div>
         <div style="padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:6px">
           <button onclick="clearDeck()" style="flex:1;padding:9px;background:#fff;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--muted);font-family:inherit;cursor:pointer">🗑️ 초기화</button>
-          <button onclick="shareDeckToCommunity()" style="flex:1;padding:9px;background:linear-gradient(135deg,#059669,#10b981);border:none;border-radius:8px;font-size:12px;font-weight:600;color:#fff;font-family:inherit;cursor:pointer">💬 커뮤니티 공유</button>
+          <button onclick="exportDeck()" style="flex:1;padding:9px;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;color:var(--text);font-family:inherit;cursor:pointer">📤 공유</button>
         </div>
       </div>
     </div>
@@ -777,10 +803,8 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
     </div>
     <div style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px">
       <select id="postCat" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none">
-        <option value="free">자유게시판</option>
-        <option value="showcase">카드 자랑</option>
-        <option value="deck">덱 공유</option>
-        <option value="info">정보/질문</option>
+        <option value="free">자유게시판</option><option value="showcase">카드 자랑</option>
+        <option value="deck">덱 공유</option><option value="info">정보/질문</option>
       </select>
       <input id="postTitle" placeholder="제목을 입력해주세요" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none">
       <textarea id="postContent" placeholder="내용을 입력해주세요..." style="flex:1;min-height:200px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none;resize:none;line-height:1.6"></textarea>
@@ -806,10 +830,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
       </div>
       <div style="padding:0 20px 16px;display:flex;align-items:center;gap:14px">
         <div id="mp2Avatar" style="width:56px;height:56px;border-radius:50%;background:rgba(255,255,255,.25);border:2.5px solid rgba(255,255,255,.6);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#fff;flex-shrink:0">?</div>
-        <div>
-          <div id="mp2Name" style="color:#fff;font-size:17px;font-weight:700">-</div>
-          <div id="mp2Sub" style="color:rgba(255,255,255,.7);font-size:12px;margin-top:2px">-</div>
-        </div>
+        <div><div id="mp2Name" style="color:#fff;font-size:17px;font-weight:700">-</div><div id="mp2Sub" style="color:rgba(255,255,255,.7);font-size:12px;margin-top:2px">-</div></div>
       </div>
       <div style="display:flex;background:rgba(0,0,0,.15);border-top:1px solid rgba(255,255,255,.15)">
         <button class="mp2-tab active" onclick="switchMp2Tab('collection',this)" style="flex:1;padding:10px;border:none;border-bottom:2.5px solid #fff;background:none;color:#fff;font-size:11px;font-weight:700;font-family:inherit;cursor:pointer">📚 컬렉션</button>
@@ -992,7 +1013,10 @@ async function init() {
   // 초기 시리즈 로드 - 사이드바 펼치고 OPK-01 선택
   toggleVer('kr');
   toggleGrp('kr-b');
-  await loadCards('OPK-01');
+  // 홈 화면 렌더링 (카드 바로 로드하지 않음)
+  document.getElementById('homeView').style.display = 'block';
+  document.getElementById('cardView').style.display = 'none';
+  renderHomeView();
 }
 
 // ── 카드 로드 ──
@@ -1148,7 +1172,8 @@ function selectSeries(el) {
   document.querySelectorAll('.s-series').forEach(s=>s.classList.remove('active'));
   el.classList.add('active');
   const ser = el.dataset.ser;
-  document.getElementById('listTitle').textContent = el.textContent.replace(/\d+$/, '').trim();
+  const info = SERIES_INFO[ser];
+  document.getElementById('listTitle').textContent = info ? `${ser} ${info.name}` : el.textContent.replace(/\d+$/, '').trim();
   curFilter.owner = '전체';
   curFilter.rarity = 'all';
   document.querySelectorAll('#rarityDrop .rdrop-item').forEach((e,i)=>{e.classList.toggle('active',i===0);});
@@ -1156,6 +1181,9 @@ function selectSeries(el) {
   document.getElementById('rarityChip').classList.remove('active');
   document.querySelectorAll('.ftag').forEach(b=>{if(['전체','✓ 보유','미보유'].some(t=>b.textContent.trim()===t))b.classList.remove('active');});
   document.getElementById('fAll').classList.add('active');
+  // 홈→카드뷰 전환
+  document.getElementById('homeView').style.display = 'none';
+  document.getElementById('cardView').style.display = 'block';
   loadCards(ser);
   if (window.innerWidth <= 700) toggleMob();
 }
@@ -1177,7 +1205,102 @@ function toggleMob() {
   document.getElementById('sidebar').classList.toggle('mobile-open');
   document.getElementById('mobOverlay').classList.toggle('on');
 }
-function showMain() {}
+// ── 홈 화면 ──
+const SERIES_INFO = {
+  'OPK-01':{ name:'ROMANCE DAWN',    sub:'1탄', group:'OP' },
+  'OPK-02':{ name:'정상결전',         sub:'2탄', group:'OP' },
+  'OPK-03':{ name:'강대한 적',        sub:'3탄', group:'OP' },
+  'OPK-04':{ name:'모략의 왕국',      sub:'4탄', group:'OP' },
+  'OPK-05':{ name:'신시대의 주역',    sub:'5탄', group:'OP' },
+  'OPK-06':{ name:'쌍벽의 패자',      sub:'6탄', group:'OP' },
+  'OPK-07':{ name:'500년 후의 미래',  sub:'7탄', group:'OP' },
+  'OPK-08':{ name:'두 전설',          sub:'8탄', group:'OP' },
+  'OPK-09':{ name:'악인의 시대',      sub:'9탄', group:'OP' },
+  'OPK-10':{ name:'왕에게 도전',      sub:'10탄', group:'OP' },
+  'OPK-11':{ name:'신속의 권',        sub:'11탄', group:'OP' },
+  'OPK-12':{ name:'사제의 연',        sub:'12탄', group:'OP' },
+  'OPK-13':{ name:'계승되는 의지',    sub:'13탄', group:'OP' },
+  'OPK-14':{ name:'창해의칠걸',       sub:'14탄', group:'OP' },
+  'EBK-01':{ name:'메모리얼 컬렉션',  sub:'EB1', group:'EB' },
+  'EBK-02':{ name:'Anime 25th',       sub:'EB2', group:'EB' },
+  'EBK-03':{ name:'히로인즈 에디션',  sub:'EB3', group:'EB' },
+};
+
+const GROUP_COLOR = { OP:'var(--red)', EB:'#D97706' };
+
+function renderHomeView() {
+  const opSeries  = Object.entries(SERIES_INFO).filter(([,v])=>v.group==='OP');
+  const ebSeries  = Object.entries(SERIES_INFO).filter(([,v])=>v.group==='EB');
+
+  function makeCard([code, info]) {
+    const total = allCards.filter(c=>c.series===code).length;
+    const ownedCnt = allCards.filter(c=>c.series===code&&owned[c.id]).length;
+    const pct = total ? Math.round(ownedCnt/total*100) : 0;
+    const col = GROUP_COLOR[info.group] || 'var(--red)';
+    // 대표 이미지: 첫 번째 리더 카드 이미지
+    const leaderCard = allCards.find(c=>c.series===code&&(c.card_type==='리더'||c.rarity==='L')&&c.image_url);
+    const img = leaderCard?.image_url ? proxyUrl(leaderCard.image_url) : null;
+
+    return `<div onclick="selectSeriesHome('${code}')" style="background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;cursor:pointer;box-shadow:var(--sh);transition:all .18s" onmouseover="this.style.transform='translateY(-3px)';this.style.borderColor='${col}'" onmouseout="this.style.transform='';this.style.borderColor='var(--border)'">
+      <!-- 이미지 영역 -->
+      <div style="height:100px;background:linear-gradient(135deg,${col}22,${col}08);position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden">
+        ${img ? `<img src="${img}" style="height:110px;object-fit:cover;object-position:top;opacity:.85;margin-top:10px">` : `<div style="font-size:36px;opacity:.3">🃏</div>`}
+        <div style="position:absolute;top:8px;left:10px;font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;background:${col};color:#fff">${info.sub}</div>
+        ${pct===100?`<div style="position:absolute;top:8px;right:10px;font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;background:#059669;color:#fff">완성 ✓</div>`:''}
+      </div>
+      <!-- 정보 영역 -->
+      <div style="padding:10px 12px">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px">${code}</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${info.name}</div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-bottom:5px">
+          <span>${total}장</span>
+          <span style="color:${col};font-weight:700">${pct}%</span>
+        </div>
+        <div style="height:3px;background:var(--bg3);border-radius:2px">
+          <div style="height:3px;background:${col};border-radius:2px;width:${pct}%"></div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('homeOpGrid').innerHTML = opSeries.map(makeCard).join('');
+  document.getElementById('homeEbGrid').innerHTML = ebSeries.map(makeCard).join('');
+}
+
+function selectSeriesHome(series) {
+  // 홈 숨기고 카드뷰 표시
+  document.getElementById('homeView').style.display = 'none';
+  document.getElementById('cardView').style.display = 'block';
+  // 사이드바 active 업데이트
+  document.querySelectorAll('.s-series').forEach(s=>s.classList.remove('active'));
+  const sidebar = document.querySelector(`.s-series[data-ser="${series}"]`);
+  if(sidebar) sidebar.classList.add('active');
+  // 제목
+  const info = SERIES_INFO[series];
+  document.getElementById('listTitle').textContent = `${series} ${info?.name||''}`;
+  // 필터 초기화
+  curFilter.owner='전체'; curFilter.rarity='all';
+  document.querySelectorAll('.ftag').forEach(b=>{ if(['전체','✓ 보유','미보유'].some(t=>b.textContent.trim()===t))b.classList.remove('active'); });
+  document.getElementById('fAll')?.classList.add('active');
+  document.querySelectorAll('#rarityDrop .rdrop-item').forEach((e,i)=>e.classList.toggle('active',i===0));
+  document.getElementById('rarityLabel').textContent='희귀도';
+  document.getElementById('rarityChip')?.classList.remove('active');
+  loadCards(series);
+}
+
+function goHome() {
+  document.getElementById('cardView').style.display = 'none';
+  document.getElementById('homeView').style.display = 'block';
+  renderHomeView();
+}
+
+function showMain() {
+  // 모든 오버레이 닫기
+  ['communityOv','myPage2Ov','deckHubOv','deckOv','myDeckPageOv'].forEach(id=>{
+    document.getElementById(id)?.classList.remove('on');
+  });
+  goHome();
+}
 
 // ── 카드 상세 ──
 function openDetail(cid) {
@@ -1902,7 +2025,7 @@ async function saveDeck() {
   const name = document.getElementById('deckNameInput').value.trim() || '나의 덱';
   const cards = Object.entries(curDeck.cards).map(([card_id, count]) => ({ card_id, count }));
   const payload = {
-    user_id: curUser.id || curUser.username,
+    user_id: curUser.username,
     name,
     leader_id: curDeck.leader?.id || null,
     cards,
@@ -1922,7 +2045,7 @@ async function openMyDecks() {
   document.getElementById('myDecksOv').classList.add('on');
   const el = document.getElementById('myDecksList');
   el.innerHTML = '<div style="text-align:center;padding:20px"><div class="spinner"></div></div>';
-  const { data } = await sb.from('decks').select('*').eq('user_id', curUser.id || curUser.username).order('updated_at', { ascending: false });
+  const { data } = await sb.from('decks').select('*').eq('user_id', curUser.username).order('updated_at', { ascending: false });
   if (!data?.length) { el.innerHTML = '<div style="text-align:center;color:var(--muted);padding:20px;font-size:13px">저장된 덱이 없어요</div>'; return; }
   el.innerHTML = data.map(d => {
     const cards = Array.isArray(d.cards) ? d.cards : [];
@@ -1968,108 +2091,62 @@ function clearDeck() {
   toast('덱이 초기화됐어요');
 }
 
-async function shareDeckToCommunity() {
-  if (!curUser) { toast('로그인이 필요해요'); openAuth('login'); return; }
+function exportDeck() {
   const total = Object.values(curDeck.cards).reduce((a,b)=>a+b,0);
-  if (total === 0 && !curDeck.leader) { toast('덱에 카드를 추가해주세요'); return; }
-
-  // 덱 먼저 저장
-  await saveDeck();
-
-  const deckName = document.getElementById('deckNameInput').value.trim() || '나의 덱';
-  const desc = document.getElementById('deckDescInput')?.value.trim() || '';
-  const leader = curDeck.leader;
-
-  // 카드 목록 텍스트 생성
-  const lines = [];
-  if (leader) lines.push(`👑 리더: ${leader.name} (${leader.id})`);
+  const lines = [`[${curDeck.name}] 총 ${total}장\n`];
+  if (curDeck.leader) lines.push(`👑 리더: ${curDeck.leader.name} (${curDeck.leader.id})`);
   Object.entries(curDeck.cards).forEach(([cid, cnt]) => {
     const c = allCards.find(x => x.id === cid);
     if (c) lines.push(`${cnt}x ${c.name} (${cid})`);
   });
-  const cardText = lines.join('\n');
-
-  const content = `${desc ? desc + '\n\n' : ''}📦 총 ${total}장\n\n${cardText}`;
-
-  const { data, error } = await sb.from('posts').insert({
-    user_id: curUser.id || curUser.username,
-    nickname: curUser.nickname || curUser.username,
-    category: 'deck',
-    title: `[덱 공유] ${deckName}`,
-    content,
-    deck_id: curDeck.id || null,
-    likes: 0, views: 0
-  }).select().single();
-
-  if (error) { toast('공유 실패: ' + error.message); return; }
-  toast('커뮤니티에 덱이 공유됐어요! 💬');
-  closeDeckBuilder();
-  openCommunity();
-  // 덱 공유 탭으로 이동
-  const deckTab = document.querySelector('.comm-tab[data-cat="deck"]');
-  if (deckTab) switchCommTab('deck', deckTab);
-}
-
-function exportDeck() {
-  const total = Object.values(curDeck.cards).reduce((a,b)=>a+b,0);
-  const lines = [`[${document.getElementById('deckNameInput')?.value||'나의 덱'}] 총 ${total}장\n`];
-  if (curDeck.leader) lines.push(`👑 리더: ${curDeck.leader.name} (${curDeck.leader.id})`);
-  Object.entries(curDeck.cards).forEach(([cid,cnt])=>{ const c=allCards.find(x=>x.id===cid); if(c) lines.push(`${cnt}x ${c.name} (${cid})`); });
   const text = lines.join('\n');
-  navigator.clipboard.writeText(text).then(()=>toast('덱 목록이 복사됐어요 📋')).catch(()=>{ prompt('덱 목록 복사:',text); });
+  navigator.clipboard.writeText(text).then(() => toast('덱 목록이 복사됐어요 📋')).catch(() => {
+    prompt('덱 목록 복사:', text);
+  });
 }
 function openLB(url) { document.getElementById('lb-img').src=url; document.getElementById('lightbox').classList.add('on'); }
 function closeLB() { document.getElementById('lightbox').classList.remove('on'); }
 
 // ── 커뮤니티 ──
 let commTabVal = 'all';
-const CAT_LABEL = { all:'전체', free:'자유게시판', showcase:'카드 자랑', deck:'덱 공유', info:'정보/질문' };
-const CAT_COLOR = { free:'#4B6CF7', showcase:'#D97706', deck:'#7C3AED', info:'#059669' };
+const CAT_LABEL = {all:'전체',free:'자유게시판',showcase:'카드 자랑',deck:'덱 공유',info:'정보/질문'};
+const CAT_COLOR = {free:'#4B6CF7',showcase:'#D97706',deck:'#7C3AED',info:'#059669'};
+const timeAgo = t => { const d=Math.floor((Date.now()-new Date(t))/1000); if(d<60)return '방금'; if(d<3600)return Math.floor(d/60)+'분 전'; if(d<86400)return Math.floor(d/3600)+'시간 전'; return Math.floor(d/86400)+'일 전'; };
 
 function openCommunity() {
   document.getElementById('communityOv').classList.add('on');
   loadPosts();
-  if (window.innerWidth <= 700) toggleMob();
+  if (window.innerWidth<=700) toggleMob();
 }
 function closeCommunity() { document.getElementById('communityOv').classList.remove('on'); }
 
-function switchCommTab(cat, btn) {
-  commTabVal = cat;
-  document.querySelectorAll('.comm-tab').forEach(b => {
-    b.style.color = 'var(--muted)'; b.style.fontWeight = '500'; b.style.borderBottomColor = 'transparent';
-  });
-  btn.style.color = '#059669'; btn.style.fontWeight = '700'; btn.style.borderBottomColor = '#059669';
+function switchCommTab(cat,btn) {
+  commTabVal=cat;
+  document.querySelectorAll('.comm-tab').forEach(b=>{ b.style.color='var(--muted)'; b.style.fontWeight='500'; b.style.borderBottomColor='transparent'; });
+  btn.style.color='#059669'; btn.style.fontWeight='700'; btn.style.borderBottomColor='#059669';
   loadPosts();
 }
 
 async function loadPosts() {
-  const el = document.getElementById('postList');
-  el.innerHTML = '<div style="text-align:center;padding:40px"><div class="spinner"></div></div>';
-  let query = sb.from('posts').select('*').order('created_at', { ascending: false }).limit(30);
-  if (commTabVal !== 'all') query = query.eq('category', commTabVal);
-  const { data } = await query;
-  if (!data?.length) {
-    el.innerHTML = `<div style="text-align:center;padding:60px;color:var(--muted)">
-      <div style="font-size:40px;margin-bottom:12px">💬</div>
-      <div style="font-size:14px;font-weight:600">아직 게시글이 없어요</div>
-      <button onclick="openPostWrite()" style="margin-top:14px;padding:10px 24px;background:#059669;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">+ 글쓰기</button>
-    </div>`;
-    return;
-  }
-  const timeAgo = t => { const d=Math.floor((Date.now()-new Date(t))/1000); if(d<60)return '방금'; if(d<3600)return Math.floor(d/60)+'분 전'; if(d<86400)return Math.floor(d/3600)+'시간 전'; return Math.floor(d/86400)+'일 전'; };
-  el.innerHTML = data.map(p => {
-    const col = CAT_COLOR[p.category] || '#4B6CF7';
-    const hasDeck = !!p.deck_id;
+  const el=document.getElementById('postList');
+  el.innerHTML='<div style="text-align:center;padding:40px"><div class="spinner"></div></div>';
+  let q=sb.from('posts').select('*').order('created_at',{ascending:false}).limit(30);
+  if(commTabVal!=='all') q=q.eq('category',commTabVal);
+  const {data}=await q;
+  if(!data?.length){ el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">💬</div><div style="font-size:14px;font-weight:600">아직 게시글이 없어요</div><button onclick="openPostWrite()" style="margin-top:14px;padding:10px 24px;background:#059669;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">+ 글쓰기</button></div>`; return; }
+  el.innerHTML=data.map(p=>{
+    const col=CAT_COLOR[p.category]||'#4B6CF7';
+    const hasDeck=!!p.deck_id;
     return `<div onclick="openPostDetail('${p.id}')" style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='#059669'" onmouseout="this.style.borderColor='var(--border)'">
       <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">
         <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${col}18;color:${col}">${CAT_LABEL[p.category]||p.category}</span>
-        ${hasDeck ? '<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:#EEF0FF;color:#4B6CF7">🗂️ 덱첨부</span>' : ''}
+        ${hasDeck?'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:#EEF0FF;color:#4B6CF7">🗂️ 덱첨부</span>':''}
         <span style="font-size:11px;color:var(--muted);margin-left:auto">${timeAgo(p.created_at)}</span>
       </div>
       <div style="font-size:14px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div>
       <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content}</div>
       <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--muted)">
-        <span>👤 ${p.nickname||p.user_id||'익명'}</span>
+        <span>👤 ${p.nickname||p.username||'익명'}</span>
         <span>❤️ ${p.likes||0}</span>
         <span>👁 ${p.views||0}</span>
       </div>
@@ -2078,49 +2155,48 @@ async function loadPosts() {
 }
 
 function openPostWrite() {
-  if (!curUser) { toast('로그인이 필요해요'); openAuth('login'); return; }
+  if(!curUser){toast('로그인이 필요해요');openAuth('login');return;}
   document.getElementById('postWriteOv').classList.add('on');
 }
 function closePostWrite() { document.getElementById('postWriteOv').classList.remove('on'); }
 
 async function submitPost() {
-  const title = document.getElementById('postTitle').value.trim();
-  const content = document.getElementById('postContent').value.trim();
-  const category = document.getElementById('postCat').value;
-  const image_url = document.getElementById('postImgUrl').value.trim() || null;
-  if (!title || !content) { toast('제목과 내용을 입력해주세요'); return; }
-  const { error } = await sb.from('posts').insert({
-    user_id: curUser.id||curUser.username, nickname: curUser.nickname||curUser.username,
-    category, title, content, image_url, likes: 0, views: 0
+  const title=document.getElementById('postTitle').value.trim();
+  const content=document.getElementById('postContent').value.trim();
+  const category=document.getElementById('postCat').value;
+  const image_url=document.getElementById('postImgUrl').value.trim()||null;
+  if(!title||!content){toast('제목과 내용을 입력해주세요');return;}
+  const {error}=await sb.from('posts').insert({
+    username:curUser.username, user_id:curUser.username,
+    nickname:curUser.nickname||curUser.username,
+    category,title,content,image_url,likes:0,views:0
   });
-  if (error) { toast('등록 실패: '+error.message); return; }
-  document.getElementById('postTitle').value=''; document.getElementById('postContent').value=''; document.getElementById('postImgUrl').value='';
+  if(error){toast('등록 실패: '+error.message);return;}
+  document.getElementById('postTitle').value='';
+  document.getElementById('postContent').value='';
+  document.getElementById('postImgUrl').value='';
   toast('게시글이 등록됐어요 ✅'); closePostWrite(); loadPosts();
 }
 
 async function openPostDetail(id) {
   document.getElementById('postDetailOv').classList.add('on');
-  const el = document.getElementById('postDetailContent');
-  el.innerHTML = '<div style="text-align:center;padding:60px"><div class="spinner"></div></div>';
-  const { data: p } = await sb.from('posts').select('*').eq('id',id).single();
-  if (!p) return;
-  // 조회수
+  const el=document.getElementById('postDetailContent');
+  el.innerHTML='<div style="text-align:center;padding:60px"><div class="spinner"></div></div>';
+  const {data:p}=await sb.from('posts').select('*').eq('id',id).single();
+  if(!p) return;
   await sb.from('posts').update({views:(p.views||0)+1}).eq('id',id).catch(()=>{});
-  const { data: comments } = await sb.from('comments').select('*').eq('post_id',id).order('created_at',{ascending:true});
-  const timeAgo = t => { const d=Math.floor((Date.now()-new Date(t))/1000); if(d<60)return '방금'; if(d<3600)return Math.floor(d/60)+'분 전'; if(d<86400)return Math.floor(d/3600)+'시간 전'; return Math.floor(d/86400)+'일 전'; };
-  const isOwner = curUser && (curUser.id===p.user_id||curUser.username===p.user_id);
+  const {data:comments}=await sb.from('comments').select('*').eq('post_id',id).order('created_at',{ascending:true});
+  const isOwner=curUser&&(curUser.username===p.username||curUser.username===p.user_id);
 
-  // 연결된 덱 정보
-  let deckSection = '';
-  if (p.deck_id) {
-    const { data: deck } = await sb.from('decks').select('*').eq('id',p.deck_id).single();
-    if (deck) {
-      const leader = deck.leader_id ? allCards.find(c=>c.id===deck.leader_id) : null;
-      const leaderImg = leader?.image_url ? proxyUrl(leader.image_url) : null;
-      const cards = Array.isArray(deck.cards)?deck.cards:[];
-      const total = cards.reduce((a,b)=>a+(b.count||1),0);
-      deckSection = `
-      <div style="margin:14px 0;padding:14px;background:var(--bg2);border-radius:12px;border:1.5px solid var(--border)">
+  // 연결된 덱
+  let deckSection='';
+  if(p.deck_id) {
+    const {data:deck}=await sb.from('decks').select('*').eq('id',p.deck_id).single();
+    if(deck){
+      const leader=deck.leader_id?allCards.find(c=>c.id===deck.leader_id):null;
+      const leaderImg=leader?.image_url?proxyUrl(leader.image_url):null;
+      const total=(Array.isArray(deck.cards)?deck.cards:[]).reduce((a,b)=>a+(b.count||1),0);
+      deckSection=`<div style="margin:14px 0;padding:14px;background:var(--bg2);border-radius:12px;border:1.5px solid var(--border)">
         <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:10px">🗂️ 첨부된 덱</div>
         <div style="display:flex;gap:10px;align-items:center">
           <div style="width:42px;height:58px;border-radius:7px;overflow:hidden;background:var(--bg3);flex-shrink:0">
@@ -2128,7 +2204,7 @@ async function openPostDetail(id) {
           </div>
           <div style="flex:1">
             <div style="font-size:13px;font-weight:700">${deck.name}</div>
-            <div style="font-size:11px;color:var(--muted);margin-top:2px">${leader?`👑 ${leader.name} · `:''} 📦 ${total}장</div>
+            <div style="font-size:11px;color:var(--muted)">${leader?`👑 ${leader.name} · `:''}📦 ${total}장</div>
           </div>
           <button onclick="loadDeckFromPost('${deck.id}')" style="padding:7px 14px;background:linear-gradient(135deg,#4B6CF7,#7C3AED);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;flex-shrink:0">덱 불러오기</button>
         </div>
@@ -2136,7 +2212,7 @@ async function openPostDetail(id) {
     }
   }
 
-  el.innerHTML = `
+  el.innerHTML=`
     <div style="background:linear-gradient(135deg,#059669,#10b981);padding:14px 18px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10">
       <button onclick="closePostDetail()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:28px;height:28px;color:#fff;font-size:14px;cursor:pointer">←</button>
       <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,.25);color:#fff">${CAT_LABEL[p.category]||p.category}</span>
@@ -2145,7 +2221,7 @@ async function openPostDetail(id) {
     <div style="background:#fff;padding:18px 16px;border-bottom:1px solid var(--border)">
       <h2 style="font-size:18px;font-weight:700;margin-bottom:8px;line-height:1.4">${p.title}</h2>
       <div style="display:flex;gap:12px;font-size:11px;color:var(--muted);margin-bottom:14px">
-        <span>👤 ${p.nickname||p.user_id||'익명'}</span>
+        <span>👤 ${p.nickname||p.username||'익명'}</span>
         <span>${timeAgo(p.created_at)}</span>
         <span>👁 ${(p.views||0)+1}</span>
         <span>❤️ <span id="postLikeCount">${p.likes||0}</span></span>
@@ -2162,148 +2238,145 @@ async function openPostDetail(id) {
     <div style="padding:14px 16px">
       <div style="font-size:13px;font-weight:700;margin-bottom:10px">댓글 ${comments?.length||0}개</div>
       <div id="commentList">
-        ${(comments||[]).map(c=>`
-          <div style="padding:10px 0;border-bottom:1px solid var(--border)">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-              <span style="font-size:12px;font-weight:600">${c.nickname||c.user_id||'익명'}</span>
-              <span style="font-size:10px;color:var(--muted)">${timeAgo(c.created_at)}</span>
-            </div>
-            <div style="font-size:13px;line-height:1.6">${c.content}</div>
-          </div>`).join('')}
+        ${(comments||[]).map(c=>`<div style="padding:10px 0;border-bottom:1px solid var(--border)">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+            <span style="font-size:12px;font-weight:600">${c.nickname||c.user_id||'익명'}</span>
+            <span style="font-size:10px;color:var(--muted)">${timeAgo(c.created_at)}</span>
+          </div>
+          <div style="font-size:13px;line-height:1.6">${c.content}</div>
+        </div>`).join('')}
       </div>
-      ${curUser?`
-      <div style="margin-top:12px;display:flex;gap:8px">
+      ${curUser?`<div style="margin-top:12px;display:flex;gap:8px">
         <input id="commentInput" placeholder="댓글 입력..." style="flex:1;padding:9px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none" onkeydown="if(event.key==='Enter')submitComment('${p.id}')">
         <button onclick="submitComment('${p.id}')" style="padding:9px 14px;background:#059669;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">등록</button>
       </div>`:`<div style="text-align:center;padding:14px;font-size:13px;color:var(--muted)"><button onclick="openAuth('login')" style="color:#059669;background:none;border:none;cursor:pointer;font-weight:600;font-family:inherit">로그인</button>하면 댓글을 달 수 있어요</div>`}
     </div>`;
 }
-
 function closePostDetail() { document.getElementById('postDetailOv').classList.remove('on'); }
 
 async function loadDeckFromPost(deckId) {
-  if (!curUser) { toast('로그인이 필요해요'); openAuth('login'); return; }
-  const { data } = await sb.from('decks').select('*').eq('id',deckId).single();
-  if (!data) { toast('덱을 불러올 수 없어요'); return; }
-  curDeck = {
-    id: null, // 새 덱으로 저장
-    name: data.name + ' (복사)',
-    category: 'personal',
-    description: data.description || '',
-    leader: data.leader_id ? allCards.find(c=>c.id===data.leader_id)||null : null,
-    cards: {}
-  };
-  (data.cards||[]).forEach(({card_id,count})=>{ curDeck.cards[card_id]=count; });
-  toast(`"${data.name}" 덱을 불러왔어요! 덱 빌더에서 확인하세요`);
-  closePostDetail();
-  closeCommunity();
+  if(!curUser){toast('로그인이 필요해요');openAuth('login');return;}
+  const {data}=await sb.from('decks').select('*').eq('id',deckId).single();
+  if(!data){toast('덱을 불러올 수 없어요');return;}
+  curDeck={id:null,name:data.name+' (복사)',category:'personal',description:data.description||'',
+    leader:data.leader_id?allCards.find(c=>c.id===data.leader_id)||null:null,cards:{}};
+  (data.cards||[]).forEach(({card_id,count})=>{curDeck.cards[card_id]=count;});
+  toast(`"${data.name}" 불러왔어요! 덱 빌더에서 확인하세요`);
+  closePostDetail(); closeCommunity();
   openDeckBuilder();
-  setTimeout(()=>{ renderDeckCardList(); renderDeckPanel(); }, 300);
+  setTimeout(()=>{renderDeckCardList();renderDeckPanel();},300);
 }
 
 async function likePost(id) {
-  if (!curUser) { toast('로그인이 필요해요'); return; }
-  const uid = curUser.id||curUser.username;
-  const { data: existing } = await sb.from('post_likes').select('id').eq('post_id',id).eq('user_id',uid).single().catch(()=>({data:null}));
-  const cur = parseInt(document.getElementById('postLikeCount')?.textContent||0);
-  if (existing) {
+  if(!curUser){toast('로그인이 필요해요');return;}
+  const uid=curUser.username;
+  const {data:existing}=await sb.from('post_likes').select('id').eq('post_id',id).eq('user_id',uid).single().catch(()=>({data:null}));
+  const cur=parseInt(document.getElementById('postLikeCount')?.textContent||0);
+  if(existing){
     await sb.from('post_likes').delete().eq('post_id',id).eq('user_id',uid);
     await sb.from('posts').update({likes:Math.max(0,cur-1)}).eq('id',id);
-    ['postLikeCount','postLikeCount2'].forEach(i=>{ const e=document.getElementById(i); if(e) e.textContent=Math.max(0,cur-1); });
+    ['postLikeCount','postLikeCount2'].forEach(i=>{const e=document.getElementById(i);if(e)e.textContent=Math.max(0,cur-1);});
     toast('좋아요 취소');
   } else {
     await sb.from('post_likes').insert({post_id:id,user_id:uid});
     await sb.from('posts').update({likes:cur+1}).eq('id',id);
-    ['postLikeCount','postLikeCount2'].forEach(i=>{ const e=document.getElementById(i); if(e) e.textContent=cur+1; });
+    ['postLikeCount','postLikeCount2'].forEach(i=>{const e=document.getElementById(i);if(e)e.textContent=cur+1;});
     toast('좋아요! ❤️');
   }
 }
 
 async function submitComment(postId) {
-  const input = document.getElementById('commentInput');
-  const content = input?.value.trim();
-  if (!content) return;
-  await sb.from('comments').insert({ post_id:postId, user_id:curUser.id||curUser.username, nickname:curUser.nickname||curUser.username, content });
-  input.value='';
-  toast('댓글이 등록됐어요');
-  openPostDetail(postId);
+  const input=document.getElementById('commentInput');
+  const content=input?.value.trim();
+  if(!content) return;
+  await sb.from('comments').insert({post_id:postId,user_id:curUser.username,nickname:curUser.nickname||curUser.username,content});
+  input.value=''; toast('댓글이 등록됐어요'); openPostDetail(postId);
 }
 
 async function deletePost(id) {
-  if (!confirm('게시글을 삭제할까요?')) return;
+  if(!confirm('게시글을 삭제할까요?')) return;
   await sb.from('posts').delete().eq('id',id);
   toast('삭제됐어요'); closePostDetail(); loadPosts();
 }
 
+async function shareDeckToCommunity() {
+  if(!curUser){toast('로그인이 필요해요');openAuth('login');return;}
+  const total=Object.values(curDeck.cards).reduce((a,b)=>a+b,0);
+  if(total===0&&!curDeck.leader){toast('덱에 카드를 추가해주세요');return;}
+  await saveDeck();
+  const deckName=document.getElementById('deckNameInput').value.trim()||'나의 덱';
+  const desc=document.getElementById('deckDescInput')?.value.trim()||'';
+  const lines=[];
+  if(curDeck.leader) lines.push(`👑 리더: ${curDeck.leader.name} (${curDeck.leader.id})`);
+  Object.entries(curDeck.cards).forEach(([cid,cnt])=>{const c=allCards.find(x=>x.id===cid);if(c)lines.push(`${cnt}x ${c.name} (${cid})`);});
+  const content=`${desc?desc+'\n\n':''}📦 총 ${total}장\n\n${lines.join('\n')}`;
+  const {error}=await sb.from('posts').insert({
+    username:curUser.username,user_id:curUser.username,
+    nickname:curUser.nickname||curUser.username,
+    category:'deck',title:`[덱 공유] ${deckName}`,
+    content,deck_id:curDeck.id||null,likes:0,views:0
+  });
+  if(error){toast('공유 실패: '+error.message);return;}
+  toast('커뮤니티에 공유됐어요! 💬');
+  closeDeckBuilder();
+  openCommunity();
+  const tab=document.querySelector('.comm-tab[data-cat="deck"]');
+  if(tab) switchCommTab('deck',tab);
+}
+
 // ── 마이페이지 ──
-let mp2TabVal = 'collection';
+let mp2TabVal='collection';
 function openMyPage2() {
-  if (!curUser) { openAuth('login'); return; }
+  if(!curUser){openAuth('login');return;}
   document.getElementById('myPage2Ov').classList.add('on');
-  document.getElementById('mp2Avatar').textContent = (curUser.nickname||curUser.username||'?')[0].toUpperCase();
-  document.getElementById('mp2Name').textContent = curUser.nickname||curUser.username;
-  document.getElementById('mp2Sub').textContent = '@'+curUser.username;
-  switchMp2Tab('collection', document.querySelector('.mp2-tab'));
-  if (window.innerWidth <= 700) toggleMob();
+  document.getElementById('mp2Avatar').textContent=(curUser.nickname||curUser.username||'?')[0].toUpperCase();
+  document.getElementById('mp2Name').textContent=curUser.nickname||curUser.username;
+  document.getElementById('mp2Sub').textContent='@'+curUser.username;
+  switchMp2Tab('collection',document.querySelector('.mp2-tab'));
+  if(window.innerWidth<=700) toggleMob();
 }
 function closeMyPage2() { document.getElementById('myPage2Ov').classList.remove('on'); }
 function mobNavMy() { openMyPage2(); }
 
-function switchMp2Tab(tab, btn) {
-  mp2TabVal = tab;
-  document.querySelectorAll('.mp2-tab').forEach(b=>{ b.style.color='rgba(255,255,255,.6)'; b.style.fontWeight='500'; b.style.borderBottomColor='transparent'; });
-  if(btn){ btn.style.color='#fff'; btn.style.fontWeight='700'; btn.style.borderBottomColor='#fff'; }
+function switchMp2Tab(tab,btn) {
+  mp2TabVal=tab;
+  document.querySelectorAll('.mp2-tab').forEach(b=>{b.style.color='rgba(255,255,255,.6)';b.style.fontWeight='500';b.style.borderBottomColor='transparent';});
+  if(btn){btn.style.color='#fff';btn.style.fontWeight='700';btn.style.borderBottomColor='#fff';}
   loadMp2Tab();
 }
 
 async function loadMp2Tab() {
-  const el = document.getElementById('mp2Body');
-  el.innerHTML = '<div style="text-align:center;padding:40px"><div class="spinner"></div></div>';
-  const uid = curUser.id||curUser.username;
-  const series = ['OPK-01','OPK-02','OPK-03','OPK-04','OPK-05','OPK-06','OPK-07','OPK-08','OPK-09','OPK-10','OPK-11','OPK-12','OPK-13','OPK-14','EBK-01','EBK-02','EBK-03'];
+  const el=document.getElementById('mp2Body');
+  el.innerHTML='<div style="text-align:center;padding:40px"><div class="spinner"></div></div>';
+  const uid=curUser.username;
+  const series=['OPK-01','OPK-02','OPK-03','OPK-04','OPK-05','OPK-06','OPK-07','OPK-08','OPK-09','OPK-10','OPK-11','OPK-12','OPK-13','OPK-14','EBK-01','EBK-02','EBK-03'];
 
-  if (mp2TabVal === 'collection') {
-    const totalOwned = Object.keys(owned).length;
-    const completed = series.filter(s=>{ const t=allCards.filter(c=>c.series===s).length; return t>0&&allCards.filter(c=>c.series===s).every(c=>owned[c.id]); }).length;
-    const sampleImgs = allCards.filter(c=>owned[c.id]&&c.image_url).slice(0,5).map(c=>proxyUrl(c.image_url));
-    el.innerHTML = `
+  if(mp2TabVal==='collection') {
+    const totalOwned=Object.keys(owned).length;
+    const completed=series.filter(s=>{const t=allCards.filter(c=>c.series===s).length;return t>0&&allCards.filter(c=>c.series===s).every(c=>owned[c.id]);}).length;
+    const sampleImgs=allCards.filter(c=>owned[c.id]&&c.image_url).slice(0,5).map(c=>proxyUrl(c.image_url));
+    el.innerHTML=`
       <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:16px;margin-bottom:12px">
         <div style="display:flex;gap:10px;margin-bottom:12px">
-          <div style="flex:1;text-align:center">
-            <div style="font-size:28px;font-weight:800;color:var(--red)">${totalOwned}</div>
-            <div style="font-size:11px;color:var(--muted)">보유 카드</div>
-          </div>
+          <div style="flex:1;text-align:center"><div style="font-size:28px;font-weight:800;color:var(--red)">${totalOwned}</div><div style="font-size:11px;color:var(--muted)">보유 카드</div></div>
           <div style="width:1px;background:var(--border)"></div>
-          <div style="flex:1;text-align:center">
-            <div style="font-size:28px;font-weight:800;color:#059669">${completed}</div>
-            <div style="font-size:11px;color:var(--muted)">완성 시리즈</div>
-          </div>
+          <div style="flex:1;text-align:center"><div style="font-size:28px;font-weight:800;color:#059669">${completed}</div><div style="font-size:11px;color:var(--muted)">완성 시리즈</div></div>
         </div>
         ${sampleImgs.length?`<div style="display:flex;gap:4px">${sampleImgs.map(img=>`<img src="${img}" style="width:44px;height:62px;object-fit:cover;border-radius:5px;border:1px solid var(--border)">`).join('')}</div>`:''}
       </div>
       <div style="font-size:13px;font-weight:700;margin-bottom:8px">시리즈별 진행률</div>
-      ${series.map(s=>{
-        const total=allCards.filter(c=>c.series===s).length;
-        const own=allCards.filter(c=>c.series===s&&owned[c.id]).length;
-        const pct=total?Math.round(own/total*100):0;
+      ${series.map(s=>{const t=allCards.filter(c=>c.series===s).length;const o=allCards.filter(c=>c.series===s&&owned[c.id]).length;const pct=t?Math.round(o/t*100):0;
         return `<div style="background:#fff;border-radius:10px;border:1px solid var(--border);padding:10px 14px;margin-bottom:6px">
-          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
-            <span style="font-weight:600">${s}</span>
-            <span style="color:${pct===100?'#059669':'var(--red)'};font-weight:700">${own}/${total} (${pct}%)</span>
-          </div>
-          <div style="height:4px;background:var(--bg3);border-radius:2px">
-            <div style="height:4px;background:${pct===100?'#059669':'var(--red)'};border-radius:2px;width:${pct}%"></div>
-          </div>
-        </div>`;
-      }).join('')}`;
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px"><span style="font-weight:600">${s}</span><span style="color:${pct===100?'#059669':'var(--red)'};font-weight:700">${o}/${t} (${pct}%)</span></div>
+          <div style="height:4px;background:var(--bg3);border-radius:2px"><div style="height:4px;background:${pct===100?'#059669':'var(--red)'};border-radius:2px;width:${pct}%"></div></div>
+        </div>`;}).join('')}`;
 
-  } else if (mp2TabVal === 'decks') {
-    const { data } = await sb.from('decks').select('*').eq('user_id',uid).order('updated_at',{ascending:false});
-    if (!data?.length) { el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🗂️</div>아직 덱이 없어요<br><button onclick="openDeckBuilder();closeMyPage2()" style="margin-top:12px;padding:8px 18px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">+ 덱 만들기</button></div>'; return; }
+  } else if(mp2TabVal==='decks') {
+    const {data}=await sb.from('decks').select('*').eq('user_id',uid).order('updated_at',{ascending:false});
+    if(!data?.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">🗂️</div>아직 덱이 없어요<br><button onclick="openDeckBuilder();closeMyPage2()" style="margin-top:12px;padding:8px 18px;background:var(--red);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer">+ 덱 만들기</button></div>';return;}
     const catLabel={personal:'🔒 개인',public:'🌐 공개',tournament:'🏆 대회'};
     el.innerHTML=data.map(d=>{
-      const cards=Array.isArray(d.cards)?d.cards:[];
-      const total=cards.reduce((a,b)=>a+(b.count||1),0);
+      const cards=Array.isArray(d.cards)?d.cards:[];const total=cards.reduce((a,b)=>a+(b.count||1),0);
       const leader=d.leader_id?allCards.find(c=>c.id===d.leader_id):null;
       const leaderImg=leader?.image_url?proxyUrl(leader.image_url):null;
       return `<div style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:12px;margin-bottom:8px;display:flex;gap:10px;box-shadow:var(--sh)">
@@ -2317,15 +2390,14 @@ async function loadMp2Tab() {
         </div>
         <div style="display:flex;flex-direction:column;gap:4px;flex-shrink:0">
           <button onclick="closeMyPage2();loadDeckToEditor('${d.id}')" style="padding:5px 10px;background:var(--red);border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:600;font-family:inherit;cursor:pointer">편집</button>
-          <button onclick="closeMyPage2();shareDeckPostById('${d.id}','${d.name.replace(/'/g,"\\'")}',${total})" style="padding:5px 10px;background:#059669;border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:600;font-family:inherit;cursor:pointer">공유</button>
+          <button onclick="closeMyPage2();shareDeckPostById('${d.id}','${(d.name||'').replace(/'/g,"\\'")}',${total})" style="padding:5px 10px;background:#059669;border:none;border-radius:6px;color:#fff;font-size:11px;font-weight:600;font-family:inherit;cursor:pointer">공유</button>
         </div>
       </div>`;
     }).join('');
 
-  } else if (mp2TabVal === 'posts') {
-    const { data } = await sb.from('posts').select('*').eq('user_id',uid).order('created_at',{ascending:false});
-    if (!data?.length) { el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">💬</div>아직 게시글이 없어요</div>'; return; }
-    const timeAgo=t=>{const d=Math.floor((Date.now()-new Date(t))/1000);if(d<60)return '방금';if(d<3600)return Math.floor(d/60)+'분 전';if(d<86400)return Math.floor(d/3600)+'시간 전';return Math.floor(d/86400)+'일 전';};
+  } else if(mp2TabVal==='posts') {
+    const {data}=await sb.from('posts').select('*').eq('username',uid).order('created_at',{ascending:false});
+    if(!data?.length){el.innerHTML='<div style="text-align:center;padding:40px;color:var(--muted)"><div style="font-size:36px;margin-bottom:10px">💬</div>아직 게시글이 없어요</div>';return;}
     el.innerHTML=data.map(p=>`
       <div onclick="closeMyPage2();openCommunity();setTimeout(()=>openPostDetail('${p.id}'),300)" style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:12px 14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh)">
         <div style="font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:4px">${p.title}</div>
@@ -2334,16 +2406,14 @@ async function loadMp2Tab() {
         </div>
       </div>`).join('');
 
-  } else if (mp2TabVal === 'settings') {
+  } else if(mp2TabVal==='settings') {
     el.innerHTML=`
       <div style="background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px">
         ${[{label:'닉네임 변경',icon:'✏️',action:"promptChange('nickname')"},
            {label:'비밀번호 변경',icon:'🔑',action:"promptChange('password')"},
            {label:'전화번호 변경',icon:'📱',action:"promptChange('phone')"}].map((item,i,arr)=>`
           <div onclick="${item.action}" style="display:flex;align-items:center;gap:12px;padding:14px 16px;${i<arr.length-1?'border-bottom:1px solid var(--border)':''};cursor:pointer">
-            <span style="font-size:18px">${item.icon}</span>
-            <span style="font-size:13px;font-weight:500">${item.label}</span>
-            <span style="margin-left:auto;color:var(--dim)">›</span>
+            <span style="font-size:18px">${item.icon}</span><span style="font-size:13px;font-weight:500">${item.label}</span><span style="margin-left:auto;color:var(--dim)">›</span>
           </div>`).join('')}
       </div>
       <button onclick="doLogout();closeMyPage2()" style="width:100%;padding:12px;background:#fff;border:1.5px solid #fca5a5;border-radius:12px;color:#ef4444;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">🚪 로그아웃</button>`;
@@ -2351,21 +2421,19 @@ async function loadMp2Tab() {
 }
 
 async function shareDeckPostById(deckId, deckName, total) {
-  if (!curUser) { toast('로그인이 필요해요'); return; }
-  const { error } = await sb.from('posts').insert({
-    user_id: curUser.id||curUser.username,
-    nickname: curUser.nickname||curUser.username,
-    category: 'deck',
-    title: `[덱 공유] ${deckName}`,
-    content: `📦 총 ${total}장 덱을 공유합니다!`,
-    deck_id: deckId,
-    likes: 0, views: 0
+  if(!curUser){toast('로그인이 필요해요');return;}
+  const {error}=await sb.from('posts').insert({
+    username:curUser.username,user_id:curUser.username,
+    nickname:curUser.nickname||curUser.username,
+    category:'deck',title:`[덱 공유] ${deckName}`,
+    content:`📦 총 ${total}장 덱을 공유합니다!`,
+    deck_id:deckId,likes:0,views:0
   });
-  if (error) { toast('공유 실패'); return; }
-  toast('커뮤니티에 덱이 공유됐어요! 💬');
+  if(error){toast('공유 실패');return;}
+  toast('커뮤니티에 공유됐어요! 💬');
   openCommunity();
-  const deckTab = document.querySelector('.comm-tab[data-cat="deck"]');
-  if (deckTab) switchCommTab('deck', deckTab);
+  const tab=document.querySelector('.comm-tab[data-cat="deck"]');
+  if(tab) switchCommTab('deck',tab);
 }
 
 async function promptChange(type) {
