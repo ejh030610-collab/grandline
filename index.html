@@ -1070,10 +1070,14 @@ async function loadCards(series) {
   curSeries = series;
   document.getElementById('cardGrid').innerHTML = '<div class="empty-grid"><div class="spinner"></div>불러오는 중...</div>';
 
-  // 서버에서 최신 보유 정보 동기화
+  // 서버에서 최신 보유 정보로 완전히 동기화 (로컬 잔재 제거)
   if (curUser) {
-    const { data } = await sb.from('collections').select('card_id').eq('user_id', curUser.username);
-    if (data) { data.forEach(r => { owned[r.card_id] = true; }); saveLocalOwned(); }
+    const { data, error } = await sb.from('collections').select('card_id').eq('user_id', curUser.username);
+    if (!error) {
+      owned = {};
+      (data || []).forEach(r => { owned[r.card_id] = true; });
+      saveLocalOwned();
+    }
   }
 
   renderCards();
@@ -1450,9 +1454,13 @@ async function submitAuth() {
 async function onLogin(user) {
   if (!user?.username) return;
   curUser = user;
-  // 서버 보유 동기화
-  const { data } = await sb.from('collections').select('card_id').eq('user_id', user.username);
-  if (data) { data.forEach(r=>{ owned[r.card_id]=true; }); saveLocalOwned(); }
+  // 서버 보유 데이터로 완전히 동기화 (로컬 잔재 제거)
+  const { data, error } = await sb.from('collections').select('card_id').eq('user_id', user.username);
+  if (!error) {
+    owned = {};
+    (data || []).forEach(r => { owned[r.card_id] = true; });
+    saveLocalOwned();
+  }
   const isAdmin = user.is_admin;
   document.getElementById('hRight').innerHTML = `
     <button class="hbtn mob-hide" onclick="openNotice()">📢 공지</button>
