@@ -971,7 +971,7 @@ async function toggleCheckAll() {
     btn.classList.remove('active');
     showCheckAllToast(seriesCards.length, false);
     if (curUser) {
-      await sb.from('collections').delete().eq('user_id', curUser.id).in('card_id', seriesCards.map(c => c.id)).catch(()=>{});
+      await sb.from('collections').delete().eq('user_id', curUser.username).in('card_id', seriesCards.map(c => c.id)).catch(()=>{});
       showCheckAllToast(seriesCards.length, false, true);
     }
   } else {
@@ -982,7 +982,7 @@ async function toggleCheckAll() {
     btn.classList.add('active');
     showCheckAllToast(seriesCards.length, true);
     if (curUser) {
-      const rows = seriesCards.map(c => ({ user_id: curUser.id, card_id: c.id, quantity: 1 }));
+      const rows = seriesCards.map(c => ({ user_id: curUser.username, card_id: c.id, quantity: 1 }));
       await sb.from('collections').upsert(rows).catch(()=>{});
       showCheckAllToast(seriesCards.length, true, true);
     }
@@ -1054,7 +1054,7 @@ async function loadCards(series) {
 
   // 서버에서 최신 보유 정보 동기화
   if (curUser) {
-    const { data } = await sb.from('collections').select('card_id').eq('user_id', curUser.id);
+    const { data } = await sb.from('collections').select('card_id').eq('user_id', curUser.username);
     if (data) { data.forEach(r => { owned[r.card_id] = true; }); saveLocalOwned(); }
   }
 
@@ -1155,8 +1155,8 @@ async function toggleOwned(cardId) {
 
   // 서버 동기화
   if (curUser) {
-    if (owned[cardId]) await sb.from('collections').upsert({ user_id: curUser.id, card_id: cardId, quantity: 1 }).catch(()=>{});
-    else await sb.from('collections').delete().eq('user_id', curUser.id).eq('card_id', cardId).catch(()=>{});
+    if (owned[cardId]) await sb.from('collections').upsert({ user_id: curUser.username, card_id: cardId, quantity: 1 }).catch(()=>{});
+    else await sb.from('collections').delete().eq('user_id', curUser.username).eq('card_id', cardId).catch(()=>{});
   }
 
   toast(owned[cardId] ? '✓ 보유 카드에 추가됐어요' : '보유 해제됐어요');
@@ -1424,7 +1424,7 @@ async function onLogin(user) {
   if (!user?.username) return;
   curUser = user;
   // 서버 보유 동기화
-  const { data } = await sb.from('collections').select('card_id').eq('user_id', user.id);
+  const { data } = await sb.from('collections').select('card_id').eq('user_id', user.username);
   if (data) { data.forEach(r=>{ owned[r.card_id]=true; }); saveLocalOwned(); }
   const isAdmin = user.is_admin;
   document.getElementById('hRight').innerHTML = `
