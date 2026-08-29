@@ -1209,11 +1209,15 @@ function selectSeries(el) {
   document.getElementById('rarityChip').classList.remove('active');
   document.querySelectorAll('.ftag').forEach(b=>{if(['전체','✓ 보유','미보유'].some(t=>b.textContent.trim()===t))b.classList.remove('active');});
   document.getElementById('fAll').classList.add('active');
+  // 사이드바 닫기
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('mobOverlay').classList.remove('on');
   // 홈→카드뷰 전환
   document.getElementById('homeView').style.display = 'none';
+  document.getElementById('myView').style.display = 'none';
   document.getElementById('cardView').style.display = 'block';
+  document.getElementById('sidebar').style.display = '';
   loadCards(ser);
-  if (window.innerWidth <= 700) toggleMob();
 }
 function toggleVer(id) {
   const el = document.getElementById('vg-'+id);
@@ -1326,6 +1330,8 @@ function showMain() {
   ['communityOv','deckHubOv','deckOv','myDeckPageOv'].forEach(id=>{
     document.getElementById(id)?.classList.remove('on');
   });
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('mobOverlay').classList.remove('on');
   document.getElementById('myView').style.display = 'none';
   document.getElementById('sidebar').style.display = '';
   goHome();
@@ -2399,7 +2405,9 @@ async function shareDeckToCommunity() {
 let mp2TabVal='collection';
 function openMyPage2() {
   if(!curUser){openAuth('login');return;}
-  // 사이드바 숨기고 마이뷰 표시
+  // 사이드바 완전히 닫기
+  document.getElementById('sidebar').classList.remove('mobile-open');
+  document.getElementById('mobOverlay').classList.remove('on');
   document.getElementById('sidebar').style.display = 'none';
   document.getElementById('homeView').style.display = 'none';
   document.getElementById('cardView').style.display = 'none';
@@ -2408,7 +2416,6 @@ function openMyPage2() {
   document.getElementById('mp2Name').textContent=curUser.nickname||curUser.username;
   document.getElementById('mp2Sub').textContent='@'+curUser.username;
   switchMp2Tab('collection',document.querySelector('.mp2-tab'));
-  if(window.innerWidth<=700) toggleMob();
 }
 function closeMyPage2() {
   document.getElementById('myView').style.display = 'none';
