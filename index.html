@@ -741,6 +741,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
     <div style="background:linear-gradient(135deg,#4B6CF7,#7C3AED);padding:12px 16px;display:flex;align-items:center;gap:8px;flex-shrink:0">
       <button onclick="closeDeckBuilder()" style="background:rgba(255,255,255,.2);border:none;border-radius:50%;width:32px;height:32px;color:#fff;font-size:16px;cursor:pointer;flex-shrink:0">←</button>
       <input id="deckNameInput" placeholder="덱 이름..." value="나의 덱" style="background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:6px 10px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;outline:none;flex:1;min-width:0">
+      <button onclick="openMyDecks()" style="padding:7px 12px;background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);border-radius:8px;color:#fff;font-size:12px;font-weight:600;font-family:inherit;cursor:pointer;flex-shrink:0">📋 내 덱</button>
       <button onclick="saveDeck()" style="padding:7px 14px;background:#fff;border:none;border-radius:8px;color:var(--red);font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;flex-shrink:0">💾 저장</button>
     </div>
 
@@ -2193,11 +2194,14 @@ async function loadDeck(id) {
   curDeck.leader = data.leader_id ? allCards.find(c => c.id === data.leader_id) || null : null;
   curDeck.cards = {};
   (data.cards || []).forEach(({ card_id, count }) => { curDeck.cards[card_id] = count; });
+  document.getElementById('deckOv').classList.add('on');
   document.getElementById('deckNameInput').value = data.name;
+  if(window.innerWidth <= 700) switchDeckMobTab('cards');
   renderDeckCardList();
   renderDeckPanel();
   toast(`"${data.name}" 불러왔어요!`);
 }
+async function loadDeckToEditor(id) { await loadDeck(id); }
 
 async function deleteDeck(id) {
   if (!confirm('덱을 삭제할까요?')) return;
