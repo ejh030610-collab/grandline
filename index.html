@@ -2701,6 +2701,7 @@ async function loadMp2Tab() {
       </div>`).join('');
 
   } else if(mp2TabVal==='settings') {
+    const isAdmin = curUser?.is_admin;
     el.innerHTML=`
       <div style="background:#fff;border-radius:14px;border:1px solid var(--border);overflow:hidden;margin-bottom:12px">
         ${[{label:'닉네임 변경',icon:'✏️',action:"promptChange('nickname')"},
@@ -2710,6 +2711,7 @@ async function loadMp2Tab() {
             <span style="font-size:18px">${item.icon}</span><span style="font-size:13px;font-weight:500">${item.label}</span><span style="margin-left:auto;color:var(--dim)">›</span>
           </div>`).join('')}
       </div>
+      ${isAdmin ? `<button onclick="closeMyPage2();openAdmin()" style="width:100%;padding:12px;background:var(--gold-light);border:1.5px solid #D4A017;border-radius:12px;color:var(--gold);font-size:13px;font-weight:700;font-family:inherit;cursor:pointer;margin-bottom:10px">⚙️ 관리자 패널</button>` : ''}
       <button onclick="doLogout();closeMyPage2()" style="width:100%;padding:12px;background:#fff;border:1.5px solid #fca5a5;border-radius:12px;color:#ef4444;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer">🚪 로그아웃</button>`;
   }
 }
