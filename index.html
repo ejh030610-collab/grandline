@@ -1916,6 +1916,24 @@ async function aAnswerInquiry(id) {
 const COLOR_HEX = {'적색':'#ef4444','청색':'#3b82f6','녹색':'#22c55e','자색':'#a855f7','황색':'#eab308','흑색':'#374151','다색':'#ec4899'};
 let curDeck = { id: null, name: '나의 덱', leader: null, cards: {} }; // cards: { card_id: count }
 
+function switchDeckMobTab(tab) {
+  const cardsPanel = document.getElementById('deckCardsPanel');
+  const deckPanel  = document.getElementById('deckDeckPanel');
+  const btnC = document.getElementById('dmt-cards');
+  const btnD = document.getElementById('dmt-deck');
+  if (tab === 'cards') {
+    cardsPanel.style.display = 'flex';
+    deckPanel.style.display  = 'none';
+    if (btnC) { btnC.style.color='var(--red)'; btnC.style.fontWeight='700'; btnC.style.borderBottomColor='var(--red)'; }
+    if (btnD) { btnD.style.color='var(--muted)'; btnD.style.fontWeight='500'; btnD.style.borderBottomColor='transparent'; }
+  } else {
+    cardsPanel.style.display = 'none';
+    deckPanel.style.display  = 'flex';
+    if (btnC) { btnC.style.color='var(--muted)'; btnC.style.fontWeight='500'; btnC.style.borderBottomColor='transparent'; }
+    if (btnD) { btnD.style.color='var(--red)'; btnD.style.fontWeight='700'; btnD.style.borderBottomColor='var(--red)'; }
+  }
+}
+
 function openDeckBuilder() {
   document.getElementById('deckOv').classList.add('on');
   if(window.innerWidth <= 700) {
