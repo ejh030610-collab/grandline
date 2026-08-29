@@ -272,6 +272,12 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
 .atbl tr:last-child td{border-bottom:none;}
 .atbl tr:hover td{background:var(--bg2);}
 .a-search{display:flex;gap:7px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+@media(max-width:700px){
+  .a-search{gap:6px;}
+  .a-search input,.a-search select{flex:1;min-width:100px;font-size:12px;padding:8px 9px;}
+  .admin-body{padding:12px;}
+  .a-stat-row{grid-template-columns:1fr 1fr;}
+}
 .a-search input,.a-search select{background:#fff;border:1px solid var(--border);border-radius:var(--r3);padding:7px 11px;font-size:12px;font-family:inherit;outline:none;color:var(--text);}
 .aact{font-size:11px;padding:4px 9px;border-radius:5px;border:1px solid var(--border);background:#fff;color:var(--muted);font-family:inherit;cursor:pointer;}
 .aact.del:hover{background:#fef2f2;color:#dc2626;border-color:rgba(220,38,38,.3);}
@@ -698,7 +704,7 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
             <option>★H</option><option>★BH</option>
           </select>
         </div>
-        <div class="atbl"><table>
+        <div class="atbl" id="cardListTblWrap"><table id="cardListTbl">
           <thead><tr><th>이미지</th><th>번호</th><th>카드명</th><th>희귀도</th><th>버전</th><th>관리</th></tr></thead>
           <tbody id="a-card-list"></tbody>
         </table></div>
@@ -1732,21 +1738,51 @@ async function aLoadCards(keepScroll) {
   if(scrollTop) setTimeout(()=>{ const el=document.getElementById('ap-cardlist'); if(el) el.scrollTop=scrollTop; },50);
 }
 function aRenderCards(cards) {
-  document.getElementById('a-card-list').innerHTML = cards.length
-    ? cards.map(c=>`<tr data-cid="${c.id}">
-        <td>${c.image_url?`<img src="${proxyUrl(c.image_url)}" style="width:30px;height:44px;object-fit:cover;border-radius:3px" onerror="this.style.display='none'">`:`<span style="font-size:18px">${c.emoji||'🃏'}</span>`}</td>
-        <td style="font-size:11px;color:var(--muted)">${c.id}</td>
-        <td style="font-weight:500;font-size:12px">${c.name}</td>
-        <td><span class="rtag ${RC(c.rarity)}" style="position:static;font-size:10px;padding:1px 6px">${c.rarity}</span></td>
-        <td style="font-size:11px;color:var(--muted)">${c.version||'한글판'}</td>
-        <td><div style="display:flex;gap:4px">
-          <button class="aact" onclick="aSetImg('${c.id}')">🖼 이미지</button>
-          <button class="aact" onclick="aEditName('${c.id}','${(c.name||'').replace(/'/g,'\\\'').replace(/"/g,'&quot;')}')">✏️ 이름</button>
-          <button class="aact" onclick="aEditRarity('${c.id}','${c.rarity||''}')">⭐ 희귀도</button>
-          <button class="aact del" onclick="aDelCard('${c.id}')">삭제</button>
-        </div></td>
-      </tr>`).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">카드 없음</td></tr>';
+  const isMobile = window.innerWidth <= 700;
+  if (isMobile) {
+    document.getElementById('a-card-list').innerHTML = cards.length
+      ? cards.map(c=>`<tr data-cid="${c.id}"><td colspan="6" style="padding:10px 8px">
+          <div style="display:flex;gap:10px;align-items:flex-start">
+            <div style="flex-shrink:0">${c.image_url?`<img src="${proxyUrl(c.image_url)}" style="width:44px;height:62px;object-fit:cover;border-radius:5px" onerror="this.style.display='none'">`:`<div style="width:44px;height:62px;background:var(--bg3);border-radius:5px;display:flex;align-items:center;justify-content:center;font-size:20px">${c.emoji||'🃏'}</div>`}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:2px">${c.id}</div>
+              <div style="font-weight:700;font-size:13px;margin-bottom:4px">${c.name}</div>
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">
+                <span class="rtag ${RC(c.rarity)}" style="position:static;font-size:10px;padding:2px 7px">${RL(c.rarity)}</span>
+                <span style="font-size:10px;color:var(--muted)">${c.version||'한글판'}</span>
+              </div>
+              <div style="display:flex;gap:5px;flex-wrap:wrap">
+                <button class="aact" onclick="aSetImg('${c.id}')" style="font-size:11px;padding:5px 9px">🖼 이미지</button>
+                <button class="aact" onclick="aEditName('${c.id}','${(c.name||'').replace(/'/g,'\\\'').replace(/"/g,'&quot;')}')" style="font-size:11px;padding:5px 9px">✏️ 이름</button>
+                <button class="aact" onclick="aEditRarity('${c.id}','${c.rarity||''}')" style="font-size:11px;padding:5px 9px">⭐ 희귀도</button>
+                <button class="aact del" onclick="aDelCard('${c.id}')" style="font-size:11px;padding:5px 9px">삭제</button>
+              </div>
+            </div>
+          </div>
+        </td></tr>`).join('')
+      : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">카드 없음</td></tr>';
+    // 모바일에선 헤더 숨김
+    const thead = document.querySelector('#cardListTbl thead');
+    if (thead) thead.style.display = 'none';
+  } else {
+    const thead = document.querySelector('#cardListTbl thead');
+    if (thead) thead.style.display = '';
+    document.getElementById('a-card-list').innerHTML = cards.length
+      ? cards.map(c=>`<tr data-cid="${c.id}">
+          <td>${c.image_url?`<img src="${proxyUrl(c.image_url)}" style="width:30px;height:44px;object-fit:cover;border-radius:3px" onerror="this.style.display='none'">`:`<span style="font-size:18px">${c.emoji||'🃏'}</span>`}</td>
+          <td style="font-size:11px;color:var(--muted)">${c.id}</td>
+          <td style="font-weight:500;font-size:12px">${c.name}</td>
+          <td><span class="rtag ${RC(c.rarity)}" style="position:static;font-size:10px;padding:1px 6px">${RL(c.rarity)}</span></td>
+          <td style="font-size:11px;color:var(--muted)">${c.version||'한글판'}</td>
+          <td><div style="display:flex;gap:4px">
+            <button class="aact" onclick="aSetImg('${c.id}')">🖼 이미지</button>
+            <button class="aact" onclick="aEditName('${c.id}','${(c.name||'').replace(/'/g,'\\\'').replace(/"/g,'&quot;')}')">✏️ 이름</button>
+            <button class="aact" onclick="aEditRarity('${c.id}','${c.rarity||''}')">⭐ 희귀도</button>
+            <button class="aact del" onclick="aDelCard('${c.id}')">삭제</button>
+          </div></td>
+        </tr>`).join('')
+      : '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:14px">카드 없음</td></tr>';
+  }
 }
 function aFilterCards() {
   const q=document.getElementById('a-q').value.toLowerCase();
