@@ -2543,18 +2543,20 @@ async function loadDeckFromPost(deckId) {
 async function likePost(id) {
   if(!curUser){toast('로그인이 필요해요');return;}
   const uid=curUser.username;
-  const {data:existing}=await sb.from('post_likes').select('id').eq('post_id',id).eq('user_id',uid).single().catch(()=>({data:null}));
   const cur=parseInt(document.getElementById('postLikeCount')?.textContent||0);
+  const {data:existing}=await sb.from('post_likes').select('id').eq('post_id',id).eq('user_id',uid).single().catch(()=>({data:null}));
   if(existing){
-    await sb.from('post_likes').delete().eq('post_id',id).eq('user_id',uid);
-    await sb.from('posts').update({likes:Math.max(0,cur-1)}).eq('id',id);
-    ['postLikeCount','postLikeCount2'].forEach(i=>{const e=document.getElementById(i);if(e)e.textContent=Math.max(0,cur-1);});
+    const newCount = Math.max(0,cur-1);
+    ['postLikeCount','postLikeCount2'].forEach(i=>{const e=document.getElementById(i);if(e)e.textContent=newCount;});
     toast('좋아요 취소');
+    sb.from('post_likes').delete().eq('post_id',id).eq('user_id',uid).catch(()=>{});
+    sb.from('posts').update({likes:newCount}).eq('id',id).catch(()=>{});
   } else {
-    await sb.from('post_likes').insert({post_id:id,user_id:uid});
-    await sb.from('posts').update({likes:cur+1}).eq('id',id);
-    ['postLikeCount','postLikeCount2'].forEach(i=>{const e=document.getElementById(i);if(e)e.textContent=cur+1;});
+    const newCount = cur+1;
+    ['postLikeCount','postLikeCount2'].forEach(i=>{const e=document.getElementById(i);if(e)e.textContent=newCount;});
     toast('좋아요! ❤️');
+    sb.from('post_likes').insert({post_id:id,user_id:uid}).catch(()=>{});
+    sb.from('posts').update({likes:newCount}).eq('id',id).catch(()=>{});
   }
 }
 
