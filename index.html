@@ -1219,11 +1219,11 @@ function selectSeries(el) {
   // 사이드바 닫기
   document.getElementById('sidebar').classList.remove('mobile-open');
   document.getElementById('mobOverlay').classList.remove('on');
-  // 홈→카드뷰 전환
+  document.getElementById('sidebar').style.display = '';
+  // 다른 뷰 숨기고 카드뷰 표시
   document.getElementById('homeView').style.display = 'none';
   document.getElementById('myView').style.display = 'none';
   document.getElementById('cardView').style.display = 'block';
-  document.getElementById('sidebar').style.display = '';
   loadCards(ser);
 }
 function toggleVer(id) {
@@ -1241,6 +1241,7 @@ function toggleGrp(id) {
   if (arr) arr.classList.toggle('open', !open);
 }
 function toggleMob() {
+  document.getElementById('sidebar').style.display = '';
   document.getElementById('sidebar').classList.toggle('mobile-open');
   document.getElementById('mobOverlay').classList.toggle('on');
 }
