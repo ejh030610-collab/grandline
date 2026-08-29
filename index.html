@@ -856,7 +856,17 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
       </select>
       <input id="postTitle" placeholder="제목을 입력해주세요" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none">
       <textarea id="postContent" placeholder="내용을 입력해주세요..." style="flex:1;min-height:200px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none;resize:none;line-height:1.6"></textarea>
-      <input id="postImgUrl" placeholder="이미지 URL (선택사항)" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none">
+      <div>
+        <input type="file" id="postImgFile" accept="image/*" onchange="previewPostImg(event)" style="display:none">
+        <button onclick="document.getElementById('postImgFile').click()" style="width:100%;padding:12px;border:1.5px dashed var(--border);border-radius:10px;background:var(--bg2);color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+          📷 사진 첨부 (선택사항)
+        </button>
+        <div id="postImgPreviewWrap" style="display:none;margin-top:8px;position:relative">
+          <img id="postImgPreview" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px">
+          <button onclick="removePostImg()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer">✕</button>
+        </div>
+        <input type="hidden" id="postImgUrl">
+      </div>
     </div>
   </div>
 </div>
@@ -2284,15 +2294,46 @@ async function loadPosts() {
 function openPostWrite() {
   if(!curUser){toast('로그인이 필요해요');openAuth('login');return;}
   document.getElementById('postWriteOv').classList.add('on');
+  removePostImg();
 }
 function closePostWrite() { document.getElementById('postWriteOv').classList.remove('on'); }
+
+let postImgFile = null;
+function previewPostImg(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  postImgFile = file;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    document.getElementById('postImgPreview').src = ev.target.result;
+    document.getElementById('postImgPreviewWrap').style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+function removePostImg() {
+  postImgFile = null;
+  document.getElementById('postImgFile').value = '';
+  document.getElementById('postImgPreviewWrap').style.display = 'none';
+  document.getElementById('postImgUrl').value = '';
+}
 
 async function submitPost() {
   const title=document.getElementById('postTitle').value.trim();
   const content=document.getElementById('postContent').value.trim();
   const category=document.getElementById('postCat').value;
-  const image_url=document.getElementById('postImgUrl').value.trim()||null;
   if(!title||!content){toast('제목과 내용을 입력해주세요');return;}
+
+  let image_url = null;
+  if (postImgFile) {
+    toast('업로드 중...');
+    const path = `posts/${curUser.username}_${Date.now()}.jpg`;
+    const { error: upErr } = await sb.storage.from('card-images').upload(path, postImgFile, { upsert: true, contentType: postImgFile.type });
+    if (!upErr) {
+      const { data } = sb.storage.from('card-images').getPublicUrl(path);
+      image_url = data.publicUrl;
+    }
+  }
+
   const {error}=await sb.from('posts').insert({
     username:curUser.username, user_id:curUser.username,
     nickname:curUser.nickname||curUser.username,
@@ -2301,7 +2342,7 @@ async function submitPost() {
   if(error){toast('등록 실패: '+error.message);return;}
   document.getElementById('postTitle').value='';
   document.getElementById('postContent').value='';
-  document.getElementById('postImgUrl').value='';
+  removePostImg();
   toast('게시글이 등록됐어요 ✅'); closePostWrite(); loadPosts();
 }
 
