@@ -978,34 +978,41 @@ async function toggleCheckAll() {
   const btn = document.getElementById('checkAllBtn');
 
   if (allOwned) {
-    // 전체 해제
+    // 전체 해제 - 화면 먼저 업데이트
     seriesCards.forEach(c => { delete owned[c.id]; });
     saveLocalOwned();
     btn.textContent = '✓ 전체 체크';
     btn.classList.remove('active');
+    curFilter.owner = '전체';
+    document.querySelectorAll('.ftag').forEach(b=>{if(['전체','✓ 보유','미보유'].some(t=>b.textContent.trim()===t))b.classList.remove('active');});
+    document.getElementById('fAll')?.classList.add('active');
+    renderCards();
     showCheckAllToast(seriesCards.length, false);
+    // 서버 저장은 백그라운드에서
     if (curUser) {
-      await sb.from('collections').delete().eq('user_id', curUser.username).in('card_id', seriesCards.map(c => c.id)).catch(()=>{});
-      showCheckAllToast(seriesCards.length, false, true);
+      sb.from('collections').delete().eq('user_id', curUser.username).in('card_id', seriesCards.map(c => c.id))
+        .then(() => showCheckAllToast(seriesCards.length, false, true))
+        .catch(() => {});
     }
   } else {
-    // 전체 체크
+    // 전체 체크 - 화면 먼저 업데이트
     seriesCards.forEach(c => { owned[c.id] = true; });
     saveLocalOwned();
     btn.textContent = '✓ 전체 해제';
     btn.classList.add('active');
+    curFilter.owner = '전체';
+    document.querySelectorAll('.ftag').forEach(b=>{if(['전체','✓ 보유','미보유'].some(t=>b.textContent.trim()===t))b.classList.remove('active');});
+    document.getElementById('fAll')?.classList.add('active');
+    renderCards();
     showCheckAllToast(seriesCards.length, true);
+    // 서버 저장은 백그라운드에서
     if (curUser) {
       const rows = seriesCards.map(c => ({ user_id: curUser.username, card_id: c.id, quantity: 1 }));
-      await sb.from('collections').upsert(rows).catch(()=>{});
-      showCheckAllToast(seriesCards.length, true, true);
+      sb.from('collections').upsert(rows)
+        .then(() => showCheckAllToast(seriesCards.length, true, true))
+        .catch(() => {});
     }
   }
-  // 보유/미보유 필터가 걸려있으면 결과가 사라져 보일 수 있으니 전체로 리셋
-  curFilter.owner = '전체';
-  document.querySelectorAll('.ftag').forEach(b=>{if(['전체','✓ 보유','미보유'].some(t=>b.textContent.trim()===t))b.classList.remove('active');});
-  document.getElementById('fAll')?.classList.add('active');
-  renderCards();
 }
 
 function showCheckAllToast(count, isCheck, isSaved) {
