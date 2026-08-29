@@ -857,15 +857,11 @@ header{position:sticky;top:0;z-index:100;background:linear-gradient(135deg,#4B6C
       <input id="postTitle" placeholder="제목을 입력해주세요" style="padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:inherit;outline:none">
       <textarea id="postContent" placeholder="내용을 입력해주세요..." style="flex:1;min-height:200px;padding:10px 12px;border:1.5px solid var(--border);border-radius:10px;font-size:13px;font-family:inherit;outline:none;resize:none;line-height:1.6"></textarea>
       <div>
-        <input type="file" id="postImgFile" accept="image/*" onchange="previewPostImg(event)" style="display:none">
+        <input type="file" id="postImgFile" accept="image/*" multiple onchange="addPostImgs(event)" style="display:none">
         <button onclick="document.getElementById('postImgFile').click()" style="width:100%;padding:12px;border:1.5px dashed var(--border);border-radius:10px;background:var(--bg2);color:var(--muted);font-size:13px;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
-          📷 사진 첨부 (선택사항)
+          📷 사진 첨부 (여러 장 가능)
         </button>
-        <div id="postImgPreviewWrap" style="display:none;margin-top:8px;position:relative">
-          <img id="postImgPreview" style="width:100%;max-height:220px;object-fit:cover;border-radius:10px">
-          <button onclick="removePostImg()" style="position:absolute;top:6px;right:6px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:26px;height:26px;font-size:14px;cursor:pointer">✕</button>
-        </div>
-        <input type="hidden" id="postImgUrl">
+        <div id="postImgPreviewWrap" style="display:none;margin-top:8px;display:grid;grid-template-columns:repeat(3,1fr);gap:6px"></div>
       </div>
     </div>
   </div>
@@ -2274,18 +2270,24 @@ async function loadPosts() {
   el.innerHTML=data.map(p=>{
     const col=CAT_COLOR[p.category]||'#4B6CF7';
     const hasDeck=!!p.deck_id;
-    return `<div onclick="openPostDetail('${p.id}')" style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s" onmouseover="this.style.borderColor='#059669'" onmouseout="this.style.borderColor='var(--border)'">
-      <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">
-        <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${col}18;color:${col}">${CAT_LABEL[p.category]||p.category}</span>
-        ${hasDeck?'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:#EEF0FF;color:#4B6CF7">🗂️ 덱첨부</span>':''}
-        <span style="font-size:11px;color:var(--muted);margin-left:auto">${timeAgo(p.created_at)}</span>
-      </div>
-      <div style="font-size:14px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div>
-      <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content}</div>
-      <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--muted)">
-        <span>👤 ${p.nickname||p.username||'익명'}</span>
-        <span>❤️ ${p.likes||0}</span>
-        <span>👁 ${p.views||0}</span>
+    const imgs = Array.isArray(p.image_urls) && p.image_urls.length ? p.image_urls : (p.image_url ? [p.image_url] : []);
+    const thumb = imgs[0];
+    return `<div onclick="openPostDetail('${p.id}')" style="background:#fff;border-radius:12px;border:1px solid var(--border);padding:14px;margin-bottom:8px;cursor:pointer;box-shadow:var(--sh);transition:border-color .15s;display:flex;gap:10px" onmouseover="this.style.borderColor='#059669'" onmouseout="this.style.borderColor='var(--border)'">
+      ${thumb ? `<img src="${thumb}" style="width:64px;height:64px;object-fit:cover;border-radius:8px;flex-shrink:0">` : ''}
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:7px">
+          <span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:${col}18;color:${col}">${CAT_LABEL[p.category]||p.category}</span>
+          ${hasDeck?'<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:#EEF0FF;color:#4B6CF7">🗂️ 덱첨부</span>':''}
+          ${imgs.length>1?`<span style="font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:var(--bg2);color:var(--muted)">📷 ${imgs.length}</span>`:''}
+          <span style="font-size:11px;color:var(--muted);margin-left:auto">${timeAgo(p.created_at)}</span>
+        </div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.title}</div>
+        <div style="font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${p.content}</div>
+        <div style="display:flex;gap:12px;margin-top:8px;font-size:11px;color:var(--muted)">
+          <span>👤 ${p.nickname||p.username||'익명'}</span>
+          <span>❤️ ${p.likes||0}</span>
+          <span>👁 ${p.views||0}</span>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -2298,23 +2300,37 @@ function openPostWrite() {
 }
 function closePostWrite() { document.getElementById('postWriteOv').classList.remove('on'); }
 
-let postImgFile = null;
-function previewPostImg(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-  postImgFile = file;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    document.getElementById('postImgPreview').src = ev.target.result;
-    document.getElementById('postImgPreviewWrap').style.display = 'block';
-  };
-  reader.readAsDataURL(file);
+let postImgFiles = [];
+function addPostImgs(e) {
+  const files = Array.from(e.target.files || []);
+  if (!files.length) return;
+  if (postImgFiles.length + files.length > 10) { toast('사진은 최대 10장까지 가능해요'); }
+  files.slice(0, 10 - postImgFiles.length).forEach(file => {
+    postImgFiles.push(file);
+  });
+  renderPostImgPreviews();
+  e.target.value = '';
+}
+function removePostImgAt(idx) {
+  postImgFiles.splice(idx, 1);
+  renderPostImgPreviews();
 }
 function removePostImg() {
-  postImgFile = null;
+  postImgFiles = [];
   document.getElementById('postImgFile').value = '';
-  document.getElementById('postImgPreviewWrap').style.display = 'none';
-  document.getElementById('postImgUrl').value = '';
+  renderPostImgPreviews();
+}
+function renderPostImgPreviews() {
+  const wrap = document.getElementById('postImgPreviewWrap');
+  if (!postImgFiles.length) { wrap.style.display = 'none'; wrap.innerHTML = ''; return; }
+  wrap.style.display = 'grid';
+  wrap.innerHTML = postImgFiles.map((file, i) => {
+    const url = URL.createObjectURL(file);
+    return `<div style="position:relative;aspect-ratio:1">
+      <img src="${url}" style="width:100%;height:100%;object-fit:cover;border-radius:8px">
+      <button onclick="removePostImgAt(${i})" style="position:absolute;top:3px;right:3px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer">✕</button>
+    </div>`;
+  }).join('');
 }
 
 async function submitPost() {
@@ -2323,21 +2339,26 @@ async function submitPost() {
   const category=document.getElementById('postCat').value;
   if(!title||!content){toast('제목과 내용을 입력해주세요');return;}
 
-  let image_url = null;
-  if (postImgFile) {
+  let image_urls = [];
+  if (postImgFiles.length) {
     toast('업로드 중...');
-    const path = `posts/${curUser.username}_${Date.now()}.jpg`;
-    const { error: upErr } = await sb.storage.from('card-images').upload(path, postImgFile, { upsert: true, contentType: postImgFile.type });
-    if (!upErr) {
-      const { data } = sb.storage.from('card-images').getPublicUrl(path);
-      image_url = data.publicUrl;
+    for (const file of postImgFiles) {
+      const path = `posts/${curUser.username}_${Date.now()}_${Math.random().toString(36).slice(2)}.jpg`;
+      const { error: upErr } = await sb.storage.from('card-images').upload(path, file, { upsert: true, contentType: file.type });
+      if (!upErr) {
+        const { data } = sb.storage.from('card-images').getPublicUrl(path);
+        image_urls.push(data.publicUrl);
+      }
     }
   }
 
   const {error}=await sb.from('posts').insert({
     username:curUser.username, user_id:curUser.username,
     nickname:curUser.nickname||curUser.username,
-    category,title,content,image_url,likes:0,views:0
+    category,title,content,
+    image_url: image_urls[0] || null,
+    image_urls,
+    likes:0,views:0
   });
   if(error){toast('등록 실패: '+error.message);return;}
   document.getElementById('postTitle').value='';
@@ -2412,7 +2433,14 @@ async function openPostDetail(id) {
         <span>👁 ${(p.views||0)+1}</span>
         <span>❤️ <span id="postLikeCount">${p.likes||0}</span></span>
       </div>
-      ${p.image_url?`<img src="${p.image_url}" style="width:100%;border-radius:10px;margin-bottom:14px;max-height:400px;object-fit:cover" onclick="openLB('${p.image_url}')">`:''} 
+      ${(() => {
+        const imgs = Array.isArray(p.image_urls) && p.image_urls.length ? p.image_urls : (p.image_url ? [p.image_url] : []);
+        if (!imgs.length) return '';
+        if (imgs.length === 1) return `<img src="${imgs[0]}" style="width:100%;border-radius:10px;margin-bottom:14px;max-height:400px;object-fit:cover" onclick="openLB('${imgs[0]}')">`;
+        return `<div style="display:grid;grid-template-columns:repeat(${imgs.length===2?2:3},1fr);gap:6px;margin-bottom:14px">
+          ${imgs.map(url=>`<img src="${url}" style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer" onclick="openLB('${url}')">`).join('')}
+        </div>`;
+      })()}
       <div style="font-size:14px;line-height:1.8;color:var(--text);white-space:pre-wrap">${p.content}</div>
       ${deckSection}
     </div>
