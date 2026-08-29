@@ -1001,6 +1001,10 @@ async function toggleCheckAll() {
       showCheckAllToast(seriesCards.length, true, true);
     }
   }
+  // 보유/미보유 필터가 걸려있으면 결과가 사라져 보일 수 있으니 전체로 리셋
+  curFilter.owner = '전체';
+  document.querySelectorAll('.ftag').forEach(b=>{if(['전체','✓ 보유','미보유'].some(t=>b.textContent.trim()===t))b.classList.remove('active');});
+  document.getElementById('fAll')?.classList.add('active');
   renderCards();
 }
 
