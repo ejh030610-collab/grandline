@@ -1008,7 +1008,7 @@ async function toggleCheckAll() {
     // 서버 저장은 백그라운드에서
     if (curUser) {
       const rows = seriesCards.map(c => ({ user_id: curUser.username, card_id: c.id, quantity: 1 }));
-      sb.from('collections').upsert(rows)
+      sb.from('collections').upsert(rows, { onConflict: 'user_id,card_id' })
         .then(() => showCheckAllToast(seriesCards.length, true, true))
         .catch(() => {});
     }
@@ -1186,7 +1186,7 @@ async function toggleOwned(cardId) {
 
   // 서버 동기화
   if (curUser) {
-    if (owned[cardId]) await sb.from('collections').upsert({ user_id: curUser.username, card_id: cardId, quantity: 1 }).catch(()=>{});
+    if (owned[cardId]) await sb.from('collections').upsert({ user_id: curUser.username, card_id: cardId, quantity: 1 }, { onConflict: 'user_id,card_id' }).catch(()=>{});
     else await sb.from('collections').delete().eq('user_id', curUser.username).eq('card_id', cardId).catch(()=>{});
   }
 
