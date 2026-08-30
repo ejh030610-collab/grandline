@@ -2324,7 +2324,7 @@ function switchCommTab(cat,btn) {
 async function loadPosts() {
   const el=document.getElementById('postList');
   el.innerHTML='<div style="text-align:center;padding:40px"><div class="spinner"></div></div>';
-  let q=sb.from('posts').select('*').order('created_at',{ascending:false}).limit(30);
+  let q=sb.from('posts').select('*').order('created_at',{ascending:false}).limit(100);
   if(commTabVal!=='all') q=q.eq('category',commTabVal);
   const {data}=await q;
   if(!data?.length){ el.innerHTML=`<div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:40px;margin-bottom:12px">💬</div><div style="font-size:14px;font-weight:600">아직 게시글이 없어요</div><button onclick="openPostWrite()" style="margin-top:14px;padding:10px 24px;background:#059669;color:#fff;border:none;border-radius:10px;font-size:13px;font-weight:700;font-family:inherit;cursor:pointer">+ 글쓰기</button></div>`; return; }
