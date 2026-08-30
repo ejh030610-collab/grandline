@@ -2030,7 +2030,9 @@ function renderDeckCardList() {
     if (col && c.color !== col) return false;
     if (typ && c.card_type !== typ) return false;
     return true;
-  }).slice(0, 120);
+  });
+  // 필터가 하나도 없을 때만(전체 카드 나열) 과도한 렌더링 방지를 위해 제한, 그 외엔 전체 표시
+  if (!q && !ser && !col && !typ) cards = cards.slice(0, 300);
 
   const el = document.getElementById('deckCardList');
   if (!el) return;
